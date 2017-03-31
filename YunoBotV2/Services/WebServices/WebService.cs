@@ -12,20 +12,20 @@ namespace YunoBotV2.Services.WebServices
     public class WebService
     {
 
-        public HttpClient Http { get; private set; }
+        protected HttpClient _http;
 
         public WebService()
-            => Http = new HttpClient();
+            => _http = new HttpClient();
 
         public async Task<JObject> GetJsonContent(string url)
         {
 
             int counter = 1;
-            HttpResponseMessage response = await Http.GetAsync(url);
+            HttpResponseMessage response = await _http.GetAsync(url);
 
             while ((!response.IsSuccessStatusCode) && (counter < 4))
             {
-                response = await Http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+                response = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
                 counter++;
             }
 
@@ -39,11 +39,11 @@ namespace YunoBotV2.Services.WebServices
         {
 
             int counter = 1;
-            HttpResponseMessage response = await Http.GetAsync(url);
+            HttpResponseMessage response = await _http.GetAsync(url);
 
             while ((!response.IsSuccessStatusCode) && (counter < 4))
             {
-                response = await Http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+                response = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
                 counter++;
             }
 

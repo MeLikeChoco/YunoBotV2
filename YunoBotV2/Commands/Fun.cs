@@ -16,11 +16,13 @@ namespace YunoBotV2.Commands
     {
 
         private WebService _webService;
+        private Unshortener _unshortenService;
 
-        public Fun(WebService webServiceParams)
+        public Fun(WebService webServiceParams, Unshortener unshortenParams)
         {
 
             _webService = webServiceParams;
+            _unshortenService = unshortenParams;
 
         }
 
@@ -176,11 +178,7 @@ namespace YunoBotV2.Commands
             if (url.Contains("adf.ly"))
                 await ReplyAsync("With how adf.ly works, I cannot determine the correct end link.");
             else
-            {
-                
-                
-
-            }
+                await ReplyAsync($"{Context.User.Mention} The actual link is: {await _unshortenService.Get(url)}");
 
         }
 
