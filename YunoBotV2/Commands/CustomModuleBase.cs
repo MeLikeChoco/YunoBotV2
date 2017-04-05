@@ -9,7 +9,7 @@ using Discord.WebSocket;
 
 namespace YunoBotV2.Commands
 {
-    public class CustomModuleBase : ModuleBase
+    public class CustomModuleBase : ModuleBase<SocketCommandContext>
     {
 
         /// <summary>

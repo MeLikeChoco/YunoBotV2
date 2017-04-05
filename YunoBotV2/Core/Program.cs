@@ -25,7 +25,7 @@ namespace YunoBotV2.Core
         private CommandService _commands;
         private DependencyMap _map;
         private int LatencyLimiter;
-        private bool IsTest;
+        private bool IsTest = false;
         private string[] Args;
 
         public async Task Run(string[] args)
@@ -166,7 +166,7 @@ namespace YunoBotV2.Core
 
             if (!(message.HasStringPrefix(prefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return;
 
-            var context = new CommandContext(_client, message);
+            var context = new SocketCommandContext(_client, message);
             AltConsole.Print("Verbose", "Command", $"{(message.Channel as SocketGuildChannel).Guild.Name}");
             AltConsole.Print("Verbose", "Command", $"{message.Content}");
             IResult result = await _commands.ExecuteAsync(context, argPos, _map);

@@ -27,6 +27,12 @@ namespace YunoBotV2.Commands
 
         }
 
+        [Command("ping")]
+        [Summary("Returns the ping between bot and guild")]
+        [RequireContext(ContextType.Guild)]
+        public async Task PingCommand()
+            => await ReplyAsync($"The ping between bot and guild is: **{(Context.Client.Latency)} ms**");
+
         [Command("gif")]
         [Summary("Returns a gif from giphy")]
         public async Task GifCommand([Remainder]string search)
@@ -253,8 +259,6 @@ namespace YunoBotV2.Commands
             => await ReplyAsync($"{Context.User.Mention} I think it's hilarious you kids talking shit about me. " +
                 "You wouldn't say shit to me irl, " + $"I'm jacked. Not only that but I wear the freshest clothes, " +
                      "eat at the chillest restaurants, and bang the hottest dudes. Ya'll are pathetic lol.﻿");
-
-
 
     }
 }
