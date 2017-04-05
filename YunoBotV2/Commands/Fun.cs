@@ -1,4 +1,5 @@
 ﻿using Discord.Commands;
+using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,20 @@ namespace YunoBotV2.Commands
 
         }
 
+        [Command("gif")]
+        [Summary("Returns a gif from giphy")]
+        public async Task GifCommand([Remainder]string search)
+        {
+
+            //api key is the public one
+            var url = "http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" + search;
+            JObject result = await _webService.GetJObjectContent(url);
+            var gifUrl = result["data"]["image_original_url"].ToString();
+
+            await ReplyAsync(gifUrl);            
+
+        }
+
         [Command("norris")]
         [Summary("Returns a really bad Chuck Norris joke, with optional name!")]
         public async Task NorrisCommand([Remainder]string name = null)
@@ -35,7 +50,7 @@ namespace YunoBotV2.Commands
 
             string url;
 
-            if((name.IndexOf(' ') == name.LastIndexOf(' ')) && name.IndexOf(' ') != -1)
+            if((name.IndexOf(' ') == name.LastIndexOf(' ')) && name.IndexOf(' ') != -1) 
             {
 
                 string[] temp = name.Split(' ');
@@ -44,7 +59,7 @@ namespace YunoBotV2.Commands
             }
             else url = $"http://api.icndb.com/jokes/random?firstName={Uri.EscapeUriString(name)}&lastName=";
 
-            JObject result = await _webService.GetJsonContent(url);
+            JObject result = await _webService.GetJObjectContent(url);
 
             if(result == null)
             {
@@ -181,6 +196,65 @@ namespace YunoBotV2.Commands
                 await ReplyAsync($"{Context.User.Mention} The actual link is: {await _unshortenService.Get(url)}");
 
         }
+
+        [Command("rr")]
+        [Summary("Play a round of russian roulette")]
+        public async Task RussianRouletteCommand(int bullets = 1, int capacity = 6)
+        {
+
+            if (bullets > capacity)
+            {
+
+                await ReplyAsync($"You try fitting {bullets} bullets in a {capacity} round gun and see if that works.");
+                return;
+
+            }
+
+            var r = new Random();
+            var landingPos = r.Next(1, capacity + 1);
+            var bulletPositions = new int[bullets];
+
+            for (int i = 0; i < bullets; i++)
+            {               
+
+                while (true)
+                {
+
+                    var b = r.Next(1, capacity + 1);
+                    if (!(bulletPositions.Contains(b)))
+                    {
+
+                        bulletPositions[i] = b;
+                        break;
+
+                    }
+
+                }
+
+            }
+
+            if (bulletPositions.Contains(landingPos))
+                await ReplyAsync(":gun: BAM, YOU DEAD :skull:");
+            else
+                await ReplyAsync($"{Context.User.Mention} :gun: You live to see another day which you will spend browsing the internet " +
+                    "wishing you were doing something else productive.");
+
+        }
+
+        [Command("invite")]
+        [Summary("Get an invite link for this bot!")]
+        public async Task InviteCommand()
+            => await ReplyAsync($"{Context.User.Mention} https://discordapp.com/oauth2/authorize?client_id={Context.Client.GetApplicationInfoAsync().Result.Id}&scope=bot&permissions=0" +
+                "\nPlease take care of me.");
+
+        [Command("you suck")]
+        [Summary("Insult the bot")]
+        public async Task YouSuckCommand()
+            => await ReplyAsync($"{Context.User.Mention} I think it's hilarious you kids talking shit about me. " +
+                "You wouldn't say shit to me irl, " + $"I'm jacked. Not only that but I wear the freshest clothes, " +
+                     "eat at the chillest restaurants, and bang the hottest dudes. Ya'll are pathetic lol.﻿");
+
+
 
     }
 }
