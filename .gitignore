@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /YunoBotV2/Configuration/Config.xml
 /YunoBotV2/Properties/launchSettings.json
+/YunoBotV2/Properties/PublishProfiles/FolderProfile.pubxml
