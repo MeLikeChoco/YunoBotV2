@@ -9,12 +9,12 @@ using Newtonsoft.Json;
 
 namespace YunoBotV2.Services.WebServices
 {
-    public class WebService
+    public class Web
     {
 
         protected HttpClient _http;
 
-        public WebService()
+        public Web()
             => _http = new HttpClient();
 
         /// <summary>
@@ -46,6 +46,20 @@ namespace YunoBotV2.Services.WebServices
         }
 
         /// <summary>
+        /// Will return null if service is down or nothing is found
+        /// </summary>
+        /// <param name="url">The url to use</param>
+        /// <returns>JObject</returns>
+        public async Task<JToken> GetFirstJArrayContent(string url)
+        {
+
+            string response = await CheckConnection(url);
+            
+            return JArray.Parse(response).FirstOrDefault();
+
+        }
+
+        /// <summary>
         /// Will return null if service is down.
         /// </summary>
         /// <param name="url">The url to use</param>
@@ -73,16 +87,18 @@ namespace YunoBotV2.Services.WebServices
         private async Task<string> CheckConnection(string url)
         {
 
-            int counter = 1;
-            HttpResponseMessage response = await _http.GetAsync(url);
+            int counter = 0;
+            HttpResponseMessage response;
 
-            while ((!response.IsSuccessStatusCode) && (counter < 4))
+            do
             {
+
                 response = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
                 counter++;
-            }
 
-            if (counter == 4) return null;
+            } while ((!response.IsSuccessStatusCode) && (counter < 3));
+
+            if (counter == 3) return null;
 
             return await response.Content.ReadAsStringAsync();
 

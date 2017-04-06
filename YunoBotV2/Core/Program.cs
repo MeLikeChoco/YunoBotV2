@@ -72,7 +72,7 @@ namespace YunoBotV2.Core
             
             _map = new DependencyMap();
             _map.Add(_client);
-            _map.Add(new WebService());
+            _map.Add(new Web());
             _map.Add(new Unshortener());
 
         }

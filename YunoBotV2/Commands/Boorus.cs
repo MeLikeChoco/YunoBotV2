@@ -9,12 +9,12 @@ using YunoBotV2.Services.WebServices;
 
 namespace YunoBotV2.Commands
 {
-    public class Booru : CustomModuleBase
+    public class Boorus : CustomModuleBase
     {
 
-        private WebService _service;
+        private Web _service;
 
-        public Booru(WebService serviceParams)
+        public Boorus(Web serviceParams)
         {
 
             _service = serviceParams;

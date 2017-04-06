@@ -16,10 +16,10 @@ namespace YunoBotV2.Commands
     public class Fun : CustomModuleBase
     {
 
-        private WebService _webService;
+        private Web _webService;
         private Unshortener _unshortenService;
 
-        public Fun(WebService webServiceParams, Unshortener unshortenParams)
+        public Fun(Web webServiceParams, Unshortener unshortenParams)
         {
 
             _webService = webServiceParams;

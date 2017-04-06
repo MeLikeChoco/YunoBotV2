@@ -6,10 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using Discord.Addons.InteractiveCommands;
 
 namespace YunoBotV2.Commands
 {
-    public class CustomModuleBase : ModuleBase<SocketCommandContext>
+    public class CustomModuleBase : InteractiveModuleBase<SocketCommandContext>
     {
 
         /// <summary>

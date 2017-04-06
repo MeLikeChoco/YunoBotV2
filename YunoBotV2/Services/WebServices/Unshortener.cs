@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace YunoBotV2.Services.WebServices
 {
-    public class Unshortener : WebService
+    public class Unshortener : Web
     {
         
         public Unshortener()

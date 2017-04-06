@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,9 @@ namespace YunoBotV2.Commands
     public class Osu : CustomModuleBase
     {
 
-        private WebService _service;
+        private Web _service;
 
-        public Osu(WebService serviceParams)
+        public Osu(Web serviceParams)
         {
 
             _service = serviceParams;
@@ -92,38 +93,26 @@ namespace YunoBotV2.Commands
 
                 eBuilder.AddField(x =>
                 {
-
                     x.Name = "Genre";
                     x.Value = GetGenre(int.Parse(mapset.First().genre_id));
-                    x.IsInline = false;
-
                 });
 
                 eBuilder.AddField(x =>
                 {
-
                     x.Name = "Language";
                     x.Value = GetLanguage(int.Parse(mapset.First().language_id));
-                    x.IsInline = false;
-
                 });
 
                 eBuilder.AddField(x =>
                 {
-
                     x.Name = "Plays";
                     x.Value = GetPlays(mapset);
-                    x.IsInline = false;
-
                 });
 
                 eBuilder.AddField(x =>
                 {
-
                     x.Name = "Favourited";
                     x.Value = $"{mapset.First().favourite_count} times";
-                    x.IsInline = false;
-
                 });
 
                 eBuilder.AddInlineField("Version", GetVersions(mapset));
@@ -132,11 +121,8 @@ namespace YunoBotV2.Commands
 
                 eBuilder.AddField(x =>
                 {
-
                     x.Name = "Download";
                     x.Value = $"https://osu.ppy.sh/d/{mapset.First().beatmapset_id}n";
-                    x.IsInline = false;
-
                 });
 
             }
@@ -150,7 +136,80 @@ namespace YunoBotV2.Commands
         public async Task OsuUserCommand([Remainder]string user)
         {
 
-            //todo: osu user command
+            var url = $"https://osu.ppy.sh/api/get_user?k={Config.Osu}&u={Uri.EscapeUriString(user)}";
+
+            using (Context.Channel.EnterTypingState())
+            {
+
+                JToken token = await _service.GetFirstJArrayContent(url);
+
+                if (token == null)
+                {
+                    await ReplyAsync("Either service is down or user does not exist.");
+                    return;
+                }
+
+                OsuUser osuUser = token.ToObject<OsuUser>();
+
+                EmbedBuilder eBuilder;
+
+                var AuthorBuilder = new EmbedAuthorBuilder()
+                {
+
+                    Name = "Osu!",
+                    Url = @"https://osu.ppy.sh/",
+                    IconUrl = @"http://vignette3.wikia.nocookie.net/osugame/images/c/c9/Logo.png/revision/latest?cb=20151219073209"
+
+                };
+
+                var FooterBuilder = new EmbedFooterBuilder()
+                {
+
+                    IconUrl = @"http://orig09.deviantart.net/ac11/f/2014/305/f/1/osu____spinner_circle_1_by_yunowhoitis-d84ni6l.png",
+                    Text = "Click the circles ♫ | " + osuUser.country
+
+                };
+
+                eBuilder = new EmbedBuilder()
+                {
+
+                    Author = AuthorBuilder,
+                    Color = new Color(255, 105, 180),
+                    Title = osuUser.username,
+                    Description = "Global Rank: " + osuUser.pp_rank +
+                    "\nCountry Rank: " + osuUser.pp_country_rank +
+                    "\nLevel: " + osuUser.level,
+                    ImageUrl = $"https://a.ppy.sh/{osuUser.user_id}",
+                    Url = $"https://osu.ppy.sh/u/{Uri.EscapeUriString(osuUser.username)}",
+                    Footer = FooterBuilder
+
+                };
+
+                eBuilder.AddField(x =>
+                {
+                    x.Name = "PP";
+                    x.Value = osuUser.pp_raw;
+                });
+
+                eBuilder.AddField(x =>
+                {
+                    x.Name = "Accuracy";
+                    x.Value = string.Format("{0:0.##}", double.Parse(osuUser.accuracy)) + "%";
+                });
+
+                eBuilder.AddField(x =>
+                {
+                    x.Name = "Total Amount of Plays";
+                    x.Value = osuUser.playcount;
+                });
+
+                eBuilder.AddInlineField("Total SS Ranks", osuUser.count_rank_ss);
+                eBuilder.AddInlineField("Total S Ranks", osuUser.count_rank_s);
+                eBuilder.AddInlineField("Total A Ranks", osuUser.count_rank_a);
+
+                await ReplyAsync("", embed: eBuilder);
+
+            }
 
         }
 
