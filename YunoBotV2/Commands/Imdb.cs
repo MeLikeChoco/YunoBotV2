@@ -30,22 +30,29 @@ namespace YunoBotV2.Commands
         {
 
             var url = $"http://www.omdbapi.com/?s={Uri.EscapeUriString(search)}&plot=full";
-            var searchResults = new Dictionary<int, string>(10);
+            var searchResults = new Dictionary<int, string>(20);
 
             using (Context.Channel.EnterTypingState())
             {
 
                 JObject o = await _service.GetJObjectContent(url);
+
+                if(o == null)
+                {
+                    await DefaultErrorMessage();
+                    return;
+                }
+
                 var results = o.Value<JArray>("Search");
                 int resultsShown = results.Count > 21 ? 20 : results.Count; //if over 20 results, only show the first 20
                 var organizedResults = new StringBuilder($"```Showing {resultsShown}/{results.Count}\n\n");
 
-                for (int i = 1; i < resultsShown; i++)
+                for (int i = 0; i < resultsShown; i++)
                 {
 
-                    var temp = results[i].Value<string>("Title");
-                    organizedResults.AppendLine($"{i}: {temp}");
-                    searchResults.Add(i, results[i].Value<string>("imdbID"));
+                    var temp = results[i];
+                    organizedResults.AppendLine($"{i + 1}: {temp.Value<string>("Title")}");
+                    searchResults.Add(i + 1, temp.Value<string>("imdbID"));
 
                 }
 

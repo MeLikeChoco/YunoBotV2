@@ -36,7 +36,7 @@ namespace YunoBotV2.Commands
                 var url = "http://www.colourlovers.com/api/colors/random?format=json";
                 JToken token = await _service.GetFirstJArrayContent(url);
 
-                if(token == null)
+                if (token == null)
                 {
                     await DefaultErrorMessage();
                     return;
@@ -103,10 +103,65 @@ namespace YunoBotV2.Commands
 
         }
 
+        [Command("search", RunMode = RunMode.Async)]
+        [Summary("Searches for colors based on keywords")]
+        public async Task ColorSearchCommand([Remainder]string search = "")
+        {
+
+            if (string.IsNullOrEmpty(search))
+            {
+                await SearchErrorMessage();
+                return;
+            }
+
+            var url = $"http://www.colourlovers.com/api/colors?keywords={search}&format=json&numResults=100";
+            var searchResults = new Dictionary<int, string>(20);
+
+            using (Context.Channel.EnterTypingState())
+            {
+
+                JArray results = await _service.GetJArrayContent(url);
+
+                if(results == null)
+                {
+                    await DefaultErrorMessage();
+                    return;
+                }
+
+                int resultsShown = results.Count > 21 ? 20 : results.Count;
+                var organizedResults = new StringBuilder($"```Showing {resultsShown}/{results.Count} results\n\n");
+
+                for (int i = 0; i < resultsShown; i++)
+                {
+
+                    var temp = results[i];
+                    organizedResults.AppendLine($"{i + 1}: {temp.Value<string>("title")}");
+                    searchResults.Add(i + 1, temp.Value<string>("hex"));
+
+                }
+
+                organizedResults.Append("\nHit a corresponding number to see that color!```");
+
+                await ReplyAsync(organizedResults.ToString());
+
+                IMessage message = await WaitForMessage(Context.User, Context.Channel, TimeSpan.FromSeconds(60));
+
+                if (int.TryParse(message.Content, out int color))
+                {
+                    if (searchResults.TryGetValue(color, out string hexcode))
+                        await HexcodeCommand(hexcode);
+                }
+            }
+
+        }
+
         [Command]
         [Summary("Gets color with given hexcode")]
-        public async Task HexcodeCommand(string hexcode)
+        public async Task HexcodeCommand(string hexcode = "")
         {
+
+            if (string.IsNullOrEmpty(hexcode))
+                await SearchErrorMessage();
 
             using (Context.Channel.EnterTypingState())
             {
@@ -114,7 +169,7 @@ namespace YunoBotV2.Commands
                 var url = $"http://www.colourlovers.com/api/color/{hexcode.Replace("#", "")}?format=json";
                 JToken token = await _service.GetFirstJArrayContent(url);
 
-                if(token == null)
+                if (token == null)
                 {
                     await DefaultErrorMessage();
                     return;
