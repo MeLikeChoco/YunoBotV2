@@ -174,7 +174,7 @@ namespace YunoBotV2.Core
             if (!result.IsSuccess)
             {
 
-                await context.Channel.SendMessageAsync("It seems you have encountered the shadow realm, command used wrong.");
+                await context.Channel.SendMessageAsync("There was an error in the command.");
                 //await context.Channel.SendMessageAsync("https://goo.gl/JieFJM");
 
                 AltConsole.Print("Error", "Error", result.ErrorReason);

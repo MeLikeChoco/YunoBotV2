@@ -26,8 +26,14 @@ namespace YunoBotV2.Commands
 
         [Command("search", RunMode = RunMode.Async)]
         [Summary("Searches the imdb database")]
-        public async Task MovieSearchCommand([Remainder]string search)
+        public async Task MovieSearchCommand([Remainder]string search = "")
         {
+
+            if (string.IsNullOrEmpty(search))
+            {
+                await SearchErrorMessage();
+                return;
+            }
 
             var url = $"http://www.omdbapi.com/?s={Uri.EscapeUriString(search)}&plot=full";
             var searchResults = new Dictionary<int, string>(20);
@@ -44,15 +50,16 @@ namespace YunoBotV2.Commands
                 }
 
                 var results = o.Value<JArray>("Search");
-                int resultsShown = results.Count > 21 ? 20 : results.Count; //if over 20 results, only show the first 20
-                var organizedResults = new StringBuilder($"```Showing {resultsShown}/{results.Count}\n\n");
+                var organizedResults = new StringBuilder($"```Showing {results.Count}/10\n\n");
+                var counter = 1;
 
-                for (int i = 0; i < resultsShown; i++)
+                //omdb only returns 10 max, need to use page numbers to show more
+                foreach(JToken token in results)
                 {
-
-                    var temp = results[i];
-                    organizedResults.AppendLine($"{i + 1}: {temp.Value<string>("Title")}");
-                    searchResults.Add(i + 1, temp.Value<string>("imdbID"));
+                    
+                    organizedResults.AppendLine($"{counter}: {token.Value<string>("Title")}");
+                    searchResults.Add(counter, token.Value<string>("imdbID"));
+                    counter++;
 
                 }
 
@@ -74,8 +81,14 @@ namespace YunoBotV2.Commands
 
         [Command]
         [Summary("Return a imdb result based on id")]
-        public async Task MovieCommand(string id)
+        public async Task MovieCommand(string id = "")
         {
+
+            if (string.IsNullOrEmpty(id))
+            {
+                await SearchErrorMessage();
+                return;
+            }
 
             var url = $"http://www.omdbapi.com/?i={id}&plot=full&r=json";
 
@@ -84,7 +97,7 @@ namespace YunoBotV2.Commands
 
                 ImdbMovie result = await _service.GetDeserializedContent(url, typeof(ImdbMovie));
 
-                if (result == null)
+                if (string.IsNullOrEmpty(result.Title))
                 {
                     await DefaultErrorMessage();
                     return;
