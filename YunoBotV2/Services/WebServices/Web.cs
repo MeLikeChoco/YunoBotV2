@@ -6,16 +6,24 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using AngleSharp.Parser.Html;
+using AngleSharp.Dom.Html;
 
 namespace YunoBotV2.Services.WebServices
 {
     public class Web
     {
 
-        protected HttpClient _http;
+        public HttpClient _http;
+        private HtmlParser _parser;
 
         public Web()
-            => _http = new HttpClient();
+        {
+
+            _http = new HttpClient();
+            _parser = new HtmlParser();
+
+        }
 
         /// <summary>
         /// Will return null if service is down.
@@ -74,13 +82,27 @@ namespace YunoBotV2.Services.WebServices
         /// </summary>
         /// <param name="url">The url to use</param>
         /// <param name="type">The type to deserialize to</param>
-        /// <returns></returns>
+        /// <returns>dynamic</returns>
         public async Task<dynamic> GetDeserializedContent(string url, Type type)
         {
 
             string response = await CheckConnection(url);
 
             return JsonConvert.DeserializeObject(response, type);
+
+        }
+
+        /// <summary>
+        /// Will return null if service is down.
+        /// </summary>
+        /// <param name="url">The url to use</param>
+        /// <returns>IHtmlDocument</returns>
+        public async Task<IHtmlDocument> GetDom(string url)
+        {
+
+            string response = await CheckConnection(url);
+
+            return await _parser.ParseAsync(response);
 
         }
 

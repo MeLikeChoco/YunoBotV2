@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.9.9" />
     <PackageReference Include="Discord.Addons.InteractiveCommands" Version="1.2.2" />
     <PackageReference Include="Discord.Net" Version="1.0.0-rc2-00679" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.0.0" />

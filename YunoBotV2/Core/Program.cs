@@ -21,14 +21,14 @@ namespace YunoBotV2.Core
         public static void Main(string[] args)
             => new Program().Run(args).GetAwaiter().GetResult();
 
-        private DiscordSocketClient _client;
-        private CommandService _commands;
-        private DependencyMap _map;
-        private int LatencyLimiter;
-        private bool IsTest = false;
-        private string[] Args;
+        internal DiscordSocketClient _client;
+        internal CommandService _commands;
+        internal DependencyMap _map;
+        internal int LatencyLimiter;
+        internal bool IsTest = false;
+        internal string[] Args;
 
-        public async Task Run(string[] args)
+        internal async Task Run(string[] args)
         {
 
             Args = args;
@@ -67,7 +67,7 @@ namespace YunoBotV2.Core
 
         }
 
-        private void InjectServices()
+        internal void InjectServices()
         {
             
             _map = new DependencyMap();
@@ -77,7 +77,7 @@ namespace YunoBotV2.Core
 
         }
 
-        private void Log()
+        internal void Log()
         {
 
             _commands.Log += (message)
@@ -122,7 +122,7 @@ namespace YunoBotV2.Core
 
         }
 
-        private void SetGame()
+        internal void SetGame()
         {
 
             _client.Ready += ()
@@ -136,7 +136,7 @@ namespace YunoBotV2.Core
 
         }
 
-        private async Task RegisterCommands()
+        internal async Task RegisterCommands()
         {
 
             _client.MessageReceived += CommandHandler;
@@ -144,7 +144,7 @@ namespace YunoBotV2.Core
 
         }
 
-        private async Task CommandHandler(SocketMessage possibleCmd)
+        internal async Task CommandHandler(SocketMessage possibleCmd)
         {
 
             var message = possibleCmd as SocketUserMessage;
@@ -186,7 +186,7 @@ namespace YunoBotV2.Core
 
         }
 
-        private async Task LoginAndConnect()
+        internal async Task LoginAndConnect()
         {
 
             string token = IsTest ? Config.Test : Config.Token;
@@ -200,7 +200,7 @@ namespace YunoBotV2.Core
 
         }
 
-        private void ForceReconnect()
+        internal void ForceReconnect()
         {
 
             _client.Disconnected += async (ex) =>
@@ -218,7 +218,7 @@ namespace YunoBotV2.Core
 
         }
 
-        private void ParseArgs()
+        internal void ParseArgs()
         {
             
             if (Args.Contains("--test"))
