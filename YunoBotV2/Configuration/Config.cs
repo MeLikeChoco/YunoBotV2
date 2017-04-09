@@ -14,15 +14,22 @@ namespace YunoBotV2.Configuration
         public static string Test { get; private set; }
         public static string Game { get; private set; }
         public static string Osu { get; private set; }
+        public static string EdamamId { get; private set; }
+        public static string EdamamKey { get; private set; }
 
         public static void LoadConfig()
         {
 
             var dom = XDocument.Load("Configuration/Config.xml");
-            var tokens = dom.Root.Descendants("Tokens").First();
+            XElement tokens = dom.Root.Descendants("Tokens").First();
+            XElement edamam = tokens.Descendants("Edamam").First();
+
             Token = tokens.Element("Discord").Value;
             Test = tokens.Element("Test").Value;
             Osu = tokens.Element("Osu").Value;
+
+            EdamamId = edamam.Element("appid").Value;
+            EdamamKey = edamam.Element("appkey").Value;
 
             Game = dom.Root.Element("Game").Value;
 
