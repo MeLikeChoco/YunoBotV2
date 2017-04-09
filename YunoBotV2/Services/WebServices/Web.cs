@@ -96,6 +96,30 @@ namespace YunoBotV2.Services.WebServices
         /// Will return null if service is down.
         /// </summary>
         /// <param name="url">The url to use</param>
+        /// <param name="type">The type to deserialize to at the very end</param>
+        /// <param name="objectLocations">The path to the object location</param>
+        /// <returns></returns>
+        public async Task<dynamic> GetDeserializedContent(string url, Type type, params string[] objectLocations)
+        {
+
+            string response = await CheckConnection(url);
+            dynamic jsonObject = JObject.Parse(response);
+
+            foreach(var path in objectLocations)
+            {
+
+                jsonObject = jsonObject[path];
+
+            }
+
+            return jsonObject.ToObject(type);
+
+        }
+
+        /// <summary>
+        /// Will return null if service is down.
+        /// </summary>
+        /// <param name="url">The url to use</param>
         /// <returns>IHtmlDocument</returns>
         public async Task<IHtmlDocument> GetDom(string url)
         {
