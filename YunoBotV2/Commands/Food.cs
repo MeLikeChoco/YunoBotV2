@@ -42,6 +42,13 @@ namespace YunoBotV2.Commands
             {
 
                 JArray hits = await _service.GetDeserializedContent(url, typeof(JArray), "hits");
+
+                if(hits.Count == 0)
+                {
+                    await NoResultsReturnedMessage();
+                    return;
+                }
+
                 Recipe recipe = hits.ElementAt(new Random().Next(0, hits.Count))["recipe"].ToObject<Recipe>();
 
                 var authorBuilder = new EmbedAuthorBuilder()

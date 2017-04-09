@@ -19,14 +19,17 @@ namespace YunoBotV2.Commands
         /// </summary>
         /// <returns></returns>
         public async Task DefaultErrorMessage()
-            => await Context.Channel.SendMessageAsync("There was an error using this command! Please check input or try again later.");
+            => await ReplyAsync("There was an error using this command! Please check input or try again later.");
 
         /// <summary>
         /// "You need to at least be able to search for something..."
         /// </summary>
         /// <returns></returns>
         public async Task SearchErrorMessage()
-            => await Context.Channel.SendMessageAsync("You need to at least be able to search for something...");
+            => await ReplyAsync("You need to at least be able to search for something...");
+
+        public async Task NoResultsReturnedMessage()
+            => await ReplyAsync("Nothing was returned from the search! Please check input and try again.");
 
     }
 }
