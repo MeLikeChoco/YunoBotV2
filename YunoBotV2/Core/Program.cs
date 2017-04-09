@@ -24,8 +24,10 @@ namespace YunoBotV2.Core
         internal DiscordSocketClient _client;
         internal CommandService _commands;
         internal DependencyMap _map;
-        internal int LatencyLimiter;
+
+        internal int _latencyLimiter = 20;
         internal bool IsTest = false;
+
         internal string[] Args;
 
         internal async Task Run(string[] args)
@@ -36,7 +38,6 @@ namespace YunoBotV2.Core
             Config.LoadConfig();
             AltConsole.Print("Program", "Client", "Initializing...");
 
-            LatencyLimiter = 20;
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
 
@@ -85,16 +86,17 @@ namespace YunoBotV2.Core
                 =>
                 {
 
-                    if (string.IsNullOrEmpty(message.Message)) return;
+                    if (string.IsNullOrEmpty(message.Message))
+                        return;
                     if (message.Message.Contains("Latency"))
                     {
 
-                        if (LatencyLimiter == 20)
+                        if (_latencyLimiter == 20)
                         {
                             AltConsole.Print(message.Severity, message.Source, message.Message, message.Exception);
-                            LatencyLimiter = 0;
+                            _latencyLimiter = 0;
                         }
-                        else LatencyLimiter++;
+                        else _latencyLimiter++;
 
                     }
                     else AltConsole.Print(message.Severity, message.Source, message.Message, message.Exception);
@@ -105,16 +107,17 @@ namespace YunoBotV2.Core
                 => Task.Run(()
                 =>
                 {
-                    if (string.IsNullOrEmpty(message.Message)) return;
+                    if (string.IsNullOrEmpty(message.Message))
+                        return;
                     if (message.Message.Contains("Latency"))
                     {
 
-                        if (LatencyLimiter == 20)
+                        if (_latencyLimiter == 20)
                         {
                             AltConsole.Print(message.Severity, message.Source, message.Message, message.Exception);
-                            LatencyLimiter = 0;
+                            _latencyLimiter = 0;
                         }
-                        else LatencyLimiter++;
+                        else _latencyLimiter++;
 
                     }
                     else AltConsole.Print(message.Severity, message.Source, message.Message, message.Exception);
@@ -164,7 +167,10 @@ namespace YunoBotV2.Core
             //if (_guildService._guildPrefixes.TryGetValue(guildId, out string prefix)) { }
             //else prefix = "y!";
 
-            if (!(message.HasStringPrefix(prefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return;
+            if (!(message.HasStringPrefix(prefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
+                return;
+            if (message.Content.Trim().Equals(prefix))
+                return;
 
             var context = new SocketCommandContext(_client, message);
             AltConsole.Print("Verbose", "Command", $"{(message.Channel as SocketGuildChannel).Guild.Name}");
@@ -173,6 +179,9 @@ namespace YunoBotV2.Core
 
             if (!result.IsSuccess)
             {
+
+                if (result.ErrorReason.ToLower().Contains("unknown command"))
+                    return;
 
                 await context.Channel.SendMessageAsync("There was an error in the command.");
                 //await context.Channel.SendMessageAsync("https://goo.gl/JieFJM");
