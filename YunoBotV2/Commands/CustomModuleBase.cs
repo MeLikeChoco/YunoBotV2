@@ -28,7 +28,7 @@ namespace YunoBotV2.Commands
         public async Task SearchErrorMessage()
             => await ReplyAsync("You need to at least be able to search for something...");
 
-        public async Task NoResultsReturnedMessage()
+        public async Task NoResultsReturnedErrorMessage()
             => await ReplyAsync("Nothing was returned from the search! Please check input and try again.");
 
     }

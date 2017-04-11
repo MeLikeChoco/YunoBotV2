@@ -35,6 +35,9 @@ namespace YunoBotV2.Services.WebServices
 
             string response = await CheckConnection(url);
 
+            if (string.IsNullOrEmpty(response))
+                return null;
+
             return JObject.Parse(response);
 
         }
@@ -49,6 +52,9 @@ namespace YunoBotV2.Services.WebServices
 
             string response = await CheckConnection(url);
 
+            if (string.IsNullOrEmpty(response))
+                return null;
+
             return JArray.Parse(response);
 
         }
@@ -62,7 +68,10 @@ namespace YunoBotV2.Services.WebServices
         {
 
             string response = await CheckConnection(url);
-            
+
+            if (string.IsNullOrEmpty(response))
+                return null;
+
             return JArray.Parse(response).FirstOrDefault();
 
         }
@@ -88,6 +97,9 @@ namespace YunoBotV2.Services.WebServices
 
             string response = await CheckConnection(url);
 
+            if (string.IsNullOrEmpty(response))
+                return null;
+
             return JsonConvert.DeserializeObject(response, type);
 
         }
@@ -103,6 +115,10 @@ namespace YunoBotV2.Services.WebServices
         {
 
             string response = await CheckConnection(url);
+
+            if (string.IsNullOrEmpty(response))
+                return null;
+
             dynamic jsonObject = JObject.Parse(response);
 
             foreach(var path in objectLocations)
@@ -125,6 +141,9 @@ namespace YunoBotV2.Services.WebServices
         {
 
             string response = await CheckConnection(url);
+
+            if (string.IsNullOrEmpty(response))
+                return null;
 
             return await _parser.ParseAsync(response);
 
