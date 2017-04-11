@@ -45,7 +45,7 @@ namespace YunoBotV2.Commands
 
                 if(hits.Count == 0)
                 {
-                    await NoResultsReturnedMessage();
+                    await NoResultsReturnedErrorMessage();
                     return;
                 }
 
