@@ -24,7 +24,111 @@ namespace YunoBotV2.Commands
 
         }
 
-        [Command(RunMode = RunMode.Async)]
+        [Command("user")]
+        [Summary("Search an AQWorlds user")]
+        public async Task AQWUserCommand([Remainder]string user)
+        {
+
+            using (Context.Channel.EnterTypingState())
+            {
+
+                var url = $"http://www.aq.com/character.asp?id={Uri.EscapeUriString(user)}";
+                IHtmlDocument dom = await _service.GetDom(url);
+
+                if (dom.GetElementById("character5") == null)
+                    await NoResultsReturnedErrorMessage();
+
+                IHtmlCollection<IElement> achievementNodes = dom.GetElementsByClassName("achievements").FirstOrDefault()?.GetElementsByTagName("a");
+                var achievements = new List<string>(15); //achievements
+
+                if (achievementNodes != null)
+                {
+                    foreach (var achievement in achievementNodes)
+                    {
+                        achievements.Add(achievement.GetAttribute("title"));
+                    }
+                }
+
+                IHtmlCollection<IElement> inventoryNodes = dom.GetElementsByClassName("row items").FirstOrDefault()?.GetElementsByTagName("div").FirstOrDefault()?.GetElementsByClassName("item");
+                var inventory = new List<string>(20); //inventory
+
+                if (inventoryNodes != null)
+                {
+                    foreach (var item in inventoryNodes)
+                    {
+                        inventory.Add(item.GetElementsByTagName("div").FirstOrDefault()?.TextContent);
+                    }
+                }
+
+                IHtmlCollection<IElement> classNodes = dom.GetElementsByClassName("row items").FirstOrDefault()?.GetElementsByClassName("col-md-6 col-sm-6 col-xs-12")[1].GetElementsByClassName("item");
+                var classes = new List<string>(20); //classes and armors
+
+                if (classNodes != null)
+                {
+                    foreach (var @class in classNodes)
+                    {
+                        classes.Add(@class.GetElementsByTagName("div").FirstOrDefault()?.TextContent);
+                    }
+                }
+
+                IHtmlCollection<IElement> houseNodes = dom.GetElementsByClassName("row items")[1].GetElementsByClassName("col-md-6 col-sm-6 col-xs-12");
+                var houseItems = new List<string>(20); //house items
+
+                if (houseNodes != null)
+                {
+                    foreach (var houseStuff in houseNodes)
+                    {
+                        foreach (var item in houseStuff.GetElementsByClassName("item"))
+                        {
+                            houseItems.Add(item.GetElementsByTagName("div").FirstOrDefault()?.TextContent);
+                        }
+                    }
+                }
+
+                await ReplyAsync($"Dumping information on AQWorlds player {user}...");
+
+                var organizedAchievements = new StringBuilder("```\nAchievements\n\n");
+                achievements.ForEach(achievement =>
+                {
+                    if (achievement != null)
+                        organizedAchievements.AppendLine(achievement.Trim());
+                });
+                organizedAchievements.Append("```");
+
+                var organizedInventory = new StringBuilder("```\nInventory\n\n");
+                inventory.ForEach(item =>
+                {
+                    if (item != null)
+                        organizedInventory.AppendLine(item.Trim());
+                });
+                organizedInventory.Append("```");
+
+                var organizedClasses = new StringBuilder("```Classes and Armors\n\n");
+                classes.ForEach(@class =>
+                {
+                    if (@class != null)
+                        organizedClasses.AppendLine(@class.Trim());
+                });
+                organizedClasses.Append("```");
+
+                var organizedHouse = new StringBuilder("```\nHouse Items\n\n");
+                houseItems.ForEach(item =>
+                {
+                    if (item != null)
+                        organizedHouse.AppendLine(item.Trim());
+                });
+                organizedHouse.Append("```");
+
+                await ReplyAsync(organizedAchievements.ToString());
+                await ReplyAsync(organizedInventory.ToString());
+                await ReplyAsync(organizedClasses.ToString());
+                await ReplyAsync(organizedHouse.ToString());
+
+            }
+
+        }
+
+        [Command("search")]
         [Summary("Search AQWorlds wikidot")]
         public async Task AQWSearchCommand([Remainder]string search)
         {

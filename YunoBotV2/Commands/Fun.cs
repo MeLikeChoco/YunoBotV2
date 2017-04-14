@@ -1,7 +1,9 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -24,6 +26,40 @@ namespace YunoBotV2.Commands
 
             _webService = webServiceParams;
             _unshortenService = unshortenParams;
+
+        }
+
+        [Command("playing")]
+        [Summary("Returns a list of what people are playing")]
+        public async Task PlayingCommand()
+        {
+
+            using (Context.Channel.EnterTypingState())
+            {
+
+                var playing = new ConcurrentDictionary<string, int>();
+
+                Parallel.ForEach(Context.Guild.Users, user =>
+                {
+
+                    if (user.Game.HasValue && !user.IsBot)
+                        playing.AddOrUpdate(user.Game.Value.Name, 1, (key, value) => value++);
+
+                });
+
+                playing = new ConcurrentDictionary<string, int>(playing.OrderBy(kv => kv.Value).ToDictionary(kv => kv.Key, kv2 => kv2.Value));
+                var organizedResults = new StringBuilder("```Here are a list of games people are playing!\n\n");
+
+                foreach (KeyValuePair<string, int> kv in playing)
+                {
+                    organizedResults.AppendLine($"{kv.Key}: {kv.Value}");
+                }
+
+                organizedResults.Append("```");
+
+                await ReplyAsync(organizedResults.ToString());
+
+            }
 
         }
 
@@ -253,10 +289,10 @@ namespace YunoBotV2.Commands
             => await ReplyAsync($"{Context.User.Mention} https://discordapp.com/oauth2/authorize?client_id={Context.Client.GetApplicationInfoAsync().Result.Id}&scope=bot&permissions=0" +
                 "\nPlease take care of me.");
 
-        [Command("you suck")]
+        [Command("fuck you")]
         [Summary("Insult the bot")]
-        public async Task YouSuckCommand()
-            => await ReplyAsync($"{Context.User.Mention} I think it's hilarious you kids talking shit about me. " +
+        public async Task YouSuckCommand(IGuildUser user)
+            => await ReplyAsync($"{user.Mention} I think it's hilarious you kids talking shit about me. " +
                 "You wouldn't say shit to me irl, " + $"I'm jacked. Not only that but I wear the freshest clothes, " +
                      "eat at the chillest restaurants, and bang the hottest dudes. Ya'll are pathetic lol.﻿");
 

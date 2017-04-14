@@ -55,7 +55,11 @@ namespace YunoBotV2.Services.WebServices
             if (string.IsNullOrEmpty(response))
                 return null;
 
-            return JArray.Parse(response);
+            try
+            {
+                return JArray.Parse(response);
+            }
+            catch { return new JArray(); }
 
         }
 
@@ -72,7 +76,11 @@ namespace YunoBotV2.Services.WebServices
             if (string.IsNullOrEmpty(response))
                 return null;
 
-            return JArray.Parse(response).FirstOrDefault();
+            try
+            {
+                return JArray.Parse(response).FirstOrDefault();
+            }
+            catch { return null; }
 
         }
 
@@ -121,7 +129,7 @@ namespace YunoBotV2.Services.WebServices
 
             dynamic jsonObject = JObject.Parse(response);
 
-            foreach(var path in objectLocations)
+            foreach (var path in objectLocations)
             {
 
                 jsonObject = jsonObject[path];
@@ -146,6 +154,65 @@ namespace YunoBotV2.Services.WebServices
                 return null;
 
             return await _parser.ParseAsync(response);
+
+        }
+
+        /// <summary>
+        /// Returns true if post is successful and false if not
+        /// </summary>
+        /// <param name="url">The url to use</param>
+        /// <param name="content">The content to post</param>
+        /// <returns>bool</returns>
+        public async Task<bool> Post(string url, HttpContent content)
+        {
+
+            int counter = 0;
+            HttpResponseMessage response;
+
+            do
+            {
+
+                response = await _http.PostAsync(url, content);
+                counter++;
+
+            } while ((!response.IsSuccessStatusCode) && (counter < 3));
+
+            if (counter == 3) return false;
+            else return true;
+
+        }
+
+        /// <summary>
+        /// Returns true if post is successful and false if not
+        /// </summary>
+        /// <param name="url">The url to use</param>
+        /// <param name="content">The content to post</param>
+        /// <param name="result">The content after posting</param>
+        /// <returns>bool</returns>
+        public Task<bool> Post(string url, HttpContent content, out string result)
+        {
+
+            int counter = 0;
+            HttpResponseMessage response;
+
+            do
+            {
+
+                response = _http.PostAsync(url, content).Result;
+                counter++;
+
+            } while ((!response.IsSuccessStatusCode) && (counter < 3));
+
+            if (counter == 3)
+            {
+                result = null;
+                return Task.FromResult(false);
+            }
+            else
+            {
+                result = response.Content.ReadAsStringAsync().Result;
+                return Task.FromResult(true);
+            }
 
         }
 

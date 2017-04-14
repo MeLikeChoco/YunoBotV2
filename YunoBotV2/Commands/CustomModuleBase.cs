@@ -28,8 +28,19 @@ namespace YunoBotV2.Commands
         public async Task SearchErrorMessage()
             => await ReplyAsync("You need to at least be able to search for something...");
 
+        /// <summary>
+        /// "Nothing was returned from the search! Please check input and try again."
+        /// </summary>
+        /// <returns></returns>
         public async Task NoResultsReturnedErrorMessage()
             => await ReplyAsync("Nothing was returned from the search! Please check input and try again.");
+
+        /// <summary>
+        /// "Too many results were returned! Please refine your search."
+        /// </summary>
+        /// <returns></returns>
+        public async Task RefineSearchErrorMessage()
+            => await ReplyAsync("Too many results were returned! Please refine your search.");
 
     }
 }

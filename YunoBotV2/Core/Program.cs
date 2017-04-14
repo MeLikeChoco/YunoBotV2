@@ -52,6 +52,7 @@ namespace YunoBotV2.Core
 
                 CaseSensitiveCommands = false,
                 LogLevel = LogSeverity.Verbose,
+                DefaultRunMode = RunMode.Async,
 
             });
 

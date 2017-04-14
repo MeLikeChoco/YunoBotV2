@@ -18,6 +18,10 @@ namespace YunoBotV2.Configuration
         public static string EdamamKey { get; private set; }
         public static string ChampionGG { get; private set; }
         public static string LeagueOfLegends { get; private set; }
+        public static string AnilistId { get; private set; }
+        public static string AnilistSecret { get; private set; }
+
+        public static string AnilistToken { get; set; } = "tehee";
 
         public static void LoadConfig()
         {
@@ -25,12 +29,16 @@ namespace YunoBotV2.Configuration
             var dom = XDocument.Load("Configuration/Config.xml");
             XElement tokens = dom.Root.Descendants("Tokens").First();
             XElement edamam = tokens.Descendants("Edamam").First();
+            XElement anilist = tokens.Descendants("Anilist").First();
 
             Token = tokens.Element("Discord").Value;
             Test = tokens.Element("Test").Value;
             Osu = tokens.Element("Osu").Value;
             ChampionGG = tokens.Element("Championgg").Value;
             LeagueOfLegends = tokens.Element("LeagueOfLegends").Value;
+
+            AnilistId = anilist.Element("clientid").Value;
+            AnilistSecret = anilist.Element("clientsecret").Value;
 
             EdamamId = edamam.Element("appid").Value;
             EdamamKey = edamam.Element("appkey").Value;
