@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using YunoBotV2.Core;
+using YunoBotV2.Services;
 using YunoBotV2.Services.WebServices;
 
 namespace YunoBotV2.Commands
@@ -20,13 +22,56 @@ namespace YunoBotV2.Commands
 
         private Web _webService;
         private Unshortener _unshortenService;
+        private Zalgo _zalgoService;
 
-        public Fun(Web webServiceParams, Unshortener unshortenParams)
+        public Fun(Web webServiceParams, Unshortener unshortenParams, Zalgo zalgoParams)
         {
 
             _webService = webServiceParams;
             _unshortenService = unshortenParams;
+            _zalgoService = zalgoParams;
 
+        }
+
+        [Command("zalgo")]
+        [Summary("HAIL ZALGO")]
+        public async Task ZalgoCommand([Remainder]string text)
+            => await ReplyAsync(_zalgoService.GetZalgo(text));
+
+        [Command("zalgod")]
+        [Summary("HAIL ZALGO")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        [Priority(0)]
+        public async Task ZalgoDCommand([Remainder]string text)
+        {
+            try
+            {
+                await Context.Message.DeleteAsync();
+            }
+            catch
+            {
+                AltConsole.Print("Command", "Zalgo", "No permission to delete message.");
+            }
+
+            await ReplyAsync(_zalgoService.GetZalgo(text));
+        }
+
+        [Command("zalgod")]
+        [Summary("HAIL ZALGO")]
+        [RequireOwner]
+        [Priority(1)]
+        public async Task ZalgoDOwnerCommand([Remainder]string text)
+        {
+            try
+            {
+                await Context.Message.DeleteAsync();
+            }
+            catch
+            {
+                AltConsole.Print("Command", "Zalgo", "No permission to delete message.");
+
+            }
+            await ReplyAsync(_zalgoService.GetZalgo(text));
         }
 
         [Command("playing")]
@@ -79,7 +124,7 @@ namespace YunoBotV2.Commands
             JObject result = await _webService.GetJObjectContent(url);
             var gifUrl = result["data"]["image_original_url"].ToString();
 
-            await ReplyAsync(gifUrl);            
+            await ReplyAsync(gifUrl);
 
         }
 
@@ -92,7 +137,7 @@ namespace YunoBotV2.Commands
 
             string url;
 
-            if((name.IndexOf(' ') == name.LastIndexOf(' ')) && name.IndexOf(' ') != -1) 
+            if ((name.IndexOf(' ') == name.LastIndexOf(' ')) && name.IndexOf(' ') != -1)
             {
 
                 string[] temp = name.Split(' ');
@@ -103,14 +148,14 @@ namespace YunoBotV2.Commands
 
             JObject result = await _webService.GetJObjectContent(url);
 
-            if(result == null)
+            if (result == null)
             {
                 await DefaultErrorMessage();
                 return;
             }
             //replace the extra space after name
             //due to lack of last name
-            else await ReplyAsync(Regex.Replace((string)result["value"]["joke"], @"\s+", " "));            
+            else await ReplyAsync(Regex.Replace((string)result["value"]["joke"], @"\s+", " "));
 
         }
 
@@ -257,7 +302,7 @@ namespace YunoBotV2.Commands
             var bulletPositions = new int[bullets];
 
             for (int i = 0; i < bullets; i++)
-            {               
+            {
 
                 while (true)
                 {

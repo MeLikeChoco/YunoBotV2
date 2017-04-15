@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using System.Reflection;
 using YunoBotV2.Configuration;
 using YunoBotV2.Services.WebServices;
+using YunoBotV2.Services;
 
 namespace YunoBotV2.Core
 {
@@ -76,6 +77,7 @@ namespace YunoBotV2.Core
             _map.Add(_client);
             _map.Add(new Web());
             _map.Add(new Unshortener());
+            _map.Add(new Zalgo());
 
         }
 

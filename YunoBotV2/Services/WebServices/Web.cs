@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using AngleSharp.Parser.Html;
 using AngleSharp.Dom.Html;
+using System.IO;
 
 namespace YunoBotV2.Services.WebServices
 {
@@ -23,7 +24,7 @@ namespace YunoBotV2.Services.WebServices
             _http = new HttpClient();
             _parser = new HtmlParser();
 
-        }
+        }        
 
         /// <summary>
         /// Will return null if service is down.
@@ -213,6 +214,31 @@ namespace YunoBotV2.Services.WebServices
                 result = response.Content.ReadAsStringAsync().Result;
                 return Task.FromResult(true);
             }
+
+        }
+
+        /// <summary>
+        /// Return the content in the form of a stream
+        /// </summary>
+        /// <param name="url">The url to use</param>
+        /// <returns>Stream</returns>
+        public async Task<Stream> GetStream(string url)
+        {
+
+            int counter = 0;
+            HttpResponseMessage response;
+
+            do
+            {
+
+                response = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+                counter++;
+
+            } while ((!response.IsSuccessStatusCode) && (counter < 3));
+
+            if (counter == 3) return null;
+
+            return await response.Content.ReadAsStreamAsync();
 
         }
 
