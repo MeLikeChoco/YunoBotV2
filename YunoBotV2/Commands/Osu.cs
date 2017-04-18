@@ -58,7 +58,7 @@ namespace YunoBotV2.Commands
                 string beatmapsetId = beatmaps[r.Next(0, beatmaps.Count)].Value<string>("beatmapset_id");
 
                 url = $"{baseUrl}&s={beatmapsetId}";
-                List<OsuBeatmapSet> mapset = await _service.GetDeserializedContent(url, typeof(List<OsuBeatmapSet>));
+                List<OsuBeatmapSet> mapset = await _service.GetDeserializedContent<List<OsuBeatmapSet>>(url);
                 mapset = mapset.OrderBy(map => map.difficultyrating).ToList();
 
                 var AuthorBuilder = new EmbedAuthorBuilder()

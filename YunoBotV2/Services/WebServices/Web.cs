@@ -99,17 +99,16 @@ namespace YunoBotV2.Services.WebServices
         /// Will return null if service is down.
         /// </summary>
         /// <param name="url">The url to use</param>
-        /// <param name="type">The type to deserialize to</param>
         /// <returns>dynamic</returns>
-        public async Task<dynamic> GetDeserializedContent(string url, Type type)
+        public async Task<T> GetDeserializedContent<T>(string url)
         {
 
             string response = await CheckConnection(url);
 
             if (string.IsNullOrEmpty(response))
-                return null;
+                return default(T);
 
-            return JsonConvert.DeserializeObject(response, type);
+            return JsonConvert.DeserializeObject<T>(response);
 
         }
 
@@ -117,16 +116,15 @@ namespace YunoBotV2.Services.WebServices
         /// Will return null if service is down.
         /// </summary>
         /// <param name="url">The url to use</param>
-        /// <param name="type">The type to deserialize to at the very end</param>
         /// <param name="objectLocations">The path to the object location</param>
         /// <returns></returns>
-        public async Task<dynamic> GetDeserializedContent(string url, Type type, params string[] objectLocations)
+        public async Task<T> GetDeserializedContent<T>(string url, params string[] objectLocations)
         {
 
             string response = await CheckConnection(url);
 
             if (string.IsNullOrEmpty(response))
-                return null;
+                return default(T);
 
             dynamic jsonObject = JObject.Parse(response);
 
@@ -137,7 +135,7 @@ namespace YunoBotV2.Services.WebServices
 
             }
 
-            return jsonObject.ToObject(type);
+            return jsonObject.ToObject(typeof(T));
 
         }
 

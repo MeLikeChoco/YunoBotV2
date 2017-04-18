@@ -41,7 +41,7 @@ namespace YunoBotV2.Commands
             using (Context.Channel.EnterTypingState())
             {
 
-                JArray hits = await _service.GetDeserializedContent(url, typeof(JArray), "hits");
+                var hits = await _service.GetDeserializedContent<JArray>(url, "hits");
 
                 if(hits.Count == 0)
                 {

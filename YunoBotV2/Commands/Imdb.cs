@@ -95,7 +95,7 @@ namespace YunoBotV2.Commands
             using (Context.Channel.EnterTypingState())
             {
 
-                ImdbMovie result = await _service.GetDeserializedContent(url, typeof(ImdbMovie));
+                ImdbMovie result = await _service.GetDeserializedContent<ImdbMovie>(url);
 
                 if (string.IsNullOrEmpty(result.Title))
                 {
