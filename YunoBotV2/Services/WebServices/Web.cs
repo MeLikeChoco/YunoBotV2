@@ -126,14 +126,20 @@ namespace YunoBotV2.Services.WebServices
             if (string.IsNullOrEmpty(response))
                 return default(T);
 
-            dynamic jsonObject = JObject.Parse(response);
+            dynamic jsonObject;
 
-            foreach (var path in objectLocations)
+            try
             {
+                jsonObject = JObject.Parse(response);
 
-                jsonObject = jsonObject[path];
+                foreach (var path in objectLocations)
+                {
 
+                    jsonObject = jsonObject[path];
+
+                }
             }
+            catch { return default(T); }
 
             return jsonObject.ToObject(typeof(T));
 

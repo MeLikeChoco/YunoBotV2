@@ -14,10 +14,14 @@ namespace YunoBotV2.Configuration
         public static string Test { get; private set; }
         public static string Game { get; private set; }
         public static string Osu { get; private set; }
-        public static string EdamamId { get; private set; }
-        public static string EdamamKey { get; private set; }
         public static string ChampionGG { get; private set; }
         public static string LeagueOfLegends { get; private set; }
+        public static string WallpaperAlphaCoders { get; private set; }
+        public static string YandexTranslate { get; private set; }
+
+        public static string EdamamId { get; private set; }
+        public static string EdamamKey { get; private set; }
+
         public static string AnilistId { get; private set; }
         public static string AnilistSecret { get; private set; }
 
@@ -36,6 +40,8 @@ namespace YunoBotV2.Configuration
             Osu = tokens.Element("Osu").Value;
             ChampionGG = tokens.Element("Championgg").Value;
             LeagueOfLegends = tokens.Element("LeagueOfLegends").Value;
+            WallpaperAlphaCoders = tokens.Element("Wallpaper").Value;
+            YandexTranslate = tokens.Element("Yandex").Value;
 
             AnilistId = anilist.Element("clientid").Value;
             AnilistSecret = anilist.Element("clientsecret").Value;

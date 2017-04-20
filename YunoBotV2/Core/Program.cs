@@ -59,7 +59,7 @@ namespace YunoBotV2.Core
 
             Log();
             await RegisterCommands();
-            InjectServices();
+            await StartServices();
 
             await LoginAndConnect();
 
@@ -70,14 +70,18 @@ namespace YunoBotV2.Core
 
         }
 
-        internal void InjectServices()
+        internal async Task StartServices()
         {
-            
+
+            var web = new Web();
             _map = new DependencyMap();
+
             _map.Add(_client);
-            _map.Add(new Web());
+            _map.Add(web);
             _map.Add(new Unshortener());
             _map.Add(new Zalgo());
+
+            await Cache.InitializeCache(web);
 
         }
 

@@ -1,4 +1,6 @@
-﻿using Discord;
+﻿using AngleSharp.Dom;
+using AngleSharp.Dom.Html;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
@@ -11,6 +13,8 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using YunoBotV2.Commands.Attributes;
+using YunoBotV2.Configuration;
 using YunoBotV2.Core;
 using YunoBotV2.Services;
 using YunoBotV2.Services.WebServices;
@@ -30,6 +34,118 @@ namespace YunoBotV2.Commands
             _webService = webServiceParams;
             _unshortenService = unshortenParams;
             _zalgoService = zalgoParams;
+
+        }
+
+        [Command("translate")]
+        [Summary("Translate some text")]
+        public async Task TranslateCommand(string from, string to, [Remainder]string text)
+        {
+            var url = $"https://translate.yandex.net/api/v1.5/tr.json/translate?key={Config.YandexTranslate}&lang={from}-{to}&text={Uri.EscapeUriString(text)}";
+            var array = await _webService.GetDeserializedContent<JArray>(url, "text");
+            
+            if(array == null)
+            {
+                await DefaultErrorMessage();
+                return;
+            }
+
+            var result = string.Join(" ", array);
+
+            await ReplyAsync(result);
+        }
+
+        [Command("yesno")]
+        [Summary("Get a yes or no answer")]
+        public async Task YesNoCommand([Remainder]string question)
+        {
+            //the question isnt even used lmfao
+            var url = "https://yesno.wtf/api/";
+            var result = await _webService.GetDeserializedContent<string>(url, "answer");
+
+            await ReplyAsync($"{Context.User.Mention} {char.ToUpper(result.First()) + result.Substring(1)}");
+        }
+
+        [Command("wallpaper")]
+        [Summary("Get a random wallpaper with your search choice")]
+        public async Task WallpaperCommand([Remainder]string search = "")
+        {
+
+            if (string.IsNullOrEmpty(search))
+            {
+                await SearchErrorMessage();
+                return;
+            }
+
+            using (Context.Channel.EnterTypingState())
+            {
+
+                var url = $"https://wall.alphacoders.com/api2.0/get.php?auth={Config.WallpaperAlphaCoders}&method=search&height=1080&width=1920&term={Uri.EscapeUriString(search)}";
+                JObject temp = await _webService.GetJObjectContent(url);
+                var results = int.Parse(temp["total_match"].ToString());
+
+                if (results == 0)
+                {
+                    await NoResultsReturnedErrorMessage();
+                    return;
+                }
+
+                var rand = new Random();
+                var pages = results / 30; //max 30 results on a page
+
+                if (pages == 0)
+                {
+
+                    var wallpapers = temp["wallpapers"].ToObject<JArray>();
+                    var token = wallpapers[rand.Next(0, wallpapers.Count)];
+
+                    var eBuilder = new EmbedBuilder().WithTitle($"Link").WithUrl(token["url_image"].ToString()).WithImageUrl(token["url_thumb"].ToString()).
+                        WithColor(new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256)));
+
+                    await ReplyAsync("", embed: eBuilder);
+
+                }
+                else
+                {
+
+                    var randPage = rand.Next(1, pages);
+                    url += $"&page={randPage}";
+                    var array = await _webService.GetDeserializedContent<JArray>(url, "wallpapers");
+                    var token = array[rand.Next(0, array.Count)];
+
+                    var eBuilder = new EmbedBuilder().WithTitle($"Link").WithUrl(token["url_image"].ToString()).WithImageUrl(token["url_thumb"].ToString()).
+                        WithColor(new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256)));
+
+                    await ReplyAsync("", embed: eBuilder);
+
+                }
+
+            }
+
+        }
+
+        [Command("garfield")]
+        [Summary("Get a random garfield comic")]
+        [Cooldown(3)]
+        public async Task GarfieldCommand()
+        {
+
+            var r = new Random();
+            IElement image;
+
+            do
+            {
+                var year = r.Next(1979, DateTime.Now.Year); //i aint checking 1978 and seeing if garfield was there
+                var day = r.Next(1, 29); //aint checking leapyear either
+                var month = r.Next(1, 13);
+                var url = $"https://garfield.com/comic/{year}/{month}/{day}";
+
+                IHtmlDocument dom = await _webService.GetDom(url);
+                image = dom.GetElementsByClassName("img-responsive").First();
+
+            } while (image == null);
+
+            await ReplyAsync(image.GetAttribute("src"));
 
         }
 
@@ -76,6 +192,7 @@ namespace YunoBotV2.Commands
 
         [Command("playing")]
         [Summary("Returns a list of what people are playing")]
+        [Cooldown(10)]
         public async Task PlayingCommand()
         {
 
@@ -116,6 +233,7 @@ namespace YunoBotV2.Commands
 
         [Command("gif")]
         [Summary("Returns a gif from giphy")]
+        [Cooldown(5)]
         public async Task GifCommand([Remainder]string search)
         {
 
@@ -261,13 +379,15 @@ namespace YunoBotV2.Commands
 
         [Command("ascii")]
         [Summary("Text -> Ascii art")]
+        [Cooldown(3)]
         public async Task AsciiCommand([Remainder]string text)
         {
 
             var url = $"http://artii.herokuapp.com/make?text={Uri.EscapeUriString(text)}";
             string result = await _webService.GetRawContent(url);
 
-            if (string.IsNullOrEmpty(result)) await DefaultErrorMessage();
+            if (string.IsNullOrEmpty(result))
+                await DefaultErrorMessage();
             else await ReplyAsync($"```{result}```");
 
         }
