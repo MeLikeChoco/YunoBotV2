@@ -31,7 +31,7 @@ namespace YunoBotV2.Commands.Attributes
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                if (_cooldowns[command.Name].TryAdd(context.Guild.Id, stopwatch))
+                if (_cooldowns[command.Name].TryAdd(context.Channel.Id, stopwatch))
                 {
                     return Task.FromResult(PreconditionResult.FromSuccess());
                 }
@@ -40,12 +40,12 @@ namespace YunoBotV2.Commands.Attributes
             else
             {
 
-                if (_cooldowns[command.Name].TryGetValue(context.Guild.Id, out var stopwatch))
+                if (_cooldowns[command.Name].TryGetValue(context.Channel.Id, out var stopwatch))
                 {
 
                     if (stopwatch.Elapsed > TimeSpan.FromSeconds(_cooldown))
                     {
-                        _cooldowns[command.Name].TryRemove(context.Guild.Id, out stopwatch);
+                        _cooldowns[command.Name].TryRemove(context.Channel.Id, out stopwatch);
                         return Task.FromResult(PreconditionResult.FromSuccess());
                     }
                     else
@@ -60,7 +60,7 @@ namespace YunoBotV2.Commands.Attributes
                 {
                     stopwatch = new Stopwatch();
                     stopwatch.Start();
-                    _cooldowns[command.Name].TryAdd(context.Guild.Id, stopwatch);
+                    _cooldowns[command.Name].TryAdd(context.Channel.Id, stopwatch);
                     return Task.FromResult(PreconditionResult.FromSuccess());
                 }
 
