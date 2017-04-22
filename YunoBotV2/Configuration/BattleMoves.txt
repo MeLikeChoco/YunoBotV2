@@ -1,0 +1,56 @@
+﻿%a shits on %v for %d damage!
+%a uses Rasengan on %v for %d damage!
+%a pierces %v with Chidori for %d damage!
+%a used Solar Beam on %v. It's super effective! %d damage!
+%a used Hyper Beam on %v. It's super effective! %d damage!
+%a used Hydro Pump on %v. It's super effective! %d damage!
+%a used Tackle on %v. It's super effective! %d damage!
+After 10 episodes, %a uses Spirit Bomb on %v for %d damage!
+%a fires the Kamehameha at %v, dealing %d damage!
+%a uses Thousand Years of Pain up %v's butt, dealing %d damage!
+%a slaps %v with a dill pickle for %d damage!
+%a hits %v with a dildo for %d damage!
+%a casts Fire Dragon's Roar towards %v, dealing %d damage!
+%a shoots %v with a AK-47 for %d damage!
+%a attempts to take out %v with a M16A4 for %d damage!
+%a sprays %v with a M4A1, dealing %d damage!
+%a does a drive-by on %v with a Desert Eagle dealing %d damage!
+%a shoves an apple down %v's throat for %d damage!
+%a smashes a watermelon on %v's head for %d damage!
+%a shoves a cucumber up %v's butt, dealing %d damage!
+%a marks %v for a tactical nuke dealing %d damage!
+Wielding a hachet, %a hacks away at %v for %d damage!
+%a slices and dices %v with a katana for %d damage!
+Wielding a deadly eggplant, %a smacks %v for %d damage!
+%a launches a Fireball at %v, dealing %d damage!
+%a casts multiple Ice Spears at %v for %d damage!
+%a casts an Ice Beam at %v for %d damage!
+Invoking an explosion, %a blasts %v away, dealing %d damage!
+Ryu tags in for %a and fires Hadouken at %v for %d damage!
+Invoking a storm, %a casts Lightning Spears at %v for %d damage!
+%a shocks %v, dealing %d damage!
+Praying to the gods, %a unleashes a maelstrom on %v for %d damage!
+%a casts Meteor Deluge on %a for %d damage!
+%a slaps %v for %d damage!
+%a summons the cry of a banshee on %v for %d damage!
+%a casts Dragon Lightning towards %v, dealing %d damage!
+%a pinches %v for %d damage!
+%a smashes %v's head with a beer bottle for %d damage!
+%a fires a Firebolt at %v, dealing %d damage!
+%a throws a pommel trying to end %v rightly for %d damage!
+As the Overmind, %a orders a Zerg Rush at %v for %d damage!
+%a stings %v with a scorpion for %d damage!
+%a crushes %v for %d damage!
+%a shouts "CRUCIO" towards %v, dealing %d damage!
+%a throws a snail shell at %v for %d damage!
+%a snipes %v with the AWP but only dealing %d damage!
+%a HULK SMASH-es %v for %d damage!
+%a calls United Airlines on %v for %d damage!
+%a throws Leafy at %v for %d damage!
+%a swings a pickaxe at %v, dealing %d damage!
+%a throws a shuriken at %v for %d damage!
+%a piledrives %v for %d damage!
+Commanding elephants, %a tramples %v, dealing %d damage!
+Secretly Superman, %a uses laser eyes on %v for %d damage!
+%a bonks %v on the head with Thor's Hammer for %d damage!
+%a unleashes Alpha Strike on %v, dealing %d damage!

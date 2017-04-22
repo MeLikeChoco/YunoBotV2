@@ -182,8 +182,8 @@ namespace YunoBotV2.Core
             var context = new SocketCommandContext(_client, message);
             AltConsole.Print("Verbose", "Command", $"{(message.Channel as SocketGuildChannel).Guild.Name}");
             AltConsole.Print("Verbose", "Command", $"{message.Content}");
-            IResult result = await _commands.ExecuteAsync(context, argPos, _map);
 
+            IResult result = await _commands.ExecuteAsync(context, argPos, _map);
             if (!result.IsSuccess)
             {
 
@@ -194,7 +194,6 @@ namespace YunoBotV2.Core
                 //await context.Channel.SendMessageAsync("https://goo.gl/JieFJM");
 
                 AltConsole.Print("Error", "Error", result.ErrorReason);
-
                 //debug purposes
                 //await context.Channel.SendMessageAsync($"**Error:** {result.ErrorReason}");
 
@@ -236,7 +235,7 @@ namespace YunoBotV2.Core
 
         internal void ParseArgs()
         {
-            
+
             if (Args.Contains("--test"))
             {
                 if (bool.TryParse(Args.ElementAt(Args.ToList().IndexOf("--test") + 1), out bool parseTest)) IsTest = parseTest;
