@@ -242,7 +242,13 @@ namespace YunoBotV2.Services.WebServices
 
             if (counter == 3) return null;
 
-            return await response.Content.ReadAsStreamAsync();
+            var tempstream = await response.Content.ReadAsStreamAsync();
+            var stream = new MemoryStream();
+
+            await tempstream.CopyToAsync(stream);
+            stream.Position = 0;
+
+            return stream;
 
         }
 
