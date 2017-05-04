@@ -10,6 +10,7 @@ using YunoBotV2.Configuration;
 using Newtonsoft.Json;
 using YunoBotV2.Deserializers;
 using Discord;
+using YunoBotV2.Services;
 
 namespace YunoBotV2.Commands
 {
@@ -49,7 +50,7 @@ namespace YunoBotV2.Commands
                     return;
                 }
 
-                Recipe recipe = hits.ElementAt(new Random().Next(0, hits.Count))["recipe"].ToObject<Recipe>();
+                Recipe recipe = hits.ElementAt(Rand.Next(0, hits.Count))["recipe"].ToObject<Recipe>();
 
                 var authorBuilder = new EmbedAuthorBuilder()
                 {

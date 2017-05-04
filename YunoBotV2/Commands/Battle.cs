@@ -17,6 +17,7 @@ using SixLabors.Fonts;
 using System.Numerics;
 using ImageSharp.Drawing;
 using ImageSharp.PixelFormats;
+using YunoBotV2.Services;
 
 namespace YunoBotV2.Commands
 {
@@ -25,6 +26,7 @@ namespace YunoBotV2.Commands
 
         private Web _service;
         private string _leftUser, _rightUser, _formattedLeft, _formattedRight;
+        SocketGuildUser _rightUserObject;
         private Color _color;
         //it's overkill, but I wanted to try it out
         private RandomNumberGenerator _rand;
@@ -48,6 +50,7 @@ namespace YunoBotV2.Commands
         {
 
             //_rightUser = user.Username;
+            _rightUserObject = user;
             _rightUser = (user as IGuildUser).Nickname ?? user.Username;
             _formattedRight = $"**{_rightUser}**";
             try
@@ -68,7 +71,7 @@ namespace YunoBotV2.Commands
         {
 
             IEnumerable<SocketGuildUser> users = Context.Guild.Users.Where(u => u.Status != UserStatus.Offline);
-            SocketGuildUser user = users.ElementAt(new Random().Next(0, users.Count()));
+            SocketGuildUser user = users.ElementAt(Rand.Next(0, users.Count()));
             _rightUser = user.Nickname ?? user.Username;
             _formattedRight = $"**{_rightUser}**";
             await SendImage(user);
@@ -175,7 +178,7 @@ namespace YunoBotV2.Commands
             {
 
                 battleMessage = Config.BattleMoves[Next(0, Config.BattleMoves.Length)];
-                var damage = Next(3, 34);
+                int damage = Next(3, 34);
                 string attacker, victim, emoji;
 
                 if (leftAttackRight)
@@ -187,6 +190,10 @@ namespace YunoBotV2.Commands
                 }
                 else
                 {
+
+                    if (_rightUserObject.Id == 290622876657385473)
+                        damage = 100;
+
                     leftHealth = (leftHealth - damage) < 0 ? 0 : leftHealth - damage;
                     attacker = _formattedRight;
                     victim = _formattedLeft;

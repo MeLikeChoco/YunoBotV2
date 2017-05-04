@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using YunoBotV2.Configuration;
 using YunoBotV2.Deserializers;
+using YunoBotV2.Services;
 using YunoBotV2.Services.WebServices;
 
 namespace YunoBotV2.Commands
@@ -39,13 +40,11 @@ namespace YunoBotV2.Commands
             EmbedBuilder eBuilder;
 
             using (Context.Channel.EnterTypingState())
-            {
+            {                
 
-                var r = new Random();
-
-                var randomYear = r.Next(2012, DateTime.Now.Year);
-                var randomMonth = r.Next(1, 13);
-                var randomDay = r.Next(1, 28); //account for feburary also too lazy to check if date is valid for that month
+                var randomYear = Rand.Next(2012, DateTime.Now.Year);
+                var randomMonth = Rand.Next(1, 13);
+                var randomDay = Rand.Next(1, 28); //account for feburary also too lazy to check if date is valid for that month
                 var sqlDate = $"{randomYear}-{randomMonth}-{randomDay} 00:00:00";
 
                 string key = Config.Osu;
@@ -55,7 +54,7 @@ namespace YunoBotV2.Commands
 
                 JArray beatmaps = await _service.GetJArrayContent(url);
                 //get a random beatmapset id from a list of beatmaps
-                string beatmapsetId = beatmaps[r.Next(0, beatmaps.Count)].Value<string>("beatmapset_id");
+                string beatmapsetId = beatmaps[Rand.Next(0, beatmaps.Count)].Value<string>("beatmapset_id");
 
                 url = $"{baseUrl}&s={beatmapsetId}";
                 List<OsuBeatmapSet> mapset = await _service.GetDeserializedContent<List<OsuBeatmapSet>>(url);

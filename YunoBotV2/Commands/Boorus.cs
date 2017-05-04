@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YunoBotV2.Services;
 using YunoBotV2.Services.WebServices;
 
 namespace YunoBotV2.Commands
@@ -61,8 +62,8 @@ namespace YunoBotV2.Commands
             {
 
                 var url = nsfw ?
-                $"http://gelbooru.com/index.php?page=dapi&s=post&q=index&tags={Uri.EscapeUriString(tags)}%20rating:explicit&limit=1000&json=1" :
-                $"http://gelbooru.com/index.php?page=dapi&s=post&q=index&tags={Uri.EscapeUriString(tags)}%20rating:safe&limit=1000&json=1";
+                $"http://gelbooru.com/index.php?page=dapi&s=post&q=index&tags={Uri.EscapeUriString(tags)}%20{Uri.EscapeUriString("-webm")}%20rating:explicit&limit=100&json=1" :
+                $"http://gelbooru.com/index.php?page=dapi&s=post&q=index&tags={Uri.EscapeUriString(tags)}%20{Uri.EscapeUriString("-webm")}%20rating:safe&limit=100&json=1";
                 JArray searchResults = await _service.GetJArrayContent(url);
 
                 if (searchResults == null)
@@ -77,13 +78,12 @@ namespace YunoBotV2.Commands
                     return;
                 }
 
-                Random r = new Random();
                 string fileUrl;
 
                 do
                 {
 
-                    int i = r.Next(0, searchResults.Count);
+                    int i = Rand.Next(0, searchResults.Count);
                     fileUrl = searchResults[i].Value<string>("file_url");
 
                 } while (fileUrl.Contains(".webm"));

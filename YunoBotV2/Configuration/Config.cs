@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using YunoBotV2.Services;
 
 namespace YunoBotV2.Configuration
 {
@@ -20,6 +21,7 @@ namespace YunoBotV2.Configuration
         public static string WallpaperAlphaCoders { get; private set; }
         public static string YandexTranslate { get; private set; }
         public static string RandomAPI { get; private set; }
+        public static string Thesaurus { get; private set; }
 
         public static string EdamamId { get; private set; }
         public static string EdamamKey { get; private set; }
@@ -34,8 +36,6 @@ namespace YunoBotV2.Configuration
         public static void LoadConfig()
         {
 
-            var rand = new Random();
-
             var dom = XDocument.Load("Configuration/Config.xml");
             XElement tokens = dom.Root.Descendants("Tokens").First();
             XElement edamam = tokens.Descendants("Edamam").First();
@@ -49,6 +49,7 @@ namespace YunoBotV2.Configuration
             WallpaperAlphaCoders = tokens.Element("Wallpaper").Value;
             YandexTranslate = tokens.Element("Yandex").Value;
             RandomAPI = tokens.Element("Random").Value;
+            Thesaurus = tokens.Element("Thesaurus").Value;
 
             AnilistId = anilist.Element("clientid").Value;
             AnilistSecret = anilist.Element("clientsecret").Value;
@@ -65,7 +66,7 @@ namespace YunoBotV2.Configuration
             //shuffle BattleMoves
             for(int i = 0; i < BattleMoves.Length; i++)
             {
-                var newIndex = rand.Next(0, BattleMoves.Length);
+                var newIndex = Rand.Next(0, BattleMoves.Length);
 
                 if (i == newIndex)
                     continue;

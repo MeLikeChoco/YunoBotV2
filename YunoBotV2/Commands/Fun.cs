@@ -133,18 +133,17 @@ namespace YunoBotV2.Commands
                     await NoResultsReturnedErrorMessage();
                     return;
                 }
-
-                var rand = new Random();
+                
                 var pages = results / 30; //max 30 results on a page
 
                 if (pages == 0)
                 {
 
                     var wallpapers = temp["wallpapers"].ToObject<JArray>();
-                    var token = wallpapers[rand.Next(0, wallpapers.Count)];
+                    var token = wallpapers[Rand.Next(0, wallpapers.Count)];
 
                     var eBuilder = new EmbedBuilder().WithTitle($"Link").WithUrl(token["url_image"].ToString()).WithImageUrl(token["url_thumb"].ToString()).
-                        WithColor(new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256)));
+                        WithColor(new Color(Rand.Next(0, 256), Rand.Next(0, 256), Rand.Next(0, 256)));
 
                     await ReplyAsync("", embed: eBuilder);
 
@@ -152,13 +151,13 @@ namespace YunoBotV2.Commands
                 else
                 {
 
-                    var randPage = rand.Next(1, pages);
-                    url += $"&page={randPage}";
+                    var RandPage = Rand.Next(1, pages);
+                    url += $"&page={RandPage}";
                     var array = await _webService.GetDeserializedContent<JArray>(url, "wallpapers");
-                    var token = array[rand.Next(0, array.Count)];
+                    var token = array[Rand.Next(0, array.Count)];
 
                     var eBuilder = new EmbedBuilder().WithTitle($"Link").WithUrl(token["url_image"].ToString()).WithImageUrl(token["url_thumb"].ToString()).
-                        WithColor(new Color(rand.Next(0, 256), rand.Next(0, 256), rand.Next(0, 256)));
+                        WithColor(new Color(Rand.Next(0, 256), Rand.Next(0, 256), Rand.Next(0, 256)));
 
                     await ReplyAsync("", embed: eBuilder);
 
@@ -173,15 +172,14 @@ namespace YunoBotV2.Commands
         [Cooldown(3)]
         public async Task GarfieldCommand()
         {
-
-            var r = new Random();
+            
             IElement image;
 
             do
             {
-                var year = r.Next(1979, DateTime.Now.Year); //i aint checking 1978 and seeing if garfield was there
-                var day = r.Next(1, 29); //aint checking leapyear either
-                var month = r.Next(1, 13);
+                var year = Rand.Next(1979, DateTime.Now.Year); //i aint checking 1978 and seeing if garfield was there
+                var day = Rand.Next(1, 29); //aint checking leapyear either
+                var month = Rand.Next(1, 13);
                 var url = $"https://garfield.com/comic/{year}/{month}/{day}";
 
                 IHtmlDocument dom = await _webService.GetDom(url);
@@ -345,7 +343,7 @@ namespace YunoBotV2.Commands
             else if (int.TryParse(sides, out int sidesOfDice))
             {
 
-                var diceRollDrumRollPlease = new Random().Next(1, sidesOfDice + 1);
+                var diceRollDrumRollPlease = Rand.Next(1, sidesOfDice + 1);
                 await ReplyAsync($":game_die: You have rolled {diceRollDrumRollPlease}");
 
             }
@@ -358,7 +356,7 @@ namespace YunoBotV2.Commands
         public async Task CoinFlipCommand()
         {
 
-            var r = new Random().Next(2);
+            var r = Rand.Next(2);
 
             switch (r)
             {
@@ -380,7 +378,7 @@ namespace YunoBotV2.Commands
         {
 
             var startTime = DateTime.UtcNow.Subtract(Process.GetCurrentProcess().StartTime.ToUniversalTime());
-            var randomNumber = new Random().Next(1, 10);
+            var randomNumber = Rand.Next(1, 10);
             string emoji;
 
             switch (randomNumber)
@@ -460,9 +458,8 @@ namespace YunoBotV2.Commands
                 return;
 
             }
-
-            var r = new Random();
-            var landingPos = r.Next(1, capacity + 1);
+            
+            var landingPos = Rand.Next(1, capacity + 1);
             var bulletPositions = new int[bullets];
 
             for (int i = 0; i < bullets; i++)
@@ -471,7 +468,7 @@ namespace YunoBotV2.Commands
                 while (true)
                 {
 
-                    var b = r.Next(1, capacity + 1);
+                    var b = Rand.Next(1, capacity + 1);
                     if (!(bulletPositions.Contains(b)))
                     {
 

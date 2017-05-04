@@ -44,7 +44,6 @@ namespace YunoBotV2.Services
         {
 
             string str = string.Empty;
-            var r = new Random();
 
             foreach(var letter in source)
             {
@@ -52,12 +51,12 @@ namespace YunoBotV2.Services
                 str += letter;
 
                 //each letter gets minimum 3 fuckups and maximum 5 fuck ups from up, mid, and down
-                for(int i = 1; i < r.Next(3, 6); i++)
+                for(int i = 1; i < Rand.Next(3, 6); i++)
                 {
 
-                    str += ZalgoUp[r.Next(0, ZalgoUp.Length)];
-                    str += ZalgoMid[r.Next(0, ZalgoMid.Length)];
-                    str += ZalgoDown[r.Next(0, ZalgoDown.Length)];
+                    str += ZalgoUp[Rand.Next(0, ZalgoUp.Length)];
+                    str += ZalgoMid[Rand.Next(0, ZalgoMid.Length)];
+                    str += ZalgoDown[Rand.Next(0, ZalgoDown.Length)];
 
                 }
 

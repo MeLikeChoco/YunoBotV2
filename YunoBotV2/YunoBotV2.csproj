@@ -18,7 +18,7 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.9.9" />
     <PackageReference Include="Discord.Addons.InteractiveCommands" Version="1.2.2" />
-    <PackageReference Include="Discord.Net" Version="1.0.0-rc2-00702" />
+    <PackageReference Include="Discord.Net" Version="1.0.0-rc2-00703" />
     <PackageReference Include="FIGlet.Net" Version="1.0.0" />
     <PackageReference Include="ImageSharp" Version="1.0.0-alpha7-00006" />
     <PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha7-00020" />
