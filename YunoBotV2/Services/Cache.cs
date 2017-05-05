@@ -17,16 +17,22 @@ namespace YunoBotV2.Services
     {
 
         public static ConcurrentDictionary<ulong, Stopwatch> Stopwatches = new ConcurrentDictionary<ulong, Stopwatch>();
-
-        public static List<SteamSpecialObject> SteamSpecials = new List<SteamSpecialObject>(10);
+                
+        public static EmbedBuilder SteamSpecials = new EmbedBuilder();
         public static DateTime LastSteamSpecialScrape = new DateTime(1990, 1, 1, 1, 1, 1, 1);
+
+        public static EmbedBuilder SteamTopSellers = new EmbedBuilder();
+        public static DateTime LastSteamTopSellerScrape = new DateTime(1990, 1, 1, 1, 1, 1, 1);
+
+        public static EmbedBuilder SteamNewReleases = new EmbedBuilder();
+        public static DateTime LastSteamNewReleasesScrape = new DateTime(1990, 1, 1, 1, 1, 1, 1);
 
         public static Dictionary<string, EmbedBuilder> Pokemon = new Dictionary<string, EmbedBuilder>();
 
-        public static async Task InitializeCache(Web service)
+        public static Task InitializeCache(Web service)
         {
 
-            
+            return Task.CompletedTask;
 
         }
 

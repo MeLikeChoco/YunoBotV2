@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace YunoBotV2.Deserializers
 {
-    public class SteamSpecialObject
+    public class SteamFrontpageObject
     {
         public string Link { get; set; }
         public string Title { get; set; }

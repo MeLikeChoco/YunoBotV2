@@ -37,15 +37,16 @@ namespace YunoBotV2.Commands
             using (Context.Channel.EnterTypingState())
             {
 
-                List<SteamSpecialObject> specials;
+                List<SteamFrontpageObject> specials;
 
                 if (DateTime.Now.Subtract(Cache.LastSteamSpecialScrape) > TimeSpan.FromMinutes(60))
                 {
-                    specials = await GetSteamSpecials(url);
+                    specials = await GetSteamGames(url, ScrapeType.Specials);
                 }
                 else
                 {
-                    specials = Cache.SteamSpecials;
+                    await ReplyAsync("", embed: Cache.SteamSpecials);
+                    return;
                 }
 
                 if (specials == null)
@@ -77,7 +78,7 @@ namespace YunoBotV2.Commands
                     Author = AuthorBuilder,
                     Color = new Color(27, 40, 56),
                     Title = "Frontpage Steam Specials",
-                    Url = "http://store.steampowered.com/search/?specials=1",
+                    Url = url,
                     Description = "Here are the top 10 deals on the front page of steam",
                     ThumbnailUrl = specials.FirstOrDefault().Picture,
                     Footer = FooterBuilder
@@ -86,7 +87,7 @@ namespace YunoBotV2.Commands
 
                 var counter = 1;
 
-                foreach (SteamSpecialObject game in specials)
+                foreach (SteamFrontpageObject game in specials)
                 {
 
                     eBuilder.AddField(x =>
@@ -100,15 +101,176 @@ namespace YunoBotV2.Commands
                 }
 
                 await ReplyAsync("", embed: eBuilder);
+                Cache.SteamSpecials = eBuilder;
 
             }
 
         }
 
-        private async Task<List<SteamSpecialObject>> GetSteamSpecials(string url)
+        [Command("top")]
+        [Summary("Return top 10 best sellers")]
+        public async Task SteamTopCommand()
         {
 
-            List<SteamSpecialObject> specials = new List<SteamSpecialObject>(10);
+            var url = "http://store.steampowered.com/search/?filter=globaltopsellers";
+
+            using (Context.Channel.EnterTypingState())
+            {
+
+                List<SteamFrontpageObject> topSellers;
+
+                if (DateTime.Now.Subtract(Cache.LastSteamTopSellerScrape) > TimeSpan.FromMinutes(60))
+                {
+                    topSellers = await GetSteamGames(url, ScrapeType.TopSellers);
+                }
+                else
+                {
+                    await ReplyAsync("", embed: Cache.SteamTopSellers);
+                    return;
+                }
+
+                if (topSellers == null)
+                {
+                    await DefaultErrorMessage();
+                    return;
+                }
+
+                var AuthorBuilder = new EmbedAuthorBuilder()
+                {
+
+                    Name = "Steam",
+                    Url = "http://store.steampowered.com/",
+                    IconUrl = "http://icons.iconarchive.com/icons/martz90/circle/256/steam-icon.png"
+
+                };
+
+                var FooterBuilder = new EmbedFooterBuilder()
+                {
+
+                    Text = $"Valve© | Data Last Gathered: {Cache.LastSteamTopSellerScrape.ToString("MM/dd/yyyy hh:mm")}",
+                    IconUrl = "http://icons.iconarchive.com/icons/bokehlicia/pacifica/256/steam-icon.png"
+
+                };
+
+                var eBuilder = new EmbedBuilder()
+                {
+
+                    Author = AuthorBuilder,
+                    Color = new Color(27, 40, 56),
+                    Title = "Frontpage Steam Top Sellers",
+                    Url = url,
+                    Description = "Here are the top 10 deals on the front page of steam",
+                    ThumbnailUrl = topSellers.FirstOrDefault().Picture,
+                    Footer = FooterBuilder
+
+                };
+
+                var counter = 1;
+
+                foreach (SteamFrontpageObject game in topSellers)
+                {
+
+                    eBuilder.AddField(x =>
+                    {
+                        x.Name = $"{counter}. {WebUtility.HtmlDecode(game.Title)}";
+                        x.Value = $"Rating: {game.Rating}\nRelease Date: {game.ReleaseDate}\nOriginal Price: {game.OgPrice}\nNew Price: {game.NewPrice}\nDiscount: {game.Discount}\n[Link]({game.Link})";
+                    });
+
+                    counter++;
+
+                }
+
+                await ReplyAsync("", embed: eBuilder);
+                Cache.SteamTopSellers = eBuilder;
+
+            }
+
+        }
+
+        [Command("new")]
+        [Summary("Return the top 10 new releases")]
+        public async Task SteamNewCommand()
+        {
+
+            var url = "http://store.steampowered.com/search/?filter=popularnew&sort_by=Released_DESC";
+
+            using (Context.Channel.EnterTypingState())
+            {
+
+                List<SteamFrontpageObject> topNewReleases;
+
+                if (DateTime.Now.Subtract(Cache.LastSteamNewReleasesScrape) > TimeSpan.FromMinutes(60))
+                {
+                    topNewReleases = await GetSteamGames(url, ScrapeType.New);
+                }
+                else
+                {
+                    await ReplyAsync("", embed: Cache.SteamNewReleases);
+                    return;
+                }
+
+                if (topNewReleases == null)
+                {
+                    await DefaultErrorMessage();
+                    return;
+                }
+
+                var AuthorBuilder = new EmbedAuthorBuilder()
+                {
+
+                    Name = "Steam",
+                    Url = "http://store.steampowered.com/",
+                    IconUrl = "http://icons.iconarchive.com/icons/martz90/circle/256/steam-icon.png"
+
+                };
+
+                var FooterBuilder = new EmbedFooterBuilder()
+                {
+
+                    Text = $"Valve© | Data Last Gathered: {Cache.LastSteamNewReleasesScrape.ToString("MM/dd/yyyy hh:mm")}",
+                    IconUrl = "http://icons.iconarchive.com/icons/bokehlicia/pacifica/256/steam-icon.png"
+
+                };
+
+                var eBuilder = new EmbedBuilder()
+                {
+
+                    Author = AuthorBuilder,
+                    Color = new Color(27, 40, 56),
+                    Title = "Frontpage Steam Top Sellers",
+                    Url = url,
+                    Description = "Here are the top 10 deals on the front page of steam",
+                    ThumbnailUrl = topNewReleases.FirstOrDefault().Picture,
+                    Footer = FooterBuilder
+
+                };
+
+                var counter = 1;
+
+                foreach (SteamFrontpageObject game in topNewReleases)
+                {
+
+                    eBuilder.AddField(x =>
+                    {
+                        x.Name = $"{counter}. {WebUtility.HtmlDecode(game.Title)}";
+                        x.Value = $"Rating: {game.Rating}\nRelease Date: {game.ReleaseDate}\nOriginal Price: {game.OgPrice}\nNew Price: {game.NewPrice}\nDiscount: {game.Discount}\n[Link]({game.Link})";
+                    });
+
+                    counter++;
+
+                }
+
+                await ReplyAsync("", embed: eBuilder);
+                Cache.SteamNewReleases = eBuilder;
+
+            }
+
+        }
+
+        private async Task<List<SteamFrontpageObject>> GetSteamGames(string url, ScrapeType scrapeType)
+        {
+
+            List<SteamFrontpageObject> specials = new List<SteamFrontpageObject>(10);
             IHtmlDocument dom = await _service.GetDom(url);
 
             if (dom == null) return null;
@@ -118,30 +280,41 @@ namespace YunoBotV2.Commands
             //its index 1 because there's a random div before the container i want
             IEnumerable<IElement> elements = dom.GetElementById("search_result_container").GetElementsByTagName("div")[1].GetElementsByTagName("a").Take(10);
 
-            foreach(var element in elements)
+            foreach (var element in elements)
             {
 
-                specials.Add(new SteamSpecialObject
+                specials.Add(new SteamFrontpageObject
                 {
 
                     Link = element.GetAttribute("href"),
                     Picture = element.GetElementsByClassName("col search_capsule").First().FirstElementChild.GetAttribute("src"),
                     Title = element.GetElementsByClassName("title").First().TextContent,
                     ReleaseDate = element.GetElementsByClassName("col search_released responsive_secondrow").FirstOrDefault()?.TextContent ?? "No Release Date",
-                    Rating = element.GetElementsByClassName("col search_reviewscore responsive_secondrow").FirstOrDefault()?.FirstElementChild?.GetAttribute("data-store-tooltip")?.Replace("<br>", ", ") ?? "N/A",
-                    Discount = element.GetElementsByClassName("col search_discount responsive_secondrow").First().FirstElementChild.TextContent.Replace("-", string.Empty),
-                    OgPrice = element.GetElementsByClassName("col search_price discounted responsive_secondrow").First().GetElementsByTagName("strike").First().TextContent,
-                    NewPrice = element.GetElementsByClassName("col search_price discounted responsive_secondrow").First().ChildNodes[3].TextContent,
+                    Rating = element.GetElementsByClassName("col search_reviewscore responsive_secondrow").FirstOrDefault()?.FirstElementChild?.GetAttribute("data-store-tooltip")?.Replace("<br>", ", ") ?? "No ratings",
+                    Discount = element.GetElementsByClassName("col search_discount responsive_secondrow").FirstOrDefault()?.FirstElementChild?.TextContent.Replace("-", string.Empty) ?? "No discount",
+                    OgPrice = element.GetElementsByClassName("col search_price discounted responsive_secondrow").FirstOrDefault()?.GetElementsByTagName("strike").FirstOrDefault()?.TextContent ?? element.GetElementsByClassName("col search_price  responsive_secondrow").FirstOrDefault().TextContent.Trim(),
+                    NewPrice = element.GetElementsByClassName("col search_price discounted responsive_secondrow").FirstOrDefault()?.ChildNodes[3]?.TextContent ?? "N/A",
 
                 });
 
             }
 
-            Cache.SteamSpecials = specials;
-            Cache.LastSteamSpecialScrape = DateTime.Now;
+            if (scrapeType == ScrapeType.Specials)
+                Cache.LastSteamSpecialScrape = DateTime.Now;
+            else if (scrapeType == ScrapeType.TopSellers)
+                Cache.LastSteamTopSellerScrape = DateTime.Now;
+            else if (scrapeType == ScrapeType.New)
+                Cache.LastSteamNewReleasesScrape = DateTime.Now;
 
             return specials;
 
+        }
+
+        private enum ScrapeType
+        {
+            Specials,
+            TopSellers,
+            New
         }
 
     }
