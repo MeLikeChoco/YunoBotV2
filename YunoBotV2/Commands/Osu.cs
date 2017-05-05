@@ -28,10 +28,10 @@ namespace YunoBotV2.Commands
 
         [Command("osur")]
         [Summary("Returns a random beatmap")]
-        public async Task RandomOsuMapCommand(string mode = "4", string limit = "1")
+        public async Task RandomOsuMapCommand(string mode = "4")
         {
 
-            if (!(int.TryParse(mode, out int intMode) && int.TryParse(limit, out int intLimit)))
+            if (!(int.TryParse(mode, out int intMode)))
             {
                 await DefaultErrorMessage();
                 return;

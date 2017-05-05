@@ -26,7 +26,7 @@ namespace YunoBotV2.Commands
 
         }
 
-        [Command(RunMode = RunMode.Async)]
+        [Command]
         [Summary("Return a champion's stats")]
         public async Task ChampionCommand([Remainder]string champion)
         {

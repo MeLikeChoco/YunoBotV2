@@ -22,7 +22,7 @@ namespace YunoBotV2.Commands.Attributes
             _cooldown = seconds;
         }
 
-        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IDependencyMap map)
+        public override Task<PreconditionResult> CheckPermissions(ICommandContext context, CommandInfo command, IServiceProvider map)
         {
 
             if (_cooldowns.TryAdd(command.Name, new ConcurrentDictionary<ulong, Stopwatch>()))

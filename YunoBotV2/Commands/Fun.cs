@@ -104,6 +104,7 @@ namespace YunoBotV2.Commands
         public async Task YesNoCommand([Remainder]string question)
         {
             //the question isnt even used lmfao
+            //and i could have made this so much easier, but nooooooooo
             var url = "https://yesno.wtf/api/";
             var result = await _webService.GetDeserializedContent<string>(url, "answer");
 
@@ -276,7 +277,7 @@ namespace YunoBotV2.Commands
         [Command("gif")]
         [Summary("Returns a gif from giphy")]
         [Cooldown(5)]
-        public async Task GifCommand([Remainder]string search)
+        public async Task GifCommand([Remainder]string search = "")
         {
 
             //api key is the public one
@@ -497,7 +498,7 @@ namespace YunoBotV2.Commands
 
         [Command("fuck you")]
         [Summary("Insult the bot")]
-        public async Task YouSuckCommand(IGuildUser user)
+        public async Task YouSuckCommand(SocketGuildUser user)
             => await ReplyAsync($"{user.Mention} I think it's hilarious you kids talking shit about me. " +
                 "You wouldn't say shit to me irl, " + $"I'm jacked. Not only that but I wear the freshest clothes, " +
                      "eat at the chillest restaurants, and bang the hottest dudes. Ya'll are pathetic lol.﻿");
