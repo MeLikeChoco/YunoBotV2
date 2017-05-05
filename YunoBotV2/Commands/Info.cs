@@ -63,12 +63,26 @@ namespace YunoBotV2.Commands
 
         [Command("prefix")]
         [Summary("Set custom prefix")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        [Priority(0)]
         public async Task PrefixCommand([Remainder]string prefix)
         {
 
             await Database.SavePrefix(Context.Guild.Id, prefix);
             await ReplyAsync($"Prefix has been set to: {prefix}");
             
+        }
+
+        [Command("prefix")]
+        [Summary("Set custom prefix")]
+        [RequireOwner]
+        [Priority(1)]
+        public async Task ForceSetPrefixCommand([Remainder]string prefix)
+        {
+
+            await Database.SavePrefix(Context.Guild.Id, prefix);
+            await ReplyAsync($"Prefix has been set to: {prefix}");
+
         }
 
         //i opted to hand craft my help command because I feel it's easier to control
@@ -79,33 +93,36 @@ namespace YunoBotV2.Commands
         {
 
             StringBuilder organizedResults;
-            var prefix = "e$";
+
+            if (Cache.Prefixes.TryGetValue(Context.Guild.Id, out string prefix)) { }
+            else
+                prefix = "e$";
 
             switch (page)
             {
 
                 case 1:
-                    organizedResults = new StringBuilder("```AQWorlds Help Menu\n");
+                    organizedResults = new StringBuilder("```AQWorlds Help Menu\n\n");
                     organizedResults.AppendLine($"{"aqw search <search terms>".PadRight(30)}| Search the AQWorlds wiki for information!");
                     organizedResults.AppendLine($"{"aqw user <the user's name>".PadRight(30)}| Dump a user's information into chat!");
                     break;
                 case 2:
-                    organizedResults = new StringBuilder("```Nsfw/Sfw Help Menu\n");
+                    organizedResults = new StringBuilder("```Nsfw/Sfw Help Menu\n\n");
                     organizedResults.AppendLine($"{"nsfw <optional: search tags>".PadRight(30)}| Get a nsfw picture from a random booru!");
                     organizedResults.AppendLine($"{"sfw <optional: search tags>".PadRight(30)}| Get a sfw picture from a random booru!");
                     break;
                 case 3:
-                    organizedResults = new StringBuilder("```Colors Help Menu\n");
+                    organizedResults = new StringBuilder("```Colors Help Menu\n\n");
                     organizedResults.AppendLine($"{"color".PadRight(30)}| Get a random color!");
                     organizedResults.AppendLine($"{"color search <search terms>".PadRight(30)}| Get a color related to your search!");
                     organizedResults.AppendLine($"{"color <hexcode>".PadRight(30)}| Get the color associated with the hexcode!");
                     break;
                 case 4:
-                    organizedResults = new StringBuilder("```Food Help Menu\n");
+                    organizedResults = new StringBuilder("```Food Help Menu\n\n");
                     organizedResults.AppendLine($"{"recipe <search terms>".PadRight(30)}| Get a random recipe based on your search!");
                     break;
                 case 5:
-                    organizedResults = new StringBuilder("```Fun Help Menu\n");
+                    organizedResults = new StringBuilder("```Fun Help Menu\n\n");
                     organizedResults.AppendLine($"{"randomuser".PadRight(30)}| Generate a fake random person!");
                     organizedResults.AppendLine($"{"translate <from> <to> <text>".PadRight(30)}| Translate some text!");
                     organizedResults.AppendLine($"{"yesorno <question>".PadRight(30)}| Get a yes or no answer on the question!");
@@ -127,34 +144,34 @@ namespace YunoBotV2.Commands
                     organizedResults.AppendLine($"{"fuck you <user mention/id>".PadRight(30)}| Ultimate kek.");
                     break;
                 case 6:
-                    organizedResults = new StringBuilder("```League of Legends Help Menu\n");
+                    organizedResults = new StringBuilder("```League of Legends Help Menu\n\n");
                     organizedResults.AppendLine($"{"lol <champion name>"}| Return stats on a champion!");
                     break;
                 case 7:
-                    organizedResults = new StringBuilder("```Osu Help Menu\n");
+                    organizedResults = new StringBuilder("```Osu Help Menu\n\n");
                     organizedResults.AppendLine($"{"osur <mode: 1/2/3>".PadRight(30)}| Get a random osu beatmap!");
                     organizedResults.AppendLine($"{"osuu <username>".PadRight(30)}| Fetch info on an user!");
                     break;
                 case 8:
-                    organizedResults = new StringBuilder("```Steam Help Menu\n");
+                    organizedResults = new StringBuilder("```Steam Help Menu\n\n");
                     organizedResults.AppendLine($"{"steam deals".PadRight(30)}| Returns the top 10 steam specials from frontpage!");
                     organizedResults.AppendLine($"{"steam top".PadRight(30)}| Returns the top 10 steam sellers from frontpage!");
                     organizedResults.AppendLine($"{"steam new".PadRight(30)}| Retrusn the top 10 popular new releases from frontpage!");
                     break;
                 case 9:
-                    organizedResults = new StringBuilder("```Weaboo Help Menu\n");
+                    organizedResults = new StringBuilder("```Weaboo Help Menu\n\n");
                     organizedResults.AppendLine($"{"anime <search terms>".PadRight(30)}| Search for anime!");
                     organizedResults.AppendLine($"{"manga <search terms>".PadRight(30)}| Search for manga!");
                     organizedResults.AppendLine($"{"character <search terms>".PadRight(30)}| Search for anime/manga characters!");
                     break;
                 case 10:
-                    organizedResults = new StringBuilder("```Wiki Help Menu\n");
+                    organizedResults = new StringBuilder("```Wiki Help Menu\n\n");
                     organizedResults.AppendLine($"{"wiki <search terms>".PadRight(30)}| Search the Wikipedia!");
                     organizedResults.AppendLine($"{"wikia <community> <search terms>".PadRight(30)}| Search the Wikia!");
                     organizedResults.AppendLine($"{"gamepedia <community> <search terms>".PadRight(30)}| Search Gamepedia!");
                     break;
                 default:
-                    organizedResults = new StringBuilder("```The Defacto Help Menu\n");
+                    organizedResults = new StringBuilder("```The Defacto Help Menu\n\n");
                     organizedResults.AppendLine("1. AQWorlds");
                     organizedResults.AppendLine("2. NSFW/SFW");
                     organizedResults.AppendLine("3. Colors");
