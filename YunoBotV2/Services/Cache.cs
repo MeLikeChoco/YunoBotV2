@@ -16,6 +16,8 @@ namespace YunoBotV2.Services
     public static class Cache
     {
 
+        public static ConcurrentDictionary<ulong, string> Prefixes;
+
         public static ConcurrentDictionary<ulong, Stopwatch> Stopwatches = new ConcurrentDictionary<ulong, Stopwatch>();
                 
         public static EmbedBuilder SteamSpecials = new EmbedBuilder();
@@ -29,10 +31,10 @@ namespace YunoBotV2.Services
 
         public static Dictionary<string, EmbedBuilder> Pokemon = new Dictionary<string, EmbedBuilder>();
 
-        public static Task InitializeCache(Web service)
+        public static async Task InitializeCache(Web service)
         {
 
-            return Task.CompletedTask;
+            Prefixes = new ConcurrentDictionary<ulong, string>(await Database.GetPrefixes());
 
         }
 

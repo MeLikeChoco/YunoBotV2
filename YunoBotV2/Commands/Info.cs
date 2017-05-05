@@ -61,6 +61,16 @@ namespace YunoBotV2.Commands
 
         }
 
+        [Command("prefix")]
+        [Summary("Set custom prefix")]
+        public async Task PrefixCommand([Remainder]string prefix)
+        {
+
+            await Database.SavePrefix(Context.Guild.Id, prefix);
+            await ReplyAsync($"Prefix has been set to: {prefix}");
+            
+        }
+
         //i opted to hand craft my help command because I feel it's easier to control
         [Command("help")]
         [Summary("Get a help ")]

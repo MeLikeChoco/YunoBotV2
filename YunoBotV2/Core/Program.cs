@@ -137,10 +137,9 @@ namespace YunoBotV2.Core
             if (message.Author.IsBot) return;
 
             var argPos = 0;
-            var prefix = "e$";
 
-            //if (_guildService._guildPrefixes.TryGetValue(guildId, out string prefix)) { }
-            //else prefix = "y!";
+            if (Cache.Prefixes.TryGetValue(guildId, out string prefix)) { }
+            else prefix = "e$";
 
             if (!(message.HasStringPrefix(prefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
                 return;
