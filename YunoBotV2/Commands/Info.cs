@@ -88,7 +88,6 @@ namespace YunoBotV2.Commands
         //i opted to hand craft my help command because I feel it's easier to control
         [Command("help")]
         [Summary("Get a help ")]
-        [Cooldown(30)]
         public async Task HelpCommand(int page = 0)
         {
 
