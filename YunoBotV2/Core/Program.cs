@@ -78,7 +78,7 @@ namespace YunoBotV2.Core
 
             _serviceProvider = new ServiceCollection()
                 .AddSingleton(_client)
-                .AddSingleton<Web>()
+                .AddSingleton(web)
                 .AddSingleton<Unshortener>()
                 .AddSingleton<Zalgo>()
                 .BuildServiceProvider();
@@ -151,6 +151,7 @@ namespace YunoBotV2.Core
             AltConsole.Print("Verbose", "Command", $"{message.Content}");
 
             IResult result = await _commands.ExecuteAsync(context, argPos, _serviceProvider);
+
             if (!result.IsSuccess)
             {
 

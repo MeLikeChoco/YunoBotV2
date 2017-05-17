@@ -8,21 +8,21 @@ namespace YunoBotV2.Services
 {
     public static class Rand
     {
-        private static Random _rand = new Random();
+        public static Random StaticRand { get; private set; } = new Random();
 
         public static int Next(int exclusiveMax)
         {
-            return _rand.Next(exclusiveMax);
+            return StaticRand.Next(exclusiveMax);
         }
 
         public static int Next(int inclusiveMin, int exclusiveMax)
         {
-            return _rand.Next(inclusiveMin, exclusiveMax);
+            return StaticRand.Next(inclusiveMin, exclusiveMax);
         }
 
         public static double NextDouble(double inclusiveMin, double exclusiveMax)
         {
-            return _rand.NextDouble() * (exclusiveMax - inclusiveMin) + inclusiveMin;
+            return StaticRand.NextDouble() * (exclusiveMax - inclusiveMin) + inclusiveMin;
         }
     }
 }

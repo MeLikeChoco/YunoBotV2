@@ -16,8 +16,8 @@ using ImageSharp;
 using SixLabors.Fonts;
 using System.Numerics;
 using ImageSharp.Drawing;
-using ImageSharp.PixelFormats;
 using YunoBotV2.Services;
+using MoreLinq;
 
 namespace YunoBotV2.Commands
 {
@@ -57,7 +57,8 @@ namespace YunoBotV2.Commands
             {
                 await SendImage(user);
                 await StartBattle();
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 AltConsole.Print(e.StackTrace);
             }
@@ -69,22 +70,51 @@ namespace YunoBotV2.Commands
         [RequireContext(ContextType.Guild)]
         public async Task RandomBattleCommand()
         {
-
-            IEnumerable<SocketGuildUser> users = Context.Guild.Users.Where(u => u.Status != UserStatus.Offline);
-            SocketGuildUser user = users.ElementAt(Rand.Next(0, users.Count()));
-            _rightUser = user.Nickname ?? user.Username;
+            
+            _rightUserObject = Context.Guild.Users.Where(u => u.Status != UserStatus.Offline).RandomSubset(1, Rand.StaticRand).First();
+            _rightUser = _rightUserObject.Nickname ?? _rightUserObject.Username;
             _formattedRight = $"**{_rightUser}**";
-            await SendImage(user);
+            await SendImage(_rightUserObject);
 
             await StartBattle();
 
         }
 
-        private async Task SendImage(SocketGuildUser user)
+        private async Task SendImage(SocketGuildUser rightUser)
         {
 
             var leftUserAvatar = Context.User.GetAvatarUrl();
-            var rightUserAvatar = user.GetAvatarUrl();
+            var rightUserAvatar = rightUser.GetAvatarUrl();
+
+            //ImageSharp
+            using (var baseImage = ImageSharp.Image.Load("Configuration/deathbattle.png"))
+            using (var leftImage = ImageSharp.Image.Load(await _service.GetStream(leftUserAvatar)).Resize(246, 262))
+            using (var rightImage = ImageSharp.Image.Load(await _service.GetStream(rightUserAvatar)).Resize(246, 262))
+            using (var stream = new MemoryStream())
+            {
+                
+                var size = new ImageSharp.Size();
+                var font = new Font(FontCollection.SystemFonts.Find("DejaVu Sans"), 20);
+                var attacker = new Rgba32(0, 128, 0);
+                var defender = new Rgba32(220, 20, 60);
+
+                var options = new TextGraphicsOptions
+                {
+                    Antialias = true,
+                    TextAlignment = TextAlignment.Center,
+                };
+                baseImage.DrawImage(leftImage, 1, size, new Point(15, 132));
+                baseImage.DrawImage(rightImage, 1, size, new Point(359, 132));
+
+                baseImage.DrawText(_leftUser, font, attacker, new Vector2(128, 406), options);
+                baseImage.DrawText(_rightUser, font, defender, new Vector2(480, 406), options);
+
+                baseImage.SaveAsJpeg(stream);
+                stream.Position = 0; //reset position to write to sendfileasync
+
+                await Context.Channel.SendFileAsync(stream, "jpeg");
+
+            }
 
             //System.Drawing (corecompat)
             //stupid discord also uses the struct Image
@@ -114,34 +144,8 @@ namespace YunoBotV2.Commands
             //    stream.Position = 0; //reset position to write to sendfileasync
 
             //    await Context.Channel.SendFileAsync(stream, "jpeg");
-                
+
             //}
-
-            //ImageSharp
-            using (var baseImage = ImageSharp.Image.Load("Configuration/deathbattle.png"))
-            using (var leftImage = ImageSharp.Image.Load(await _service.GetStream(leftUserAvatar)))
-            using (var rightImage = ImageSharp.Image.Load(await _service.GetStream(rightUserAvatar)))
-            using (var stream = new MemoryStream())
-            {
-                
-                var size = new ImageSharp.Size(246, 262);
-                var font = new Font(FontCollection.SystemFonts.Find("DejaVu Sans"), 20);
-                var black = new Rgba32(0, 0, 0);
-                var options = new TextGraphicsOptions(true);
-                var measure = new TextMeasurer();                
-
-                baseImage.DrawImage(leftImage, 100, size, new Point(15, 132));
-                baseImage.DrawImage(rightImage, 100, size, new Point(359, 132));
-
-                baseImage.DrawText(CenterString(_leftUser, 32), font, black, new Vector2(0, 406), options);
-                baseImage.DrawText(CenterString(_rightUser, 32), font, black, new Vector2(367, 406), options);
-
-                baseImage.SaveAsJpeg(stream);
-                stream.Position = 0; //reset position to write to sendfileasync
-
-                await Context.Channel.SendFileAsync(stream, "jpeg");
-
-            }
 
         }
 
