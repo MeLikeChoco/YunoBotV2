@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,24 +9,35 @@ namespace YunoBotV2.Deserializers
 {
     public class Rgb
     {
-        public string red { get; set; }
-        public string green { get; set; }
-        public string blue { get; set; }
+        [JsonProperty("red")]
+        public string Red { get; set; }
+        [JsonProperty("green")]
+        public string Green { get; set; }
+        [JsonProperty("blue")]
+        public string Blue { get; set; }
     }
 
     public class Hsv
     {
-        public string hue { get; set; }
-        public string saturation { get; set; }
+        [JsonProperty("hue")]
+        public string Hue { get; set; }
+        [JsonProperty("saturation")]
+        public string Saturation { get; set; }
     }
 
     public class ColorLouver
     {
-        public string title { get; set; }
-        public string hex { get; set; }
-        public Rgb rgb { get; set; }
-        public Hsv hsv { get; set; }
-        public string imageUrl { get; set; }
-        public string url { get; set; }
+        [JsonProperty("title")]
+        public string Title { get; set; }
+        [JsonProperty("hex")]
+        public string Hex { get; set; }
+        [JsonProperty("rgb")]
+        public Rgb RGB { get; set; }
+        [JsonProperty("hsv")]
+        public Hsv HSV { get; set; }
+        [JsonProperty("imageUrl")]
+        public string ImageUrl { get; set; }
+        [JsonProperty("url")]
+        public string Url { get; set; }
     }
 }

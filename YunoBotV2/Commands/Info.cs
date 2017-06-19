@@ -93,7 +93,7 @@ namespace YunoBotV2.Commands
 
             StringBuilder organizedResults;
 
-            if (Cache.Prefixes.TryGetValue(Context.Guild.Id, out string prefix)) { }
+            if (Database.GetPrefix(Context.Guild.Id, out string prefix)) { }
             else
                 prefix = "e$";
 

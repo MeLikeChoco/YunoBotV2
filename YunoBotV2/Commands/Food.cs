@@ -44,7 +44,7 @@ namespace YunoBotV2.Commands
 
                 var hits = await _service.GetDeserializedContent<JArray>(url, "hits");
 
-                if(hits.Count == 0)
+                if (hits.Count == 0)
                 {
                     await NoResultsReturnedErrorMessage();
                     return;
@@ -55,9 +55,8 @@ namespace YunoBotV2.Commands
                 var authorBuilder = new EmbedAuthorBuilder()
                 {
 
-                    Name = "Edamam Recipes",
-                    IconUrl = "http://cdn.appstorm.net/ipad.appstorm.net/authors/jessotoole/Edamam-icon.jpg",
-                    Url = "https://www.edamam.com/"
+                    Name = recipe.Label,
+                    Url = recipe.Url
 
                 };
 
@@ -69,30 +68,25 @@ namespace YunoBotV2.Commands
 
                 };
 
-                var dietLabels = string.Join(", ", recipe.dietLabels);
-                var healthLabels = string.Join(", ", recipe.healthLabels);
+                var dietLabels = string.Join(", ", recipe.DietLabels);
+                var healthLabels = string.Join(", ", recipe.HealthLabels);
 
                 var eBuilder = new EmbedBuilder()
                 {
 
                     Author = authorBuilder,
                     Color = new Color(122, 214, 25),
-                    Title = recipe.label,
-                    Url = recipe.url,
-                    ThumbnailUrl = recipe.image,
-                    Description = $"**Servings:** {(int)double.Parse(recipe.yield)}\n**Calories:** {(int)double.Parse(recipe.calories)}\n**Diet Labels:** {dietLabels}\n**Health Labels:** {healthLabels}",
+                    ThumbnailUrl = recipe.Image,
+                    Description = $"**Servings:** {(int)double.Parse(recipe.Yield)}\n**Calories:** {(int)double.Parse(recipe.Calories)}\n**Diet Labels:** {dietLabels}\n**Health Labels:** {healthLabels}",
                     Footer = footerBuilder
 
                 };
-
-                string ingredients = string.Empty;
-                recipe.ingredientLines.ForEach(i => ingredients += $"{i}\n");
 
                 eBuilder.AddField(x =>
                 {
 
                     x.Name = "Ingredients";
-                    x.Value = ingredients;
+                    x.Value = recipe.Ingredients.Aggregate((str, next) => $"{str}\n{next}");
                     x.IsInline = false;
 
                 });

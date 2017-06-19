@@ -85,6 +85,9 @@ namespace YunoBotV2.Core
 
             await Cache.InitializeCache(web);
 
+            _client.JoinedGuild += Database.CreateSettings;
+            _client.Connected += async () => { await Database.InitializeSettings(_client); };
+
         }
 
         internal void Log()
@@ -138,7 +141,7 @@ namespace YunoBotV2.Core
 
             var argPos = 0;
 
-            if (Cache.Prefixes.TryGetValue(guildId, out string prefix)) { }
+            if (Database.GetPrefix(guildId, out var prefix)) { }
             else prefix = "e$";
 
             if (!(message.HasStringPrefix(prefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos)))

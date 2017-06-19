@@ -15,8 +15,8 @@ namespace YunoBotV2.Services.WebServices
     public class Web
     {
 
-        public HttpClient _http;
-        private HtmlParser _parser;
+        public static HttpClient _http;
+        private static HtmlParser _parser;
 
         public Web()
         {
@@ -24,7 +24,7 @@ namespace YunoBotV2.Services.WebServices
             _http = new HttpClient();
             _parser = new HtmlParser();
 
-        }        
+        }
 
         /// <summary>
         /// Will return null if service is down.
@@ -207,6 +207,66 @@ namespace YunoBotV2.Services.WebServices
                 counter++;
 
             } while ((!response.IsSuccessStatusCode) && (counter < 3));
+
+            if (counter == 3)
+            {
+                result = null;
+                return Task.FromResult(false);
+            }
+            else
+            {
+                result = response.Content.ReadAsStringAsync().Result;
+                return Task.FromResult(true);
+            }
+
+        }
+
+        /// <summary>
+        /// Returns true if post is successful and false if not
+        /// </summary>
+        /// <param name="url">The url to use</param>
+        /// <param name="content">The content to post</param>
+        /// <returns>bool</returns>
+        public async Task<bool> PostEncodedContent(string url, IEnumerable<KeyValuePair<string,string>> content)
+        {
+
+            int counter = 0;
+            var payload = new FormUrlEncodedContent(content);
+            HttpResponseMessage response;
+
+            _http.DefaultRequestHeaders.Add("Content-Type", "application/x-www-form-urlencoded");
+
+            do
+            {
+
+                response = await _http.PostAsync(url, payload);
+                counter++;
+
+            } while ((!response.IsSuccessStatusCode) && (counter < 3));
+
+            _http.DefaultRequestHeaders.Clear();
+
+            if (counter == 3) return false;
+            else return true;
+
+        }
+
+        public Task<bool> PostEncodedContent(string url, IEnumerable<KeyValuePair<string,string>> content, out string result)
+        {
+
+            int counter = 0;
+            var payload = new FormUrlEncodedContent(content);
+            HttpResponseMessage response;
+
+            do
+            {
+
+                response = _http.PostAsync(url, payload).Result;
+                counter++;
+
+            } while ((!response.IsSuccessStatusCode) && (counter < 3));
+
+            _http.DefaultRequestHeaders.Clear();
 
             if (counter == 3)
             {

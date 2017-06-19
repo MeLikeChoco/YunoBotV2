@@ -101,8 +101,9 @@ namespace YunoBotV2.Commands
                 var options = new TextGraphicsOptions
                 {
                     Antialias = true,
-                    TextAlignment = TextAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center
                 };
+
                 baseImage.DrawImage(leftImage, 1, size, new Point(15, 132));
                 baseImage.DrawImage(rightImage, 1, size, new Point(359, 132));
 

@@ -129,7 +129,7 @@ namespace YunoBotV2.Commands
                     Color = new Color(230, 185, 30),
                     Title = result.Title,
                     Description = countryYearRatedRuntime,
-                    Url = $"http://www.imdb.com/title/{result.imdbID}",
+                    Url = $"http://www.imdb.com/title/{result.ImdbId}",
                     ThumbnailUrl = result.Poster,
                     Footer = footerBuilder
 
@@ -180,7 +180,7 @@ namespace YunoBotV2.Commands
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Ratings";
-                    x.Value = $"IMDb Rating: {result.imdbRating}/10\nMetascore: {result.Metascore}/100";
+                    x.Value = $"IMDb Rating: {result.ImdbRating}/10\nMetascore: {result.Metascore}/100";
                 });
 
                 await ReplyAsync("", embed: eBuilder);

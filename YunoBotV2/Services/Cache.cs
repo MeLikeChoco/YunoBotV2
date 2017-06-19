@@ -5,18 +5,18 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using YunoBotV2.Configuration;
 using YunoBotV2.Deserializers;
 using YunoBotV2.Services.WebServices;
 
 namespace YunoBotV2.Services
 {
     public static class Cache
-    {
-
-        public static ConcurrentDictionary<ulong, string> Prefixes;
+    {       
 
         public static ConcurrentDictionary<ulong, Stopwatch> Stopwatches = new ConcurrentDictionary<ulong, Stopwatch>();
                 
@@ -31,10 +31,36 @@ namespace YunoBotV2.Services
 
         public static Dictionary<string, EmbedBuilder> Pokemon = new Dictionary<string, EmbedBuilder>();
 
-        public static async Task InitializeCache(Web service)
+        public static string YelpToken;
+
+        private static Web _service;
+
+        public static async Task InitializeCache(Web serviceParams)
         {
 
-            Prefixes = new ConcurrentDictionary<ulong, string>(await Database.GetPrefixes());
+            _service = serviceParams;
+
+            await RequestYelpToken();
+
+        }
+
+        /// <summary>
+        /// Request a new yelp api token
+        /// </summary>
+        public static async Task RequestYelpToken()
+        {
+
+            if (await _service.PostEncodedContent("https://api.yelp.com/oauth2/token", new KeyValuePair<string, string>[]
+            {
+                new KeyValuePair<string, string>("grant_type", "client_credentials"),
+                new KeyValuePair<string, string>("client_id", Config.YelpId),
+                new KeyValuePair<string, string>("client_secret", Config.YelpSecret),
+            }, out var result))
+            {
+
+                YelpToken = result;
+
+            }
 
         }
 

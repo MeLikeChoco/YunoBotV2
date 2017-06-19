@@ -51,8 +51,8 @@ namespace YunoBotV2.Commands
                 var result = temp["results"].First.ToObject<RandomPerson>();
                 seed = temp["info"]["seed"].ToString();
 
-                url = $"https://restcountries.eu/rest/v2/alpha/{result.nationality}";
-                result.nationality = await _webService.GetDeserializedContent<string>(url, "name");
+                url = $"https://restcountries.eu/rest/v2/alpha/{result.Nationality}";
+                result.Nationality = await _webService.GetDeserializedContent<string>(url, "name");
 
                 var authorBuilder = new EmbedAuthorBuilder().WithIconUrl("https://cdn4.iconfinder.com/data/icons/online-and-internet-4/64/user_everyday_user_experience_random-512.png")
                     .WithName("RandomUser").WithUrl("https://randomuser.me");
@@ -64,16 +64,16 @@ namespace YunoBotV2.Commands
                 {
                     Author = authorBuilder,
                     Color = new Color(131, 186, 67),
-                    ThumbnailUrl = result.picture.thumbnail,
-                    Title = CapitalizeFirstLetterOfEachWord($"{result.name.title} {result.name.first} {result.name.last}"),
-                    Description = $"**Gender:** {result.gender}\n**DOB:** {result.dob}\n**Phone Number:** {result.phone}\n**Cellphone Number:** {result.cellphone}\n**Email:** {result.email}",
+                    ThumbnailUrl = result.Picture.Thumnail,
+                    Title = CapitalizeFirstLetterOfEachWord($"{result.Name.Title} {result.Name.First} {result.Name.Last}"),
+                    Description = $"**Gender:** {result.Gender}\n**DOB:** {result.DOB}\n**Phone Number:** {result.Phone}\n**Cellphone Number:** {result.Cellphone}\n**Email:** {result.Email}",
                     Footer = footerBuilder,
                 };
 
-                eBuilder.AddInlineField("Location", $"Street: {CapitalizeFirstLetterOfEachWord(result.location.street)}\nCity: {CapitalizeFirstLetterOfEachWord(result.location.city)}" +
-                    $"\nState: {CapitalizeFirstLetterOfEachWord(result.location.state)}\nPostal Code: {result.location.postcode}");
-                eBuilder.AddInlineField("Login", $"Username: {result.login.username}\nPassword: {result.login.password}");
-                eBuilder.AddInlineField("Nationality", result.nationality);
+                eBuilder.AddInlineField("Location", $"Street: {CapitalizeFirstLetterOfEachWord(result.Location.Street)}\nCity: {CapitalizeFirstLetterOfEachWord(result.Location.City)}" +
+                    $"\nState: {CapitalizeFirstLetterOfEachWord(result.Location.State)}\nPostal Code: {result.Location.Postcode}");
+                eBuilder.AddInlineField("Login", $"Username: {result.Login.Username}\nPassword: {result.Login.Password}");
+                eBuilder.AddInlineField("Nationality", result.Nationality);
                 eBuilder.AddInlineField("Seed", seed);
 
                 await ReplyAsync("", embed: eBuilder);

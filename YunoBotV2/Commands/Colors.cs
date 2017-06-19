@@ -65,10 +65,10 @@ namespace YunoBotV2.Commands
                 {
 
                     Author = authorBuilder,
-                    Color = new Color(byte.Parse(result.rgb.red), byte.Parse(result.rgb.green), byte.Parse(result.rgb.blue)),
-                    Title = result.title,
-                    ThumbnailUrl = result.imageUrl,
-                    Url = result.url,
+                    Color = new Color(byte.Parse(result.RGB.Red), byte.Parse(result.RGB.Green), byte.Parse(result.RGB.Blue)),
+                    Title = result.Title,
+                    ThumbnailUrl = result.ImageUrl,
+                    Url = result.Url,
                     Footer = footerBuilder
 
                 };
@@ -76,25 +76,25 @@ namespace YunoBotV2.Commands
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Hex Code";
-                    x.Value = result.hex;
+                    x.Value = result.Hex;
                 });
 
                 eBuilder.AddField(x =>
                 {
                     x.Name = "RGB Value";
-                    x.Value = $"{result.rgb.red}, {result.rgb.green}, {result.rgb.blue}";
+                    x.Value = $"{result.RGB.Red}, {result.RGB.Green}, {result.RGB.Blue}";
                 });
 
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Hue";
-                    x.Value = result.hsv.hue;
+                    x.Value = result.HSV.Hue;
                 });
 
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Saturation";
-                    x.Value = result.hsv.saturation;
+                    x.Value = result.HSV.Saturation;
                 });
 
                 await ReplyAsync("", embed: eBuilder);
@@ -198,10 +198,10 @@ namespace YunoBotV2.Commands
                 {
 
                     Author = authorBuilder,
-                    Color = new Color(byte.Parse(result.rgb.red), byte.Parse(result.rgb.green), byte.Parse(result.rgb.blue)),
-                    Title = result.title,
-                    ThumbnailUrl = result.imageUrl,
-                    Url = result.url,
+                    Color = new Color(byte.Parse(result.RGB.Red), byte.Parse(result.RGB.Green), byte.Parse(result.RGB.Blue)),
+                    Title = result.Title,
+                    ThumbnailUrl = result.ImageUrl,
+                    Url = result.Url,
                     Footer = footerBuilder
 
                 };
@@ -209,25 +209,25 @@ namespace YunoBotV2.Commands
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Hex Code";
-                    x.Value = result.hex;
+                    x.Value = result.Hex;
                 });
 
                 eBuilder.AddField(x =>
                 {
                     x.Name = "RGB Value";
-                    x.Value = $"{result.rgb.red}, {result.rgb.green}, {result.rgb.blue}";
+                    x.Value = $"{result.RGB.Red}, {result.RGB.Green}, {result.RGB.Blue}";
                 });
 
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Hue";
-                    x.Value = result.hsv.hue;
+                    x.Value = result.HSV.Hue;
                 });
 
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Saturation";
-                    x.Value = result.hsv.saturation;
+                    x.Value = result.HSV.Saturation;
                 });
 
                 await ReplyAsync("", embed: eBuilder);

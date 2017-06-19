@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,9 +24,12 @@ namespace YunoBotV2.Deserializers
         public string Awards { get; set; }
         public string Poster { get; set; }
         public string Metascore { get; set; }
-        public string imdbRating { get; set; }
-        public string imdbVotes { get; set; }
-        public string imdbID { get; set; }
+        [JsonProperty("imdbRating")]
+        public string ImdbRating { get; set; }
+        [JsonProperty("imdbVotes")]
+        public string ImdbVotes { get; set; }
+        [JsonProperty("imdbId")]
+        public string ImdbId { get; set; }
         public string Type { get; set; }
         public string Response { get; set; }
     }

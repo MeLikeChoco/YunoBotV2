@@ -9,53 +9,77 @@ namespace YunoBotV2.Deserializers
 {
     public class Name
     {
-        public string title { get; set; }
-        public string first { get; set; }
-        public string last { get; set; }
+        [JsonProperty("title")]
+        public string Title { get; set; }
+        [JsonProperty("first")]
+        public string First { get; set; }
+        [JsonProperty("last")]
+        public string Last { get; set; }
     }
 
     public class Location
     {
-        public string street { get; set; }
-        public string city { get; set; }
-        public string state { get; set; }
-        public string postcode { get; set; }
+        [JsonProperty("street")]
+        public string Street { get; set; }
+        [JsonProperty("city")]
+        public string City { get; set; }
+        [JsonProperty("state")]
+        public string State { get; set; }
+        [JsonProperty("postcode")]
+        public string Postcode { get; set; }
     }
 
     public class Login
     {
-        public string username { get; set; }
-        public string password { get; set; }
+        [JsonProperty("username")]
+        public string Username { get; set; }
+        [JsonProperty("password")]
+        public string Password { get; set; }
     }
 
     public class Id
     {
-        public string name { get; set; }
-        public string value { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        [JsonProperty("value")]
+        public string Value { get; set; }
     }
 
     public class Picture
     {
-        public string large { get; set; }
-        public string medium { get; set; }
-        public string thumbnail { get; set; }
+        [JsonProperty("large")]
+        public string Large { get; set; }
+        [JsonProperty("medium")]
+        public string Medium { get; set; }
+        [JsonProperty("thumbnail")]
+        public string Thumnail { get; set; }
     }
 
     public class RandomPerson
     {
-        public string gender { get; set; }
-        public Name name { get; set; }
-        public Location location { get; set; }
-        public string email { get; set; }
-        public Login login { get; set; }
-        public string dob { get; set; }
-        public string registered { get; set; }
-        public string phone { get; set; }
+        [JsonProperty("gender")]
+        public string Gender { get; set; }
+        [JsonProperty("name")]
+        public Name Name { get; set; }
+        [JsonProperty("location")]
+        public Location Location { get; set; }
+        [JsonProperty("email")]
+        public string Email { get; set; }
+        [JsonProperty("login")]
+        public Login Login { get; set; }
+        [JsonProperty("dob")]
+        public string DOB { get; set; }
+        [JsonProperty("registered")]
+        public string Registered { get; set; }
+        [JsonProperty("phone")]
+        public string Phone { get; set; }
         [JsonProperty("cell")]
-        public string cellphone { get; set; }
-        public Id id { get; set; }
-        public Picture picture { get; set; }
+        public string Cellphone { get; set; }
+        [JsonProperty("id")]
+        public Id Id { get; set; }
+        [JsonProperty("picture")]
+        public Picture Picture { get; set; }
         [JsonProperty("nat")]
-        public string nationality { get; set; }
+        public string Nationality { get; set; }
     }
 }

@@ -58,7 +58,7 @@ namespace YunoBotV2.Commands
 
                 url = $"{baseUrl}&s={beatmapsetId}";
                 List<OsuBeatmapSet> mapset = await _service.GetDeserializedContent<List<OsuBeatmapSet>>(url);
-                mapset = mapset.OrderBy(map => map.difficultyrating).ToList();
+                mapset = mapset.OrderBy(map => map.DifficultyRating).ToList();
 
                 var AuthorBuilder = new EmbedAuthorBuilder()
                 {
@@ -73,7 +73,7 @@ namespace YunoBotV2.Commands
                 {
 
                     IconUrl = @"http://orig09.deviantart.net/ac11/f/2014/305/f/1/osu____spinner_circle_1_by_yunowhoitis-d84ni6l.png",
-                    Text = "Click the circles ♫ | " + mapset.First().approved_date
+                    Text = "Click the circles ♫ | " + mapset.First().ApprovedDate
 
                 };
 
@@ -82,10 +82,10 @@ namespace YunoBotV2.Commands
 
                     Author = AuthorBuilder,
                     Color = new Color(255, 105, 180),
-                    Title = mapset.First().title,
-                    Description = $"Song by: {mapset.First().artist}\nCreated by: {mapset.First().creator}",
-                    Url = $"https://osu.ppy.sh/s/{mapset.First().beatmapset_id}",
-                    ImageUrl = $"https://b.ppy.sh/thumb/{mapset.First().beatmapset_id}l.jpg",
+                    Title = mapset.First().Title,
+                    Description = $"Song by: {mapset.First().Artist}\nCreated by: {mapset.First().Creator}",
+                    Url = $"https://osu.ppy.sh/s/{mapset.First().BeatmapSetId}",
+                    ImageUrl = $"https://b.ppy.sh/thumb/{mapset.First().BeatmapSetId}l.jpg",
                     Footer = FooterBuilder
 
                 };
@@ -93,13 +93,13 @@ namespace YunoBotV2.Commands
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Genre";
-                    x.Value = GetGenre(int.Parse(mapset.First().genre_id));
+                    x.Value = GetGenre(int.Parse(mapset.First().GenreId));
                 });
 
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Language";
-                    x.Value = GetLanguage(int.Parse(mapset.First().language_id));
+                    x.Value = GetLanguage(int.Parse(mapset.First().LanguageId));
                 });
 
                 eBuilder.AddField(x =>
@@ -111,7 +111,7 @@ namespace YunoBotV2.Commands
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Favourited";
-                    x.Value = $"{mapset.First().favourite_count} times";
+                    x.Value = $"{mapset.First().FavouriteCount} times";
                 });
 
                 eBuilder.AddInlineField("Version", GetVersions(mapset));
@@ -121,7 +121,7 @@ namespace YunoBotV2.Commands
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Download";
-                    x.Value = $"https://osu.ppy.sh/d/{mapset.First().beatmapset_id}n";
+                    x.Value = $"https://osu.ppy.sh/d/{mapset.First().BeatmapSetId}n";
                 });
 
             }
@@ -165,7 +165,7 @@ namespace YunoBotV2.Commands
                 {
 
                     IconUrl = @"http://orig09.deviantart.net/ac11/f/2014/305/f/1/osu____spinner_circle_1_by_yunowhoitis-d84ni6l.png",
-                    Text = "Click the circles ♫ | " + osuUser.country
+                    Text = "Click the circles ♫ | " + osuUser.Country
 
                 };
 
@@ -174,12 +174,12 @@ namespace YunoBotV2.Commands
 
                     Author = AuthorBuilder,
                     Color = new Color(255, 105, 180),
-                    Title = osuUser.username,
-                    Description = "Global Rank: " + osuUser.pp_rank +
-                    "\nCountry Rank: " + osuUser.pp_country_rank +
-                    "\nLevel: " + osuUser.level,
-                    ImageUrl = $"https://a.ppy.sh/{osuUser.user_id}",
-                    Url = $"https://osu.ppy.sh/u/{Uri.EscapeUriString(osuUser.username)}",
+                    Title = osuUser.Username,
+                    Description = "Global Rank: " + osuUser.PPRank +
+                    "\nCountry Rank: " + osuUser.PPCountryRank +
+                    "\nLevel: " + osuUser.Level,
+                    ImageUrl = $"https://a.ppy.sh/{osuUser.Id}",
+                    Url = $"https://osu.ppy.sh/u/{Uri.EscapeUriString(osuUser.Username)}",
                     Footer = FooterBuilder
 
                 };
@@ -187,24 +187,24 @@ namespace YunoBotV2.Commands
                 eBuilder.AddField(x =>
                 {
                     x.Name = "PP";
-                    x.Value = osuUser.pp_raw;
+                    x.Value = osuUser.PPRaw;
                 });
 
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Accuracy";
-                    x.Value = string.Format("{0:0.##}", double.Parse(osuUser.accuracy)) + "%";
+                    x.Value = string.Format("{0:0.##}", double.Parse(osuUser.Accuracy)) + "%";
                 });
 
                 eBuilder.AddField(x =>
                 {
                     x.Name = "Total Amount of Plays";
-                    x.Value = osuUser.playcount;
+                    x.Value = osuUser.PlayCount;
                 });
 
-                eBuilder.AddInlineField("Total SS Ranks", osuUser.count_rank_ss);
-                eBuilder.AddInlineField("Total S Ranks", osuUser.count_rank_s);
-                eBuilder.AddInlineField("Total A Ranks", osuUser.count_rank_a);
+                eBuilder.AddInlineField("Total SS Ranks", osuUser.CountSS);
+                eBuilder.AddInlineField("Total S Ranks", osuUser.CountS);
+                eBuilder.AddInlineField("Total A Ranks", osuUser.CountA);
 
                 await ReplyAsync("", embed: eBuilder);
 
@@ -220,7 +220,7 @@ namespace YunoBotV2.Commands
             foreach (OsuBeatmapSet o in mapset)
             {
 
-                modes += ConvertNumberToMode(o.mode) + "\n";
+                modes += ConvertNumberToMode(o.Mode) + "\n";
 
             }
 
@@ -257,7 +257,7 @@ namespace YunoBotV2.Commands
             foreach (OsuBeatmapSet o in mapset)
             {
 
-                difficulties += string.Format("{0:0.##}", o.difficultyrating) + " ★\n";
+                difficulties += string.Format("{0:0.##}", o.DifficultyRating) + " ★\n";
 
             }
 
@@ -273,7 +273,7 @@ namespace YunoBotV2.Commands
             foreach (OsuBeatmapSet o in mapset)
             {
 
-                versions += o.version + "\n";
+                versions += o.Version + "\n";
 
             }
 
@@ -289,7 +289,7 @@ namespace YunoBotV2.Commands
             foreach (OsuBeatmapSet o in mapset)
             {
 
-                totalPlays += int.Parse(o.playcount);
+                totalPlays += int.Parse(o.PlayCount);
 
             }
 

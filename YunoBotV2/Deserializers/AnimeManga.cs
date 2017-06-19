@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,40 +9,73 @@ namespace YunoBotV2.Deserializers
 {
     public class AnimeManga
     {
-        public string id { get; set; }
-        public string title_romaji { get; set; }
-        public string title_english { get; set; }
-        public string title_japanese { get; set; }
-        public string type { get; set; }
-        public string series_type { get; set; }
-        public string start_date { get; set; }
-        public string end_date { get; set; }
-        public string start_date_fuzzy { get; set; }
-        public string end_date_fuzzy { get; set; }
-        public string season { get; set; }
-        public string description { get; set; }
-        public bool adult { get; set; }
-        public string average_score { get; set; }
-        public string popularity { get; set; }
-        public bool favourite { get; set; }
-        public string image_url_sml { get; set; }
-        public string image_url_med { get; set; }
-        public string image_url_lge { get; set; }
-        public string image_url_banner { get; set; }
-        public List<string> genres { get; set; }
-        public List<string> synonyms { get; set; }
-        public string youtube_id { get; set; }
-        public string hashtag { get; set; }
-        public string updated_at { get; set; }
-        public string total_episodes { get; set; }
-        public string duration { get; set; }
-        public string airing_status { get; set; }
-        public string source { get; set; }
-        public string classification { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("title_romaji")]
+        public string TitleRomaji { get; set; }
+        [JsonProperty("title_english")]
+        public string TitleEnglish { get; set; }
+        [JsonProperty("title_japanese")]
+        public string TitleJapanese { get; set; }
+        [JsonProperty("type")]
+        public string Type { get; set; }
+        [JsonProperty("series_type")]
+        public string SeriesType { get; set; }
+        [JsonProperty("start_date")]
+        public string StartDate { get; set; }
+        [JsonProperty("end_date")]
+        public string EndDate { get; set; }
+        [JsonProperty("start_date_fuzzy")]
+        public string StartDateFuzzy { get; set; }
+        [JsonProperty("end_date_fuzzy")]
+        public string EndDateFuzzy { get; set; }
+        [JsonProperty("season")]
+        public string Season { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
+        [JsonProperty("adult")]
+        public bool Adult { get; set; }
+        [JsonProperty("average_score")]
+        public string AverageScore { get; set; }
+        [JsonProperty("popularity")]
+        public string Popularity { get; set; }
+        [JsonProperty("favourite")]
+        public bool Favourite { get; set; }
+        [JsonProperty("image_url_sml")]
+        public string ImageUrlSmall { get; set; }
+        [JsonProperty("image_url_med")]
+        public string ImageUrlMed { get; set; }
+        [JsonProperty("image_url_lge")]
+        public string ImageUrlLge { get; set; }
+        [JsonProperty("image_url_banner")]
+        public string ImageUrlBanner { get; set; }
+        [JsonProperty("genres")]
+        public string[] Genres { get; set; }
+        [JsonProperty("synonyms")]
+        public string[] Synonyms { get; set; }
+        [JsonProperty("youtube_id")]
+        public string YoutubeId { get; set; }
+        [JsonProperty("hashtag")]
+        public string HashTag { get; set; }
+        [JsonProperty("updated_at")]
+        public string UpdatedAt { get; set; }
+        [JsonProperty("total_episodes")]
+        public string TotalEpisodes { get; set; }
+        [JsonProperty("duration")]
+        public string Duration { get; set; }
+        [JsonProperty("airing_status")]
+        public string AiringStatus { get; set; }
+        [JsonProperty("source")]
+        public string Source { get; set; }
+        [JsonProperty("classification")]
+        public string Classification { get; set; }
         //for manga
-        public string total_chapters { get; set; }
-        public string total_volumes { get; set; }
-        public string publishing_status { get; set; }
+        [JsonProperty("total_chapters")]
+        public string TotalChapters { get; set; }
+        [JsonProperty("total_volumes")]
+        public string TotalVolumes { get; set; }
+        [JsonProperty("publishing_status")]
+        public string PublishingStatus { get; set; }
 
     }
 }

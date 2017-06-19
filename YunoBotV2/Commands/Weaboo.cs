@@ -299,10 +299,10 @@ namespace YunoBotV2.Commands
 
                 Author = authorBuilder,
                 Color = new Color(255, 183, 197),
-                Title = $"{character.name_first} {character.name_last}",
-                Description = $"**Japanese Name:** {character.name_japanese ?? "N/A"}\n**Alternate Name:** {character.name_alt ?? "N/A"}",
-                ThumbnailUrl = character.image_url_med,
-                Url = $"https://anilist.co/character/{character.id}",
+                Title = $"{character.NameFirst} {character.NameLast}",
+                Description = $"**Japanese Name:** {character.NameJapanese ?? "N/A"}\n**Alternate Name:** {character.NameAlt ?? "N/A"}",
+                ThumbnailUrl = character.ImageUrlMed,
+                Url = $"https://anilist.co/character/{character.Id}",
                 Footer = footerBuilder,
 
             };
@@ -310,7 +310,7 @@ namespace YunoBotV2.Commands
             eBuilder.AddField(x =>
             {
                 x.Name = "Information";
-                x.Value = IsOverLimit("character", character.id, character.info, out string info) ? info : info;
+                x.Value = IsOverLimit("character", character.Id, character.Info, out string info) ? info : info;
             });
 
             await ReplyAsync("", embed: eBuilder);
@@ -323,22 +323,22 @@ namespace YunoBotV2.Commands
             var result = token.ToObject<AnimeManga>();
             string description;
 
-            if (result.total_episodes == null)
+            if (result.TotalEpisodes == null)
             {
 
                 //for manga
-                description = $"**English Title:** {result.title_english}\n**Japanese Title:** {result.title_japanese}\n**Type:** {CapitalizeFirstLetter(result.type)}\n" +
-                    $"**Volumes:** {result.total_volumes}\n**Chapters:** {result.total_chapters}\n**Maturity Rating:** {(result.adult ? "Mature" : "Safe")}\n" +
-                    $"**Start Date:** {FormatDateTime(result.start_date_fuzzy)}\n**End Date:** {FormatDateTime(result.end_date_fuzzy)}\n**Status:** {CapitalizeFirstLetter(result.publishing_status)}";
+                description = $"**English Title:** {result.TitleEnglish}\n**Japanese Title:** {result.TitleJapanese}\n**Type:** {CapitalizeFirstLetter(result.Type)}\n" +
+                    $"**Volumes:** {result.TotalVolumes}\n**Chapters:** {result.TotalChapters}\n**Maturity Rating:** {(result.Adult ? "Mature" : "Safe")}\n" +
+                    $"**Start Date:** {FormatDateTime(result.StartDateFuzzy)}\n**End Date:** {FormatDateTime(result.EndDateFuzzy)}\n**Status:** {CapitalizeFirstLetter(result.PublishingStatus)}";
 
             }
             else
             {
 
                 //for anime
-                description = $"**English Title:** {result.title_english}\n**Japanese Title:** {result.title_japanese}\n**Type:** {char.ToUpper(result.type.First()) + result.type.Substring(1)}\n" +
-                    $"**Episodes:** {result.total_episodes}\n**Episode Duration:** {result.duration}\n**Maturity Rating:** {(result.adult ? "Mature" : "Safe")}\n" +
-                    $"**Start Date:** {FormatDateTime(result.start_date_fuzzy)}\n**End Date:** {FormatDateTime(result.end_date_fuzzy)}\n**Status:** {CapitalizeFirstLetter(result.airing_status)}";
+                description = $"**English Title:** {result.TitleEnglish}\n**Japanese Title:** {result.TitleJapanese}\n**Type:** {char.ToUpper(result.Type.First()) + result.Type.Substring(1)}\n" +
+                    $"**Episodes:** {result.TotalEpisodes}\n**Episode Duration:** {result.Duration}\n**Maturity Rating:** {(result.Adult ? "Mature" : "Safe")}\n" +
+                    $"**Start Date:** {FormatDateTime(result.StartDateFuzzy)}\n**End Date:** {FormatDateTime(result.EndDateFuzzy)}\n**Status:** {CapitalizeFirstLetter(result.AiringStatus)}";
 
             }
 
@@ -364,10 +364,10 @@ namespace YunoBotV2.Commands
 
                 Author = authorBuilder,
                 Color = new Color(255, 183, 197),
-                Url = $"https://anilist.co/anime/{result.id}",
-                ThumbnailUrl = result.image_url_med,
-                ImageUrl = result.image_url_banner,
-                Title = result.title_romaji,
+                Url = $"https://anilist.co/anime/{result.Id}",
+                ThumbnailUrl = result.ImageUrlMed,
+                ImageUrl = result.ImageUrlBanner,
+                Title = result.TitleRomaji,
                 Description = description,
                 Footer = footerBuilder,
 
@@ -376,10 +376,10 @@ namespace YunoBotV2.Commands
             eBuilder.AddField(x =>
             {
                 x.Name = "Genres";
-                x.Value = string.Join(" / ", result.genres);
+                x.Value = string.Join(" / ", result.Genres);
             });
 
-            if (IsOverLimit(result.series_type, result.id, result.description, out string shortened))
+            if (IsOverLimit(result.SeriesType, result.Id, result.Description, out string shortened))
             {
                 eBuilder.AddField(x =>
                 {

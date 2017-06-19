@@ -22,6 +22,10 @@ namespace YunoBotV2.Configuration
         public static string YandexTranslate { get; private set; }
         public static string RandomAPI { get; private set; }
         public static string Thesaurus { get; private set; }
+        public static string GooglePlaces { get; private set; }
+
+        public static string YelpId { get; private set; }
+        public static string YelpSecret { get; private set; }
 
         public static string EdamamId { get; private set; }
         public static string EdamamKey { get; private set; }
@@ -38,6 +42,7 @@ namespace YunoBotV2.Configuration
 
             var dom = XDocument.Load("Configuration/Config.xml");
             XElement tokens = dom.Root.Descendants("Tokens").First();
+            XElement yelp = tokens.Descendants("Yelp").First();
             XElement edamam = tokens.Descendants("Edamam").First();
             XElement anilist = tokens.Descendants("Anilist").First();
 
@@ -50,6 +55,10 @@ namespace YunoBotV2.Configuration
             YandexTranslate = tokens.Element("Yandex").Value;
             RandomAPI = tokens.Element("Random").Value;
             Thesaurus = tokens.Element("Thesaurus").Value;
+            GooglePlaces = tokens.Element("GooglePlaces").Value;
+
+            YelpId = yelp.Element("clientid").Value;
+            YelpSecret = yelp.Element("clientsecret").Value;
 
             AnilistId = anilist.Element("clientid").Value;
             AnilistSecret = anilist.Element("clientsecret").Value;

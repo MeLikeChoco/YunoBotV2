@@ -9,18 +9,31 @@ namespace YunoBotV2.Deserializers
 {
     public class Recipe
     {
-        public string uri { get; set; }
-        public string label { get; set; }
-        public string image { get; set; }
-        public string source { get; set; }
-        public string url { get; set; }
-        public string shareAs { get; set; }
-        public string yield { get; set; } //aka servings
-        public List<string> dietLabels { get; set; }
-        public List<string> healthLabels { get; set; }
-        public List<string> cautions { get; set; }
-        public List<string> ingredientLines { get; set; }
-        public string calories { get; set; }
-        public string totalWeight { get; set; }
+        [JsonProperty("uri")]
+        public string Uri { get; set; }
+        [JsonProperty("label")]
+        public string Label { get; set; }
+        [JsonProperty("image")]
+        public string Image { get; set; }
+        [JsonProperty("source")]
+        public string Source { get; set; }
+        [JsonProperty("url")]
+        public string Url { get; set; }
+        [JsonProperty("shareAs")]
+        public string ShareAs { get; set; }
+        [JsonProperty("yield")]
+        public string Yield { get; set; } //aka servings
+        [JsonProperty("dietLabels")]
+        public string[] DietLabels { get; set; }
+        [JsonProperty("healthLabels")]
+        public string[] HealthLabels { get; set; }
+        [JsonProperty("cautions")]
+        public string[] Cautions { get; set; }
+        [JsonProperty("ingredientLines")]
+        public string[] Ingredients { get; set; }
+        [JsonProperty("calories")]
+        public string Calories { get; set; }
+        [JsonProperty("totalWeight")]
+        public string TotalWeight { get; set; }
     }
 }
