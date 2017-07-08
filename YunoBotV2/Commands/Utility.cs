@@ -10,12 +10,12 @@ using YunoBotV2.Services;
 
 namespace YunoBotV2.Commands
 {
+    [RequireContext(ContextType.Guild)]
     public class Utility : CustomModuleBase
     {
 
         [Command("role")]
         [Summary("Selfrole with the entered role")]
-        [RequireContext(ContextType.Guild)]
         public async Task RoleCommand([Remainder]string search)
         {
 
@@ -38,10 +38,9 @@ namespace YunoBotV2.Commands
 
         [Command("unrole")]
         [Summary("Unrole with the entered role")]
-        [RequireContext(ContextType.Guild)]
         public async Task UnroleCommand([Remainder]string search)
         {
-            
+
             var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == search);
             var user = Context.User as SocketGuildUser;
 
@@ -63,58 +62,216 @@ namespace YunoBotV2.Commands
 
         [Command("selfroles")]
         [Summary("List all the selfroles")]
-        [RequireContext(ContextType.Guild)]
         public async Task SelfRolesCommand()
         {
 
-            var roles = Database.GetRoles(Context.Guild).Select(id => Context.Guild.GetRole(id)).Select(role => role.Name);
-            var display = $"```\n{string.Join("\n", roles)}```";
+            var roles = Database.GetRoles(Context.Guild)?
+                .Select(id => Context.Guild.GetRole(id))
+                .Select(role => role.Name);
 
-            await ReplyAsync(display);
-
-        }
-
-        [Command("addrole")]
-        [Summary("Add a self role!")]
-        [RequireContext(ContextType.Guild)]
-        [RequireUserPermission(GuildPermission.Administrator)]
-        public async Task AddRoleCommand([Remainder]string search)
-        {
-
-            var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == search);
-
-            if (role == null)
-                await ReplyAsync($"There is no role with the name of **{role.Name}**!");
-            else if (Database.IsSelfRole(role))
-                await ReplyAsync($"**{role.Name}** is already self role-able!");
-            else
+            if (roles != null)
             {
 
-                await Database.AddSelfRole(role);
-                await ReplyAsync($"**{role.Name}** is now self role-able!");
+                var display = $"```\n{string.Join("\n", roles)}```";
+
+                await ReplyAsync(display);
 
             }
-            
+            else
+                await ReplyAsync("There are no selfroles set up!");
 
         }
 
-        [Command("delrole")]
-        [Summary("Add a self role!")]
-        [RequireContext(ContextType.Guild)]
-        [RequireUserPermission(GuildPermission.Administrator)]
-        public async Task DelRoleCommand([Remainder]string search)
+        [Command("autoroles")]
+        [Summary("List all the autoroles")]
+        public async Task AutoRolesCommand()
         {
 
-            var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == search);
-            if (role == null)
-                await ReplyAsync($"There is no role with the name of **{role.Name}**!");
-            else if (!Database.IsSelfRole(role))
-                await ReplyAsync($"**{role.Name}** is not self role-able!");
-            else
+            var roles = Database.GetAutoRoles(Context.Guild)?
+                .Select(id => Context.Guild.GetRole(id))
+                .Select(role => role.Name);
+
+            if (roles != null)
             {
 
-                await Database.RemoveSelfRole(role);
-                await ReplyAsync($"**{role.Name}** is no longer self role-able!");
+                var display = $"```\n{string.Join("\n", roles)}```";
+
+                await ReplyAsync(display);
+
+            }
+            else
+                await ReplyAsync("There are no autoroles set up!");
+
+        }
+
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public class UtilityAdmin : CustomModuleBase
+        {
+
+            [Command("addselfrole")]
+            [Summary("Add a self role!")]
+            public async Task AddRoleCommand([Remainder]string search)
+            {
+
+                var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == search);
+
+                if (role == null)
+                    await ReplyAsync($"There is no role with the name of **{role.Name}**!");
+                else if (Database.IsSelfRole(role))
+                    await ReplyAsync($"**{role.Name}** is already self role-able!");
+                else
+                {
+
+                    await Database.AddSelfRole(role);
+                    await ReplyAsync($"**{role.Name}** is now self role-able!");
+
+                }
+
+
+            }
+
+            [Command("delselfrole")]
+            [Summary("Add a self role!")]
+            [RequireUserPermission(GuildPermission.Administrator)]
+            public async Task DelRoleCommand([Remainder]string search)
+            {
+
+                var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == search);
+
+                if (role == null)
+                    await ReplyAsync($"There is no role with the name of **{role.Name}**!");
+                else if (!Database.IsSelfRole(role))
+                    await ReplyAsync($"**{role.Name}** is not self role-able!");
+                else
+                {
+
+                    await Database.RemoveSelfRole(role);
+                    await ReplyAsync($"**{role.Name}** is no longer self role-able!");
+
+                }
+
+            }
+
+            [Command("autorole")]
+            [Summary("Add an autorole")]
+            [RequireUserPermission(GuildPermission.Administrator)]
+            public async Task AutoRoleCommand([Remainder]string search)
+            {
+
+                var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == search);
+
+                if (role == null)
+                    await ReplyAsync($"There is no role with the name of **{role.Name}**!");
+                else
+                {
+
+                    await Database.AddAutoRole(role);
+                    await ReplyAsync($"Users will now be given **{role.Name}** automatically! Use `roleall <role name>` if you want to give all users the role!");
+
+                }
+
+            }
+
+            [Command("unautorole")]
+            [Summary("Disable an autorole")]
+            [RequireUserPermission(GuildPermission.Administrator)]
+            public async Task UnAutoRoleCommand([Remainder]string search)
+            {
+
+                var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == search);
+
+                if (role == null)
+                    await ReplyAsync($"There is no role with the name of **{role.Name}**!");
+                else
+                {
+
+                    await Database.RemoveAutoRole(role);
+                    await ReplyAsync($"Users will not be given **{role.Name}** automatically!");
+
+                }
+
+            }
+
+            [Command("roleall")]
+            [Summary("Give all users in the guild a role")]
+            public async Task RoleAllCommand([Remainder]string search)
+            {
+
+                var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == search);
+
+                if (role == null)
+                    await ReplyAsync($"There is no role with the name of **{role.Name}**!");
+                else
+                {
+
+                    await ReplyAsync($"Giving all users the role **{role.Name}**, please wait!");
+
+                    await Context.Guild.DownloadUsersAsync();
+
+                    foreach (var user in Context.Guild.Users)
+                    {
+
+                        await Task.Delay(1500);
+                        await user.AddRoleAsync(role);
+
+                    }
+
+                    await ReplyAsync($"All users have been given the role **{role.Name}**!");
+
+                }
+
+            }
+
+            //the reason why only this command has a role as an accepted parameter is because
+            //the role may not be assigned to anyone, therefore, not mention them
+            //but if stupidity trumphs the intended usage, well, nothing i can do
+            [Command("roleall")]
+            [Summary("Give all users in the guild a role")]
+            public async Task RoleAllCommand(SocketRole role)
+            {
+
+                await ReplyAsync($"Giving all users the role **{role.Name}**, please wait!");
+
+                await Context.Guild.DownloadUsersAsync();
+
+                foreach (var user in Context.Guild.Users)
+                {
+
+                    await Task.Delay(1500);
+                    await user.AddRoleAsync(role);
+
+                }
+
+                await ReplyAsync($"All users have been given the role **{role.Name}**!");
+
+            }
+
+            [Command("unroleall")]
+            [Summary("Give all users in the guild a role")]
+            public async Task UnroleAllCommand([Remainder]string search)
+            {
+
+                var role = Context.Guild.Roles.FirstOrDefault(r => r.Name == search);
+
+                if (role == null)
+                    await ReplyAsync($"There is no role with the name of **{role.Name}**!");
+                else
+                {
+                    await ReplyAsync($"Removing the role **{role.Name}** from all users, please wait!");
+
+                    await Context.Guild.DownloadUsersAsync();
+
+                    foreach (var user in Context.Guild.Users)
+                    {
+
+                        await Task.Delay(1500);
+                        await user.RemoveRoleAsync(role);
+
+                    }
+
+                    await ReplyAsync($"All users have been removed of the role **{role.Name}**!");
+
+                }
 
             }
 

@@ -3,12 +3,8 @@ using Discord.Commands;
 using Discord;
 using WS4NetCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
 using System.Reflection;
 using YunoBotV2.Configuration;
 using YunoBotV2.Services.WebServices;
@@ -23,16 +19,16 @@ namespace YunoBotV2.Core
         public static void Main(string[] args)
             => new Program().Run(args).GetAwaiter().GetResult();
 
-        internal DiscordSocketClient _client;
-        internal CommandService _commands;
-        internal IServiceProvider _serviceProvider;
+        private DiscordSocketClient _client;
+        private CommandService _commands;
+        private IServiceProvider _serviceProvider;
 
-        internal int _latencyLimiter = 20;
-        internal bool IsTest = false;
+        private int _latencyLimiter = 20;
+        private bool IsTest = false;
 
-        internal string[] Args;
+        private string[] Args;
 
-        internal async Task Run(string[] args)
+        public async Task Run(string[] args)
         {
 
             Args = args;
@@ -71,7 +67,7 @@ namespace YunoBotV2.Core
 
         }
 
-        internal async Task StartServices()
+        public async Task StartServices()
         {
 
             var web = new Web();
@@ -87,10 +83,11 @@ namespace YunoBotV2.Core
 
             _client.JoinedGuild += Database.CreateSettings;
             _client.Connected += async () => { await Database.InitializeSettings(_client); };
+            _client.UserJoined += Database.AssignAutoRole;
 
         }
 
-        internal void Log()
+        public void Log()
         {
 
             _commands.Log += (message)
@@ -103,7 +100,7 @@ namespace YunoBotV2.Core
 
         }
 
-        internal void SetGame()
+        public void SetGame()
         {
 
             _client.Ready += ()
@@ -117,15 +114,16 @@ namespace YunoBotV2.Core
 
         }
 
-        internal async Task RegisterCommands()
+        public async Task RegisterCommands()
         {
 
             _client.MessageReceived += CommandHandler;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
+            var test = _commands.Modules;
 
         }
 
-        internal async Task CommandHandler(SocketMessage possibleCmd)
+        public async Task CommandHandler(SocketMessage possibleCmd)
         {
 
             var message = possibleCmd as SocketUserMessage;
@@ -144,35 +142,36 @@ namespace YunoBotV2.Core
             if (Database.GetPrefix(guildId, out var prefix)) { }
             else prefix = "e$";
 
-            if (!(message.HasStringPrefix(prefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
-                return;
-            if (message.Content.Trim().Equals(prefix))
-                return;
-
-            var context = new SocketCommandContext(_client, message);
-            AltConsole.Print("Verbose", "Command", $"{(message.Channel as SocketGuildChannel).Guild.Name}");
-            AltConsole.Print("Verbose", "Command", $"{message.Content}");
-
-            IResult result = await _commands.ExecuteAsync(context, argPos, _serviceProvider);
-
-            if (!result.IsSuccess)
+            if ((message.HasStringPrefix(prefix, ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos)) 
+                && !message.Content.Trim().Equals(prefix))
             {
 
-                if (result.ErrorReason.ToLower().Contains("unknown command"))
-                    return;
+                var context = new SocketCommandContext(_client, message);
+                AltConsole.Print("Verbose", "Command", $"{(message.Channel as SocketGuildChannel).Guild.Name}");
+                AltConsole.Print("Verbose", "Command", $"{message.Content}");
 
-                await context.Channel.SendMessageAsync("There was an error in the command.");
-                //await context.Channel.SendMessageAsync("https://goo.gl/JieFJM");
+                var result = await _commands.ExecuteAsync(context, argPos, _serviceProvider);
 
-                AltConsole.Print("Error", "Error", result.ErrorReason);
-                //debug purposes
-                //await context.Channel.SendMessageAsync($"**Error:** {result.ErrorReason}");
+                if (!result.IsSuccess)
+                {
+
+                    if (result.ErrorReason.ToLower().Contains("unknown command"))
+                        return;
+
+                    await context.Channel.SendMessageAsync("There was an error in the command.");
+                    //await context.Channel.SendMessageAsync("https://goo.gl/JieFJM");
+
+                    AltConsole.Print("Error", "Error", result.ErrorReason);
+                    //debug purposes
+                    //await context.Channel.SendMessageAsync($"**Error:** {result.ErrorReason}");
+
+                }
 
             }
 
         }
 
-        internal async Task LoginAndConnect()
+        public async Task LoginAndConnect()
         {
 
             string token = IsTest ? Config.Test : Config.Token;
@@ -186,7 +185,7 @@ namespace YunoBotV2.Core
 
         }
 
-        internal void ForceReconnect()
+        public void ForceReconnect()
         {
 
             _client.Disconnected += async (ex) =>
@@ -204,7 +203,7 @@ namespace YunoBotV2.Core
 
         }
 
-        internal void ParseArgs()
+        public void ParseArgs()
         {
 
             if (Args.Contains("--test"))

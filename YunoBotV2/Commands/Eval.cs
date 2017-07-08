@@ -18,7 +18,7 @@ namespace YunoBotV2.Commands
 
         private Stopwatch _timer = new Stopwatch();
 
-        protected override void BeforeExecute()
+        protected override void BeforeExecute(CommandInfo cmdInfo)
         {
             _timer.Start();
         }

@@ -34,7 +34,7 @@ namespace YunoBotV2.Services.WebServices
         public async Task<JObject> GetJObjectContent(string url)
         {
 
-            string response = await CheckConnection(url);
+            string response = await GetString(url);
 
             if (string.IsNullOrEmpty(response))
                 return null;
@@ -51,7 +51,7 @@ namespace YunoBotV2.Services.WebServices
         public async Task<JArray> GetJArrayContent(string url)
         {
 
-            string response = await CheckConnection(url);
+            string response = await GetString(url);
 
             if (string.IsNullOrEmpty(response))
                 return null;
@@ -72,7 +72,7 @@ namespace YunoBotV2.Services.WebServices
         public async Task<JToken> GetFirstJArrayContent(string url)
         {
 
-            string response = await CheckConnection(url);
+            string response = await GetString(url);
 
             if (string.IsNullOrEmpty(response))
                 return null;
@@ -92,7 +92,7 @@ namespace YunoBotV2.Services.WebServices
         /// <returns>string</returns>
         public async Task<string> GetRawContent(string url)
         {
-            return await CheckConnection(url);
+            return await GetString(url);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace YunoBotV2.Services.WebServices
         public async Task<T> GetDeserializedContent<T>(string url)
         {
 
-            string response = await CheckConnection(url);
+            string response = await GetString(url);
 
             if (string.IsNullOrEmpty(response))
                 return default(T);
@@ -121,7 +121,7 @@ namespace YunoBotV2.Services.WebServices
         public async Task<T> GetDeserializedContent<T>(string url, params string[] objectLocations)
         {
 
-            string response = await CheckConnection(url);
+            string response = await GetString(url);
 
             if (string.IsNullOrEmpty(response))
                 return default(T);
@@ -153,7 +153,7 @@ namespace YunoBotV2.Services.WebServices
         public async Task<IHtmlDocument> GetDom(string url)
         {
 
-            string response = await CheckConnection(url);
+            string response = await GetString(url);
 
             if (string.IsNullOrEmpty(response))
                 return null;
@@ -251,6 +251,12 @@ namespace YunoBotV2.Services.WebServices
 
         }
 
+        /// <summary>
+        /// Returns true if post is successful and false if not
+        /// </summary>
+        /// <param name="url">The url to use</param>
+        /// <param name="content">The content to post</param>
+        /// <returns>bool</returns>
         public Task<bool> PostEncodedContent(string url, IEnumerable<KeyValuePair<string,string>> content, out string result)
         {
 
@@ -289,34 +295,47 @@ namespace YunoBotV2.Services.WebServices
         public async Task<Stream> GetStream(string url)
         {
 
-            int counter = 0;
-            HttpResponseMessage response;
-
-            do
-            {
-
-                response = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
-                counter++;
-
-            } while ((!response.IsSuccessStatusCode) && (counter < 3));
-
-            if (counter == 3) return null;
-
-            var tempstream = await response.Content.ReadAsStreamAsync();
+            var content = await CheckConnection(url);
             var stream = new MemoryStream();
 
-            await tempstream.CopyToAsync(stream);
-            stream.Position = 0;
+            using (var networkStream = await content.ReadAsStreamAsync())
+            {
+
+                await networkStream.CopyToAsync(stream);
+                stream.Position = 0;
+
+            }
 
             return stream;
 
         }
 
-        private async Task<string> CheckConnection(string url)
+        /// <summary>
+        /// Returns the httpcontent of your request
+        /// </summary>
+        /// <param name="url">The url to use</param>
+        /// <returns>HttpContent</returns>
+        public async Task<HttpContent> GetHttpContent(string url)
         {
 
-            int counter = 0;
+            return await CheckConnection(url);
+
+        }
+
+        private async Task<string> GetString(string url)
+        {
+
+            var content = await CheckConnection(url);
+
+            return await content.ReadAsStringAsync();
+
+        } 
+
+        private async Task<HttpContent> CheckConnection(string url, int threshold = 3)
+        {
+            
             HttpResponseMessage response;
+            var counter = 0;
 
             do
             {
@@ -324,11 +343,11 @@ namespace YunoBotV2.Services.WebServices
                 response = await _http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
                 counter++;
 
-            } while ((!response.IsSuccessStatusCode) && (counter < 3));
+            } while ((!response.IsSuccessStatusCode) && (counter < threshold));
 
-            if (counter == 3) return null;
+            if (counter == threshold) return null;
 
-            return await response.Content.ReadAsStringAsync();
+            return response.Content;
 
         }
 

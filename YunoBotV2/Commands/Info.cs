@@ -9,6 +9,7 @@ using Discord;
 using System.Collections.Concurrent;
 using YunoBotV2.Commands.Attributes;
 using YunoBotV2.Services;
+using YunoBotV2.Services.Extensions;
 
 namespace YunoBotV2.Commands
 {
@@ -32,8 +33,8 @@ namespace YunoBotV2.Commands
         public async Task ChannelCommand(SocketTextChannel channel)
         {
 
-            IEnumerable<IMessage> messages = await channel.GetMessagesAsync(1000).Flatten();
-            IEnumerable<string> content = messages.Select(message => message.Content);
+            var messages = await channel.GetMessagesAsync(1000).Flatten();
+            var content = messages.Select(message => message.Content);
             var count = new ConcurrentDictionary<string, int>();
 
             Parallel.ForEach(content, str =>
@@ -47,7 +48,7 @@ namespace YunoBotV2.Commands
                 }
             });
 
-            IEnumerable<KeyValuePair<string, int>> top10 = count.Where(kv => kv.Key.Length > 3 && kv.Key != string.Empty).OrderByDescending(kv => kv.Value).Take(10);
+            var top10 = count.Where(kv => kv.Key.Length > 3 && kv.Key != string.Empty).OrderByDescending(kv => kv.Value).Take(10);
 
             var organizedResults = new StringBuilder($"```Here are the top 10 words used in the channel in accord to the last {messages.Count()} messages\n\n");
 
@@ -102,72 +103,96 @@ namespace YunoBotV2.Commands
 
                 case 1:
                     organizedResults = new StringBuilder("```AQWorlds Help Menu\n\n");
-                    organizedResults.AppendLine($"{"aqw search <search terms>".PadRight(30)}| Search the AQWorlds wiki for information!");
-                    organizedResults.AppendLine($"{"aqw user <the user's name>".PadRight(30)}| Dump a user's information into chat!");
+                    organizedResults.AppendLineHelp($"aqw search <search terms>| Search the AQWorlds wiki for information!");
+                    organizedResults.AppendLineHelp($"aqw user <the username>| Dump a user's information into chat!");
                     break;
                 case 2:
                     organizedResults = new StringBuilder("```Nsfw/Sfw Help Menu\n\n");
-                    organizedResults.AppendLine($"{"nsfw <optional: search tags>".PadRight(30)}| Get a nsfw picture from a random booru!");
-                    organizedResults.AppendLine($"{"sfw <optional: search tags>".PadRight(30)}| Get a sfw picture from a random booru!");
+                    organizedResults.AppendLineHelp($"nsfw <optional: search tags>| Get a nsfw picture from a random booru!");
+                    organizedResults.AppendLineHelp($"sfw <optional: search tags>| Get a sfw picture from a random booru!");
                     break;
                 case 3:
                     organizedResults = new StringBuilder("```Colors Help Menu\n\n");
-                    organizedResults.AppendLine($"{"color".PadRight(30)}| Get a random color!");
-                    organizedResults.AppendLine($"{"color search <search terms>".PadRight(30)}| Get a color related to your search!");
-                    organizedResults.AppendLine($"{"color <hexcode>".PadRight(30)}| Get the color associated with the hexcode!");
+                    organizedResults.AppendLineHelp($"color| Get a random color!");
+                    organizedResults.AppendLineHelp($"color search <search terms>| Get a color related to your search!");
+                    organizedResults.AppendLineHelp($"color <hexcode>| Get the color associated with the hexcode!");
                     break;
                 case 4:
                     organizedResults = new StringBuilder("```Food Help Menu\n\n");
-                    organizedResults.AppendLine($"{"recipe <search terms>".PadRight(30)}| Get a random recipe based on your search!");
+                    organizedResults.AppendLineHelp($"recipe <search terms>| Get a random recipe based on your search!");
                     break;
                 case 5:
                     organizedResults = new StringBuilder("```Fun Help Menu\n\n");
-                    organizedResults.AppendLine($"{"randomuser".PadRight(30)}| Generate a fake random person!");
-                    organizedResults.AppendLine($"{"translate <from> <to> <text>".PadRight(30)}| Translate some text!");
-                    organizedResults.AppendLine($"{"yesorno <question>".PadRight(30)}| Get a yes or no answer on the question!");
-                    organizedResults.AppendLine($"{"wallpaper <optional: search terms>".PadRight(30)}| Get a random wallpaper related to your search!");
-                    organizedResults.AppendLine($"{"garfield".PadRight(30)}| Get a random garfield comic!");
-                    organizedResults.AppendLine($"{"zalgo <text>".PadRight(30)}| {_zalgoService.GetZalgo("Totally nice text!")}");
+                    organizedResults.AppendLineHelp($"needsmorejpeg| Applies MOAR JPEG to a previous picture sent in chat!");
+                    organizedResults.AppendLineHelp($"battle <mention/id>| Battle a user!");
+                    organizedResults.AppendLineHelp($"battler| Battle a random user!");
+                    organizedResults.AppendLineHelp($"randomuser| Generate a fake random person!");
+                    organizedResults.AppendLineHelp($"translate <from> <to> <text>| Translate some text!");
+                    organizedResults.AppendLineHelp($"yesorno <question>| Get a yes or no answer on the question!");
+                    organizedResults.AppendLineHelp($"wallpaper <optional: search terms>| Get a random wallpaper related to your search!");
+                    organizedResults.AppendLineHelp($"garfield| Get a random garfield comic!");
+                    organizedResults.AppendLineHelp($"vaporwave| ｔｈｉｓ　ｂｏｔ　ｖａｐｅｓ");
+                    organizedResults.AppendLineHelp($"zalgo <text>| {_zalgoService.GetZalgo("Totally nice text!")}");
                     if(Context.Channel is SocketTextChannel && (Context.User as SocketGuildUser).GuildPermissions.Administrator)
                     {
-                        organizedResults.AppendLine($"{"zalgod <text>".PadRight(30)}| Same as above, but deletes user message!");
+                        organizedResults.AppendLineHelp($"zalgod <text>| Same as above, but deletes user message!");
                     }
-                    organizedResults.AppendLine($"{"playing".PadRight(30)}| Get a list of what games people are playing!");
-                    organizedResults.AppendLine($"{"gif <optional: search terms>".PadRight(30)}| Get a gif related to your search!");
-                    organizedResults.AppendLine($"{"norris <optional: name>".PadRight(30)}| Get a Chuck Norris joke, with your name if you want!");
-                    organizedResults.AppendLine($"{"for the glory of satan".PadRight(30)}| WHY? FOR THE GLORY OF SATAN OF COURSE!");
-                    organizedResults.AppendLine($"{"roll <optional: sides of dice>".PadRight(30)}| Roll a dice with a custom amount of sides or just 6!");
-                    organizedResults.AppendLine($"{"coinflip".PadRight(30)}| Flip a coin!");
-                    organizedResults.AppendLine($"{"ascii <text>".PadRight(30)}| Turn your text into ascii art!");
-                    organizedResults.AppendLine($"{"rr <bullets> <max rounds>".PadRight(30)}| Play some russian roulette!");
-                    organizedResults.AppendLine($"{"fuck you <user mention/id>".PadRight(30)}| Ultimate kek.");
+                    organizedResults.AppendLineHelp($"playing| Get a list of what games people are playing!");
+                    organizedResults.AppendLineHelp($"gif <optional: search terms>| Get a gif related to your search!");
+                    organizedResults.AppendLineHelp($"norris <optional: name>| Get a Chuck Norris joke, with your name if you want!");
+                    organizedResults.AppendLineHelp($"for the glory of satan| WHY? FOR THE GLORY OF SATAN OF COURSE!");
+                    organizedResults.AppendLineHelp($"roll <optional: sides of dice>| Roll a dice with a custom amount of sides or just 6!");
+                    organizedResults.AppendLineHelp($"coinflip| Flip a coin!");
+                    organizedResults.AppendLineHelp($"ascii <text>| Turn your text into ascii art!");
+                    organizedResults.AppendLineHelp($"rr <bullets> <max rounds>| Play some russian roulette!");
+                    organizedResults.AppendLineHelp($"fuck you <user mention/id>| Ultimate kek.");
+                    organizedResults.AppendLineHelp($"imdb <search>| Search imdb's database!");
                     break;
                 case 6:
                     organizedResults = new StringBuilder("```League of Legends Help Menu\n\n");
-                    organizedResults.AppendLine($"{"lol <champion name>"}| Return stats on a champion!");
+                    organizedResults.AppendLineHelp($"lol <champion name>| Return stats on a champion!");
                     break;
                 case 7:
-                    organizedResults = new StringBuilder("```Osu Help Menu\n\n");
-                    organizedResults.AppendLine($"{"osur <mode: 1/2/3>".PadRight(30)}| Get a random osu beatmap!");
-                    organizedResults.AppendLine($"{"osuu <username>".PadRight(30)}| Fetch info on an user!");
+                    organizedResults = new StringBuilder("```Minecraft Help Menu\n\n");
+                    organizedResults.AppendLineHelp($"mc avatar <name>| Get a user's avatar!");
+                    organizedResults.AppendLineHelp($"mc skin <name>| Get a user's skin!");
+                    organizedResults.AppendLineHelp($"mc rawskin <name>| Get a user's skin file!");
+                    organizedResults.AppendLineHelp($"mc render head <name>| Render a user's head!");
+                    organizedResults.AppendLineHelp($"mc render body <name>| Render a user's body!");
                     break;
                 case 8:
-                    organizedResults = new StringBuilder("```Steam Help Menu\n\n");
-                    organizedResults.AppendLine($"{"steam deals".PadRight(30)}| Returns the top 10 steam specials from frontpage!");
-                    organizedResults.AppendLine($"{"steam top".PadRight(30)}| Returns the top 10 steam sellers from frontpage!");
-                    organizedResults.AppendLine($"{"steam new".PadRight(30)}| Retrusn the top 10 popular new releases from frontpage!");
+                    organizedResults = new StringBuilder("```Osu Help Menu\n\n");
+                    organizedResults.AppendLineHelp($"osur <mode: 1/2/3>| Get a random osu beatmap!");
+                    organizedResults.AppendLineHelp($"osuu <username>| Fetch info on an user!");
                     break;
                 case 9:
-                    organizedResults = new StringBuilder("```Weaboo Help Menu\n\n");
-                    organizedResults.AppendLine($"{"anime <search terms>".PadRight(30)}| Search for anime!");
-                    organizedResults.AppendLine($"{"manga <search terms>".PadRight(30)}| Search for manga!");
-                    organizedResults.AppendLine($"{"character <search terms>".PadRight(30)}| Search for anime/manga characters!");
+                    organizedResults = new StringBuilder("```Steam Help Menu\n\n");
+                    organizedResults.AppendLineHelp($"steam deals| Returns the top 10 steam specials from frontpage!");
+                    organizedResults.AppendLineHelp($"steam top| Returns the top 10 steam sellers from frontpage!");
+                    organizedResults.AppendLineHelp($"steam new| Returns the top 10 popular new releases from frontpage!");
                     break;
                 case 10:
+                    organizedResults = new StringBuilder("```Weaboo Help Menu\n\n");
+                    organizedResults.AppendLineHelp($"anime <search terms>| Search for anime!");
+                    organizedResults.AppendLineHelp($"manga <search terms>| Search for manga!");
+                    organizedResults.AppendLineHelp($"character <search terms>| Search for anime/manga characters!");
+                    break;
+                case 11:
                     organizedResults = new StringBuilder("```Wiki Help Menu\n\n");
-                    organizedResults.AppendLine($"{"wiki <search terms>".PadRight(30)}| Search the Wikipedia!");
-                    organizedResults.AppendLine($"{"wikia <community> <search terms>".PadRight(30)}| Search the Wikia!");
-                    organizedResults.AppendLine($"{"gamepedia <community> <search terms>".PadRight(30)}| Search Gamepedia!");
+                    organizedResults.AppendLineHelp($"wiki <search terms>| Search the Wikipedia!");
+                    organizedResults.AppendLineHelp($"wikia <community> <search terms>| Search the Wikia!");
+                    organizedResults.AppendLineHelp($"gamepedia <community> <search terms>| Search Gamepedia!");
+                    break;
+                case 12:
+                    organizedResults = new StringBuilder("```Dump Help Menu\n\n");
+                    organizedResults.AppendLineHelp($"dump roles| Dump a list of roles");
+                    organizedResults.AppendLineHelp($"dump users| Dump a list of users");
+                    organizedResults.AppendLineHelp($"dump bans| Dump a list of bans");
+                    organizedResults.AppendLineHelp($"dump text channels| Dump a list of text channels");
+                    organizedResults.AppendLineHelp($"dump voice channels| Dump a list of voice channels");
+                    organizedResults.AppendLineHelp($"dump guild| Dump information on the guild");
+                    organizedResults.AppendLineHelp($"dump user <optional: user>| Dump information on a user. default: you");
+                    organizedResults.AppendLineHelp($"dump user <role name>| Dump information on role");
                     break;
                 default:
                     organizedResults = new StringBuilder("```The Defacto Help Menu\n\n");
@@ -177,10 +202,12 @@ namespace YunoBotV2.Commands
                     organizedResults.AppendLine("4. Food");
                     organizedResults.AppendLine("5. Fun");
                     organizedResults.AppendLine("6. League of Legends");
-                    organizedResults.AppendLine("7. Osu");
-                    organizedResults.AppendLine("8. Steam");
-                    organizedResults.AppendLine("9. Weaboo");
-                    organizedResults.AppendLine("10. Wiki");
+                    organizedResults.AppendLine("7. Minecraft");
+                    organizedResults.AppendLine("8. Osu");
+                    organizedResults.AppendLine("9. Steam");
+                    organizedResults.AppendLine("10. Weaboo");
+                    organizedResults.AppendLine("11. Wiki");
+                    organizedResults.AppendLine("12. Dump");
                     organizedResults.AppendLine($"\nUse {prefix}help <number> for its menu!");
                     break;
 

@@ -18,6 +18,8 @@ using System.Numerics;
 using ImageSharp.Drawing;
 using YunoBotV2.Services;
 using MoreLinq;
+using SixLabors.Primitives;
+using ImageSharp.Formats;
 
 namespace YunoBotV2.Commands
 {
@@ -34,7 +36,7 @@ namespace YunoBotV2.Commands
         public Battle(Web serviceParams)
             => _service = serviceParams;
 
-        protected override void BeforeExecute()
+        protected override void BeforeExecute(CommandInfo cmdInfo)
         {
             //_leftUser = Context.User.Username;
             _leftUser = (Context.User as IGuildUser).Nickname ?? Context.User.Username;
@@ -76,7 +78,7 @@ namespace YunoBotV2.Commands
             _formattedRight = $"**{_rightUser}**";
             await SendImage(_rightUserObject);
 
-            await StartBattle();
+            //await StartBattle();
 
         }
 
@@ -93,13 +95,14 @@ namespace YunoBotV2.Commands
             using (var stream = new MemoryStream())
             {
                 
-                var size = new ImageSharp.Size();
-                var font = new Font(FontCollection.SystemFonts.Find("DejaVu Sans"), 20);
+                var size = new Size();
+                var font = new Font(SystemFonts.Find("DejaVu Sans"), 20);
                 var attacker = new Rgba32(0, 128, 0);
                 var defender = new Rgba32(220, 20, 60);
 
-                var options = new TextGraphicsOptions
+                var textOptions = new TextGraphicsOptions
                 {
+                    ApplyKerning = true,
                     Antialias = true,
                     HorizontalAlignment = HorizontalAlignment.Center
                 };
@@ -107,13 +110,13 @@ namespace YunoBotV2.Commands
                 baseImage.DrawImage(leftImage, 1, size, new Point(15, 132));
                 baseImage.DrawImage(rightImage, 1, size, new Point(359, 132));
 
-                baseImage.DrawText(_leftUser, font, attacker, new Vector2(128, 406), options);
-                baseImage.DrawText(_rightUser, font, defender, new Vector2(480, 406), options);
+                baseImage.DrawText(_leftUser, font, attacker, new Vector2(128, 406), textOptions);
+                baseImage.DrawText(_rightUser, font, defender, new Vector2(480, 406), textOptions);
 
-                baseImage.SaveAsJpeg(stream);
+                baseImage.SaveAsPng(stream);
                 stream.Position = 0; //reset position to write to sendfileasync
 
-                await Context.Channel.SendFileAsync(stream, "jpeg");
+                await UploadAsync(stream, "png");
 
             }
 

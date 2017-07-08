@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YunoBotV2.Deserializers
+namespace YunoBotV2.Objects.Deserializers
 {
     public class Name
     {

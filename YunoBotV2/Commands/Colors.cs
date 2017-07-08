@@ -7,33 +7,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using YunoBotV2.Deserializers;
+using YunoBotV2.Objects.Deserializers;
 using YunoBotV2.Services.WebServices;
 
 namespace YunoBotV2.Commands
 {
+    //[Name("Colors")]
     [Group("color")]
     public class Colors : CustomModuleBase
     {
 
-        private Web _service;
+        public Web _service { get; set; }
 
-        public Colors(Web serviceParams)
-        {
+        //public Colors(Web serviceParams)
+        //{
 
-            _service = serviceParams;
+        //    _service = serviceParams;
 
-        }
+        //}
 
         [Command]
-        [Summary("Returns a random color")]
-        public async Task ColorCommand()
+        [Summary("Gets color with given hexcode")]
+        public async Task ColorCommand(string hexcode = "")
         {
+
+            string url;
+
+            if (string.IsNullOrEmpty(hexcode))
+                url = "http://www.colourlovers.com/api/colors/random?format=json";
+            else
+                url = $"http://www.colourlovers.com/api/color/{hexcode.Replace("#", "")}?format=json";
 
             using (Context.Channel.EnterTypingState())
             {
 
-                var url = "http://www.colourlovers.com/api/colors/random?format=json";
                 JToken token = await _service.GetFirstJArrayContent(url);
 
                 if (token == null)
@@ -44,78 +51,47 @@ namespace YunoBotV2.Commands
 
                 ColorLouver result = token.ToObject<ColorLouver>();
 
-                var authorBuilder = new EmbedAuthorBuilder()
+                var author = new EmbedAuthorBuilder()
+                    .WithName("Colour Lovers")
+                    .WithUrl("http://www.colourlovers.com/")
+                    .WithIconUrl("http://icons.iconarchive.com/icons/alecive/flatwoken/256/Apps-Color-B-icon.png");
+
+                var body = new EmbedBuilder()
                 {
 
-                    Name = "Colour Lovers",
-                    Url = "http://www.colourlovers.com/",
-                    IconUrl = "http://icons.iconarchive.com/icons/alecive/flatwoken/256/Apps-Color-B-icon.png"
-
-                };
-
-                var footerBuilder = new EmbedFooterBuilder()
-                {
-
-                    Text = $"Poop has color too | {(await Context.Client.GetApplicationInfoAsync()).Owner}",
-                    IconUrl = "http://icons.iconarchive.com/icons/iconshock/brilliant-graphics/256/colors-icon.png"
-
-                };
-
-                EmbedBuilder eBuilder = new EmbedBuilder()
-                {
-
-                    Author = authorBuilder,
-                    Color = new Color(byte.Parse(result.RGB.Red), byte.Parse(result.RGB.Green), byte.Parse(result.RGB.Blue)),
+                    Author = author,
+                    Color = new Color(int.Parse(result.RGB.Red), int.Parse(result.RGB.Green), int.Parse(result.RGB.Blue)),
                     Title = result.Title,
                     ThumbnailUrl = result.ImageUrl,
                     Url = result.Url,
-                    Footer = footerBuilder
 
                 };
 
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Hex Code";
-                    x.Value = result.Hex;
-                });
+                body.AddField("Hexcode", result.Hex);
+                body.AddField("RGB Value", $"{result.RGB.Red}, {result.RGB.Green}, {result.RGB.Blue}");
+                body.AddField("Hue", result.HSV.Hue);
+                body.AddField("Saturation", result.HSV.Saturation);
 
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "RGB Value";
-                    x.Value = $"{result.RGB.Red}, {result.RGB.Green}, {result.RGB.Blue}";
-                });
-
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Hue";
-                    x.Value = result.HSV.Hue;
-                });
-
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Saturation";
-                    x.Value = result.HSV.Saturation;
-                });
-
-                await ReplyAsync("", embed: eBuilder);
+                await ReplyAsync("", embed: body);
 
             }
 
         }
 
-        [Command("search", RunMode = RunMode.Async)]
+        [Command("search")]
         [Summary("Searches for colors based on keywords")]
         public async Task ColorSearchCommand([Remainder]string search = "")
         {
 
             if (string.IsNullOrEmpty(search))
             {
+
                 await SearchErrorMessage();
                 return;
+
             }
 
             var url = $"http://www.colourlovers.com/api/colors?keywords={search}&format=json&numResults=100";
-            var searchResults = new Dictionary<int, string>(20);
 
             using (Context.Channel.EnterTypingState())
             {
@@ -136,7 +112,6 @@ namespace YunoBotV2.Commands
 
                     var temp = results[i];
                     organizedResults.AppendLine($"{i + 1}: {temp.Value<string>("title")}");
-                    searchResults.Add(i + 1, temp.Value<string>("hex"));
 
                 }
 
@@ -144,94 +119,10 @@ namespace YunoBotV2.Commands
 
                 await ReplyAsync(organizedResults.ToString());
 
-                IMessage message = await WaitForMessage(Context.User, Context.Channel, TimeSpan.FromSeconds(60));
+                var message = await WaitForMessage(Context.User, Context.Channel, TimeSpan.FromSeconds(60));
 
-                if (int.TryParse(message.Content, out int color))
-                {
-                    if (searchResults.TryGetValue(color, out string hexcode))
-                        await HexcodeCommand(hexcode);
-                }
-            }
-
-        }
-
-        [Command]
-        [Summary("Gets color with given hexcode")]
-        public async Task HexcodeCommand(string hexcode = "")
-        {
-
-            if (string.IsNullOrEmpty(hexcode))
-                await SearchErrorMessage();
-
-            using (Context.Channel.EnterTypingState())
-            {
-
-                var url = $"http://www.colourlovers.com/api/color/{hexcode.Replace("#", "")}?format=json";
-                JToken token = await _service.GetFirstJArrayContent(url);
-
-                if (token == null)
-                {
-                    await DefaultErrorMessage();
-                    return;
-                }
-
-                ColorLouver result = token.ToObject<ColorLouver>();
-
-                var authorBuilder = new EmbedAuthorBuilder()
-                {
-
-                    Name = "Colour Lovers",
-                    Url = "http://www.colourlovers.com/",
-                    IconUrl = "http://icons.iconarchive.com/icons/alecive/flatwoken/256/Apps-Color-B-icon.png"
-
-                };
-
-                var footerBuilder = new EmbedFooterBuilder()
-                {
-
-                    Text = $"Poop has color too | {(await Context.Client.GetApplicationInfoAsync()).Owner}",
-                    IconUrl = "http://icons.iconarchive.com/icons/iconshock/brilliant-graphics/256/colors-icon.png"
-
-                };
-
-                EmbedBuilder eBuilder = new EmbedBuilder()
-                {
-
-                    Author = authorBuilder,
-                    Color = new Color(byte.Parse(result.RGB.Red), byte.Parse(result.RGB.Green), byte.Parse(result.RGB.Blue)),
-                    Title = result.Title,
-                    ThumbnailUrl = result.ImageUrl,
-                    Url = result.Url,
-                    Footer = footerBuilder
-
-                };
-
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Hex Code";
-                    x.Value = result.Hex;
-                });
-
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "RGB Value";
-                    x.Value = $"{result.RGB.Red}, {result.RGB.Green}, {result.RGB.Blue}";
-                });
-
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Hue";
-                    x.Value = result.HSV.Hue;
-                });
-
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Saturation";
-                    x.Value = result.HSV.Saturation;
-                });
-
-                await ReplyAsync("", embed: eBuilder);
-
+                if (int.TryParse(message.Content, out var choice) && choice > 0 && choice < 21)
+                    await ColorCommand(results[--choice].Value<string>("hexcode"));
             }
 
         }

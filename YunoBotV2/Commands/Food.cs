@@ -8,7 +8,7 @@ using YunoBotV2.Services.WebServices;
 using Newtonsoft.Json.Linq;
 using YunoBotV2.Configuration;
 using Newtonsoft.Json;
-using YunoBotV2.Deserializers;
+using YunoBotV2.Objects.Deserializers;
 using Discord;
 using YunoBotV2.Services;
 
@@ -52,46 +52,31 @@ namespace YunoBotV2.Commands
 
                 Recipe recipe = hits.ElementAt(Rand.Next(0, hits.Count))["recipe"].ToObject<Recipe>();
 
-                var authorBuilder = new EmbedAuthorBuilder()
-                {
+                var author = new EmbedAuthorBuilder()
+                    .WithName(recipe.Label)
+                    .WithUrl(recipe.Url);
 
-                    Name = recipe.Label,
-                    Url = recipe.Url
-
-                };
-
-                var footerBuilder = new EmbedFooterBuilder()
-                {
-
-                    Text = "Brought to you by Edamam Recipes | Please support them, they allow 5000 free api calls!",
-                    IconUrl = "https://pbs.twimg.com/profile_images/3414170675/d90fcd92b9a6f13b9f894fd412620c7e_400x400.png"
-
-                };
+                var footer = new EmbedFooterBuilder()
+                    .WithText("Brought to you by Edamam Recipes | Please support them, they allow 5000 free api calls!")
+                    .WithIconUrl("https://pbs.twimg.com/profile_images/3414170675/d90fcd92b9a6f13b9f894fd412620c7e_400x400.png");
 
                 var dietLabels = string.Join(", ", recipe.DietLabels);
                 var healthLabels = string.Join(", ", recipe.HealthLabels);
 
-                var eBuilder = new EmbedBuilder()
+                var body = new EmbedBuilder()
                 {
 
-                    Author = authorBuilder,
+                    Author = author,
                     Color = new Color(122, 214, 25),
                     ThumbnailUrl = recipe.Image,
                     Description = $"**Servings:** {(int)double.Parse(recipe.Yield)}\n**Calories:** {(int)double.Parse(recipe.Calories)}\n**Diet Labels:** {dietLabels}\n**Health Labels:** {healthLabels}",
-                    Footer = footerBuilder
+                    Footer = footer
 
                 };
 
-                eBuilder.AddField(x =>
-                {
+                body.AddField("Ingredients", recipe.Ingredients.Aggregate((str, next) => $"{str}\n{next}"));
 
-                    x.Name = "Ingredients";
-                    x.Value = recipe.Ingredients.Aggregate((str, next) => $"{str}\n{next}");
-                    x.IsInline = false;
-
-                });
-
-                await ReplyAsync("", embed: eBuilder);
+                await ReplyAsync("", embed: body);
 
             }
 

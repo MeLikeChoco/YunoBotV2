@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YunoBotV2.Configuration;
-using YunoBotV2.Deserializers;
+using YunoBotV2.Objects.Deserializers;
 using YunoBotV2.Services;
 using YunoBotV2.Services.WebServices;
 
@@ -37,7 +37,7 @@ namespace YunoBotV2.Commands
                 return;
             }
 
-            EmbedBuilder eBuilder;
+            EmbedBuilder body;
 
             using (Context.Channel.EnterTypingState())
             {                
@@ -60,73 +60,41 @@ namespace YunoBotV2.Commands
                 List<OsuBeatmapSet> mapset = await _service.GetDeserializedContent<List<OsuBeatmapSet>>(url);
                 mapset = mapset.OrderBy(map => map.DifficultyRating).ToList();
 
-                var AuthorBuilder = new EmbedAuthorBuilder()
+                var author = new EmbedAuthorBuilder()
+                    .WithName(mapset.First().Title)
+                    .WithUrl($"https://osu.ppy.sh/s/{mapset.First().BeatmapSetId}");
+
+                var footer = new EmbedFooterBuilder()
+                    .WithText("Click the circles ♫ | " + mapset.First().ApprovedDate)
+                    .WithIconUrl("http://vignette3.wikia.nocookie.net/osugame/images/c/c9/Logo.png/revision/latest?cb=20151219073209");
+                    //.WithIconUrl("http://orig09.deviantart.net/ac11/f/2014/305/f/1/osu____spinner_circle_1_by_yunowhoitis-d84ni6l.png")
+
+                body = new EmbedBuilder()
                 {
 
-                    Name = "Osu!",
-                    Url = @"https://osu.ppy.sh/",
-                    IconUrl = @"http://vignette3.wikia.nocookie.net/osugame/images/c/c9/Logo.png/revision/latest?cb=20151219073209"
-
-                };
-
-                var FooterBuilder = new EmbedFooterBuilder()
-                {
-
-                    IconUrl = @"http://orig09.deviantart.net/ac11/f/2014/305/f/1/osu____spinner_circle_1_by_yunowhoitis-d84ni6l.png",
-                    Text = "Click the circles ♫ | " + mapset.First().ApprovedDate
-
-                };
-
-                eBuilder = new EmbedBuilder()
-                {
-
-                    Author = AuthorBuilder,
+                    Author = author,
                     Color = new Color(255, 105, 180),
-                    Title = mapset.First().Title,
                     Description = $"Song by: {mapset.First().Artist}\nCreated by: {mapset.First().Creator}",
-                    Url = $"https://osu.ppy.sh/s/{mapset.First().BeatmapSetId}",
                     ImageUrl = $"https://b.ppy.sh/thumb/{mapset.First().BeatmapSetId}l.jpg",
-                    Footer = FooterBuilder
+                    Footer = footer
 
                 };
 
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Genre";
-                    x.Value = GetGenre(int.Parse(mapset.First().GenreId));
-                });
+                body.AddInlineField("Genre", GetGenre(int.Parse(mapset.First().GenreId)));
+                body.AddInlineField("Language", GetLanguage(int.Parse(mapset.First().LanguageId)));
 
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Language";
-                    x.Value = GetLanguage(int.Parse(mapset.First().LanguageId));
-                });
+                body.AddField("Plays", GetPlays(mapset));
+                body.AddField("Favourited", $"{mapset.First().FavouriteCount} times");
 
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Plays";
-                    x.Value = GetPlays(mapset);
-                });
+                body.AddInlineField("Version", GetVersions(mapset));
+                body.AddInlineField("Mode", GetMode(mapset));
+                body.AddInlineField("Stars", GetDifficultyStars(mapset));
 
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Favourited";
-                    x.Value = $"{mapset.First().FavouriteCount} times";
-                });
-
-                eBuilder.AddInlineField("Version", GetVersions(mapset));
-                eBuilder.AddInlineField("Mode", GetMode(mapset));
-                eBuilder.AddInlineField("Stars", GetDifficultyStars(mapset));
-
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Download";
-                    x.Value = $"https://osu.ppy.sh/d/{mapset.First().BeatmapSetId}n";
-                });
+                body.AddField("Download", $"https://osu.ppy.sh/d/{mapset.First().BeatmapSetId}n");
 
             }
 
-            await ReplyAsync("", embed: eBuilder);
+            await ReplyAsync("", embed: body);
 
         }
 
@@ -136,6 +104,7 @@ namespace YunoBotV2.Commands
         {
 
             var url = $"https://osu.ppy.sh/api/get_user?k={Config.Osu}&u={Uri.EscapeUriString(user)}";
+            EmbedBuilder body;
 
             using (Context.Channel.EnterTypingState())
             {
@@ -150,69 +119,43 @@ namespace YunoBotV2.Commands
 
                 OsuUser osuUser = token.ToObject<OsuUser>();
 
-                EmbedBuilder eBuilder;
+                var author = new EmbedAuthorBuilder()
+                    .WithName(osuUser.Username)
+                    .WithUrl($"https://osu.ppy.sh/u/{Uri.EscapeUriString(osuUser.Username)}");
 
-                var AuthorBuilder = new EmbedAuthorBuilder()
+                var footer = new EmbedFooterBuilder()
+                    .WithIconUrl("http://vignette3.wikia.nocookie.net/osugame/images/c/c9/Logo.png/revision/latest?cb=20151219073209")
+                    .WithText("Click the circles ♫ | " + osuUser.Country);
+                    //.WithIconUrl("http://orig09.deviantart.net/ac11/f/2014/305/f/1/osu____spinner_circle_1_by_yunowhoitis-d84ni6l.png")
+
+                body = new EmbedBuilder()
                 {
 
-                    Name = "Osu!",
-                    Url = @"https://osu.ppy.sh/",
-                    IconUrl = @"http://vignette3.wikia.nocookie.net/osugame/images/c/c9/Logo.png/revision/latest?cb=20151219073209"
-
-                };
-
-                var FooterBuilder = new EmbedFooterBuilder()
-                {
-
-                    IconUrl = @"http://orig09.deviantart.net/ac11/f/2014/305/f/1/osu____spinner_circle_1_by_yunowhoitis-d84ni6l.png",
-                    Text = "Click the circles ♫ | " + osuUser.Country
-
-                };
-
-                eBuilder = new EmbedBuilder()
-                {
-
-                    Author = AuthorBuilder,
+                    Author = author,
                     Color = new Color(255, 105, 180),
-                    Title = osuUser.Username,
                     Description = "Global Rank: " + osuUser.PPRank +
                     "\nCountry Rank: " + osuUser.PPCountryRank +
-                    "\nLevel: " + osuUser.Level,
+                    "\nLevel: " + FormatLevel(osuUser.Level),
                     ImageUrl = $"https://a.ppy.sh/{osuUser.Id}",
-                    Url = $"https://osu.ppy.sh/u/{Uri.EscapeUriString(osuUser.Username)}",
-                    Footer = FooterBuilder
+                    Footer = footer
 
                 };
 
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "PP";
-                    x.Value = osuUser.PPRaw;
-                });
+                body.AddInlineField("PP", osuUser.PPRaw);
+                body.AddInlineField("Accuracy", double.Parse(osuUser.Accuracy).ToString("0.##") + "%");
+                body.AddInlineField("Total Amount of Plays", osuUser.PlayCount);
 
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Accuracy";
-                    x.Value = string.Format("{0:0.##}", double.Parse(osuUser.Accuracy)) + "%";
-                });
-
-                eBuilder.AddField(x =>
-                {
-                    x.Name = "Total Amount of Plays";
-                    x.Value = osuUser.PlayCount;
-                });
-
-                eBuilder.AddInlineField("Total SS Ranks", osuUser.CountSS);
-                eBuilder.AddInlineField("Total S Ranks", osuUser.CountS);
-                eBuilder.AddInlineField("Total A Ranks", osuUser.CountA);
-
-                await ReplyAsync("", embed: eBuilder);
+                body.AddInlineField("Total SS Ranks", osuUser.CountSS);
+                body.AddInlineField("Total S Ranks", osuUser.CountS);
+                body.AddInlineField("Total A Ranks", osuUser.CountA);
 
             }
 
+            await ReplyAsync("", embed: body);
+
         }
 
-        public string GetMode(List<OsuBeatmapSet> mapset)
+        private string GetMode(List<OsuBeatmapSet> mapset)
         {
 
             string modes = "";
@@ -228,7 +171,7 @@ namespace YunoBotV2.Commands
 
         }
 
-        public string ConvertNumberToMode(int mode)
+        private string ConvertNumberToMode(int mode)
         {
 
             switch (mode)
@@ -249,7 +192,7 @@ namespace YunoBotV2.Commands
 
         }
 
-        public string GetDifficultyStars(List<OsuBeatmapSet> mapset)
+        private string GetDifficultyStars(List<OsuBeatmapSet> mapset)
         {
 
             string difficulties = "";
@@ -265,7 +208,7 @@ namespace YunoBotV2.Commands
 
         }
 
-        public string GetVersions(List<OsuBeatmapSet> mapset)
+        private string GetVersions(List<OsuBeatmapSet> mapset)
         {
 
             string versions = "";
@@ -281,7 +224,7 @@ namespace YunoBotV2.Commands
 
         }
 
-        public string GetPlays(List<OsuBeatmapSet> mapset)
+        private string GetPlays(List<OsuBeatmapSet> mapset)
         {
 
             int totalPlays = 0;
@@ -297,7 +240,7 @@ namespace YunoBotV2.Commands
 
         }
 
-        public string GetLanguage(int languageId)
+        private string GetLanguage(int languageId)
         {
 
             // 0 = any, 1 = other, 2 = english, 3 = japanese, 4 = chinese, 5 = instrumental, 6 = korean, 7 = french, 8 = german, 9 = swedish, 10 = spanish, 11 = italian
@@ -336,7 +279,7 @@ namespace YunoBotV2.Commands
 
         }
 
-        public string GetGenre(int genreId)
+        private string GetGenre(int genreId)
         {
 
             // 0 = any, 1 = unspecified, 2 = video game, 3 = anime, 4 = rock, 5 = pop, 6 = other, 7 = novelty, 9 = hip hop, 10 = electronic (note that there's no 8)
@@ -365,9 +308,27 @@ namespace YunoBotV2.Commands
                 case 10:
                     return "Electronic";
                 default:
-                    return "I DON'T FUCKING KNOW WHAT THIS IS";
+                    return "SOME FUCKERY";
 
             }
+
+        }
+
+        private string FormatLevel(string userLevel)
+        {
+
+            if (double.TryParse(userLevel, out var level))
+            {
+
+                //even though there will be a 99.9999999% chance that levels wont be negative, ill use truncate
+                var dec = (level - Math.Truncate(level)) * 100;
+                var str = $"{Math.Truncate(level)} ({dec.ToString("#.##")}%)";
+
+                return str;
+
+            }
+            else
+                return null;
 
         }
 

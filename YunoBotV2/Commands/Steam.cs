@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using YunoBotV2.Deserializers;
 using YunoBotV2.Services.WebServices;
 using AngleSharp.Dom.Html;
 using AngleSharp.Dom;
 using YunoBotV2.Services;
 using Discord;
 using System.Net;
+using YunoBotV2.Objects;
 
 namespace YunoBotV2.Commands
 {
@@ -55,42 +55,13 @@ namespace YunoBotV2.Commands
                     return;
                 }
 
-                var AuthorBuilder = new EmbedAuthorBuilder()
-                {
-
-                    Name = "Steam",
-                    Url = "http://store.steampowered.com/",
-                    IconUrl = "http://icons.iconarchive.com/icons/martz90/circle/256/steam-icon.png"
-
-                };
-
-                var FooterBuilder = new EmbedFooterBuilder()
-                {
-
-                    Text = $"Valve© | Data Last Gathered: {Cache.LastSteamSpecialScrape.ToString("MM/dd/yyyy hh:mm")}",
-                    IconUrl = "http://icons.iconarchive.com/icons/bokehlicia/pacifica/256/steam-icon.png"
-
-                };
-
-                var eBuilder = new EmbedBuilder()
-                {
-
-                    Author = AuthorBuilder,
-                    Color = new Color(27, 40, 56),
-                    Title = "Frontpage Steam Specials",
-                    Url = url,
-                    Description = "Here are the top 10 deals on the front page of steam",
-                    ThumbnailUrl = specials.FirstOrDefault().Picture,
-                    Footer = FooterBuilder
-
-                };
-
+                var body = StartEmbed(ScrapeType.Specials, specials.FirstOrDefault().Picture);
                 var counter = 1;
 
                 foreach (SteamFrontpageObject game in specials)
                 {
 
-                    eBuilder.AddField(x =>
+                    body.AddField(x =>
                     {
                         x.Name = $"{counter}. {WebUtility.HtmlDecode(game.Title)}";
                         x.Value = $"Rating: {game.Rating}\nRelease Date: {game.ReleaseDate}\nOriginal Price: {game.OgPrice}\nNew Price: {game.NewPrice}\nDiscount: {game.Discount}\n[Link]({game.Link})";
@@ -100,8 +71,8 @@ namespace YunoBotV2.Commands
 
                 }
 
-                await ReplyAsync("", embed: eBuilder);
-                Cache.SteamSpecials = eBuilder;
+                await ReplyAsync("", embed: body);
+                Cache.SteamSpecials = body;
 
             }
 
@@ -135,42 +106,13 @@ namespace YunoBotV2.Commands
                     return;
                 }
 
-                var AuthorBuilder = new EmbedAuthorBuilder()
-                {
-
-                    Name = "Steam",
-                    Url = "http://store.steampowered.com/",
-                    IconUrl = "http://icons.iconarchive.com/icons/martz90/circle/256/steam-icon.png"
-
-                };
-
-                var FooterBuilder = new EmbedFooterBuilder()
-                {
-
-                    Text = $"Valve© | Data Last Gathered: {Cache.LastSteamTopSellerScrape.ToString("MM/dd/yyyy hh:mm")}",
-                    IconUrl = "http://icons.iconarchive.com/icons/bokehlicia/pacifica/256/steam-icon.png"
-
-                };
-
-                var eBuilder = new EmbedBuilder()
-                {
-
-                    Author = AuthorBuilder,
-                    Color = new Color(27, 40, 56),
-                    Title = "Frontpage Steam Top Sellers",
-                    Url = url,
-                    Description = "Here are the top 10 deals on the front page of steam",
-                    ThumbnailUrl = topSellers.FirstOrDefault().Picture,
-                    Footer = FooterBuilder
-
-                };
-
+                var body = StartEmbed(ScrapeType.TopSellers, topSellers.FirstOrDefault().Picture);
                 var counter = 1;
 
                 foreach (SteamFrontpageObject game in topSellers)
                 {
 
-                    eBuilder.AddField(x =>
+                    body.AddField(x =>
                     {
                         x.Name = $"{counter}. {WebUtility.HtmlDecode(game.Title)}";
                         x.Value = $"Rating: {game.Rating}\nRelease Date: {game.ReleaseDate}\nOriginal Price: {game.OgPrice}\nNew Price: {game.NewPrice}\nDiscount: {game.Discount}\n[Link]({game.Link})";
@@ -180,8 +122,8 @@ namespace YunoBotV2.Commands
 
                 }
 
-                await ReplyAsync("", embed: eBuilder);
-                Cache.SteamTopSellers = eBuilder;
+                await ReplyAsync("", embed: body);
+                Cache.SteamTopSellers = body;
 
             }
 
@@ -215,42 +157,13 @@ namespace YunoBotV2.Commands
                     return;
                 }
 
-                var AuthorBuilder = new EmbedAuthorBuilder()
-                {
-
-                    Name = "Steam",
-                    Url = "http://store.steampowered.com/",
-                    IconUrl = "http://icons.iconarchive.com/icons/martz90/circle/256/steam-icon.png"
-
-                };
-
-                var FooterBuilder = new EmbedFooterBuilder()
-                {
-
-                    Text = $"Valve© | Data Last Gathered: {Cache.LastSteamNewReleasesScrape.ToString("MM/dd/yyyy hh:mm")}",
-                    IconUrl = "http://icons.iconarchive.com/icons/bokehlicia/pacifica/256/steam-icon.png"
-
-                };
-
-                var eBuilder = new EmbedBuilder()
-                {
-
-                    Author = AuthorBuilder,
-                    Color = new Color(27, 40, 56),
-                    Title = "Frontpage Steam Top Sellers",
-                    Url = url,
-                    Description = "Here are the top 10 deals on the front page of steam",
-                    ThumbnailUrl = topNewReleases.FirstOrDefault().Picture,
-                    Footer = FooterBuilder
-
-                };
-
+                var body = StartEmbed(ScrapeType.New, topNewReleases.FirstOrDefault().Picture);
                 var counter = 1;
 
                 foreach (SteamFrontpageObject game in topNewReleases)
                 {
 
-                    eBuilder.AddField(x =>
+                    body.AddField(x =>
                     {
                         x.Name = $"{counter}. {WebUtility.HtmlDecode(game.Title)}";
                         x.Value = $"Rating: {game.Rating}\nRelease Date: {game.ReleaseDate}\nOriginal Price: {game.OgPrice}\nNew Price: {game.NewPrice}\nDiscount: {game.Discount}\n[Link]({game.Link})";
@@ -260,10 +173,69 @@ namespace YunoBotV2.Commands
 
                 }
 
-                await ReplyAsync("", embed: eBuilder);
-                Cache.SteamNewReleases = eBuilder;
+                await ReplyAsync("", embed: body);
+                Cache.SteamNewReleases = body;
 
             }
+
+        }
+
+        private EmbedBuilder StartEmbed(ScrapeType scrapeType, string thumbnail)
+        {
+
+            string title, url;
+            DateTime scrapeTime;
+
+            switch (scrapeType)
+            {
+
+                case ScrapeType.New:
+                    title = "Frontpage Steam New Releases";
+                    scrapeTime = Cache.LastSteamNewReleasesScrape;
+                    url = "http://store.steampowered.com/search/?filter=popularnew&sort_by=Released_DESC";
+                    break;
+                case ScrapeType.Specials:
+                    title = "Frontpage Steam Specials";
+                    scrapeTime = Cache.LastSteamSpecialScrape;
+                    url = "http://store.steampowered.com/search/?specials=1";
+                    break;
+                case ScrapeType.TopSellers:
+                    title = "Frontpage Steam Top Sellers";
+                    scrapeTime = Cache.LastSteamTopSellerScrape;
+                    url = "http://store.steampowered.com/search/?filter=globaltopsellers";
+                    break;
+                default:
+                    title = "Frontpage Steam Specials";
+                    scrapeTime = Cache.LastSteamSpecialScrape;
+                    url = "http://store.steampowered.com/search/?specials=1";
+                    break;
+
+
+            }
+
+            var author = new EmbedAuthorBuilder()
+                .WithIconUrl("http://icons.iconarchive.com/icons/martz90/circle/256/steam-icon.png")
+                .WithName("Steam")
+                .WithUrl("http://store.steampowered.com/");
+
+            var footer = new EmbedFooterBuilder()
+                .WithText($"Valve© | Data Last Gathered: {scrapeTime.ToString("MM/dd/yyyy hh:mm")}")
+                .WithIconUrl("http://icons.iconarchive.com/icons/bokehlicia/pacifica/256/steam-icon.png");
+
+            var body = new EmbedBuilder()
+            {
+
+                Author = author,
+                Color = new Color(27, 40, 56),
+                Title = title,
+                Url = url,
+                Description = "Here are the top 10 new releases on the front page of steam",
+                ThumbnailUrl = thumbnail,
+                Footer = footer
+
+            };
+
+            return body;
 
         }
 

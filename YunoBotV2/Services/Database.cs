@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,8 @@ using Dapper.Contrib.Extensions;
 using System.Collections.Concurrent;
 using Discord.WebSocket;
 using YunoBotV2.Core;
+using YunoBotV2.Objects.Deserializers;
+using Microsoft.Data.Sqlite;
 
 namespace YunoBotV2.Services
 {
@@ -117,6 +118,53 @@ namespace YunoBotV2.Services
             
         }
 
+        public static async Task AddAutoRole(SocketRole role)
+        {
+
+            var setting = _guildSettings[role.Guild.Id];
+            setting.AddAutoRole(role.Id);
+
+            using (var connection = new SqliteConnection(DbPath))
+            {
+
+                await connection.OpenAsync();
+
+                await connection.UpdateAsync(setting);
+
+                connection.Close();
+
+            }
+
+        }
+
+        public static async Task RemoveAutoRole(SocketRole role)
+        {
+
+            var setting = _guildSettings[role.Guild.Id];
+            setting.RemoveAutoRole(role.Id);
+
+            using (var connection = new SqliteConnection(DbPath))
+            {
+
+                await connection.OpenAsync();
+
+                await connection.UpdateAsync(setting);
+
+                connection.Close();
+
+            }
+
+        }
+
+        public static ulong[] GetAutoRoles(SocketGuild guild)
+        {
+
+            var setting = _guildSettings[guild.Id];
+
+            return setting.AutoRoles;
+
+        }
+
         public static async Task ExecuteSql(string statement)
         {
 
@@ -130,6 +178,18 @@ namespace YunoBotV2.Services
                 connection.Close();
 
             }
+
+        }
+
+        public static async Task AssignAutoRole(SocketGuildUser user)
+        {
+
+            var guild = user.Guild;
+            var setting = _guildSettings[guild.Id];
+            var roles = setting.AutoRoles.Select(u => guild.GetRole(u));
+
+            if(roles.Count() != 0)
+                await user.AddRolesAsync(roles);
 
         }
 
@@ -148,8 +208,10 @@ namespace YunoBotV2.Services
 
                     var setting = new GuildSetting
                     {
+
                         Id = guild.Id,
                         Prefix = DefaultPrefix,
+
                     };
 
                     await connection.InsertAsync(setting);
@@ -167,7 +229,7 @@ namespace YunoBotV2.Services
         public static async Task InitializeSettings(DiscordSocketClient client)
         {
 
-            Log("Initializing settigns...");
+            Log("Initializing settings...");
 
             using (var connection = new SqliteConnection(DbPath))
             {
@@ -195,50 +257,6 @@ namespace YunoBotV2.Services
 
         private static void Log(string message)
             => AltConsole.Print("Service", "Database", message);
-
-    }
-    
-    [Table("GuildSettings")]
-    public class GuildSetting
-    {
-
-        [ExplicitKey]
-        public ulong Id { get; set; }
-        public string Prefix { get; set; }
-        [Computed, Write(false)]
-        public ulong[] SelfRoles { get { return SelfRoleString.Split('/').Select(str => ulong.Parse(str)).ToArray(); } }
-
-        private string SelfRoleString { get; set; } = "0";
-
-        public GuildSetting()
-        {
-
-            //SelfRoleString = "0";
-
-        }
-
-        public void AddSelfRole(ulong id)
-        {
-
-            if (SelfRoleString == "0")
-                SelfRoleString = SelfRoleString.Replace("0", $"{id}");
-            else
-                SelfRoleString += $"/{id}";
-
-        }
-
-        public void RemoveSelfRole(ulong id)
-        {
-
-            SelfRoleString = SelfRoleString.Replace(id.ToString(), string.Empty).Replace("//", "/");
-
-            if (SelfRoleString.EndsWith("/"))
-                SelfRoleString = SelfRoleString.Substring(0, SelfRoleString.Length - 1);
-
-            if (string.IsNullOrEmpty(SelfRoleString))
-                SelfRoleString = "0";
-
-        }
 
     }
 }

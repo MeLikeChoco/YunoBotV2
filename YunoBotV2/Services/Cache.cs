@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using YunoBotV2.Configuration;
-using YunoBotV2.Deserializers;
+using YunoBotV2.Objects.Deserializers;
 using YunoBotV2.Services.WebServices;
 
 namespace YunoBotV2.Services
@@ -31,14 +31,14 @@ namespace YunoBotV2.Services
 
         public static Dictionary<string, EmbedBuilder> Pokemon = new Dictionary<string, EmbedBuilder>();
 
-        public static string YelpToken;
+        public static string YelpToken { get; set; }
 
-        private static Web _service;
+        private static Web _web;
 
-        public static async Task InitializeCache(Web serviceParams)
+        public static async Task InitializeCache(Web web)
         {
 
-            _service = serviceParams;
+            _web = web;
 
             await RequestYelpToken();
 
@@ -50,17 +50,13 @@ namespace YunoBotV2.Services
         public static async Task RequestYelpToken()
         {
 
-            if (await _service.PostEncodedContent("https://api.yelp.com/oauth2/token", new KeyValuePair<string, string>[]
+            if (await _web.PostEncodedContent("https://api.yelp.com/oauth2/token", new KeyValuePair<string, string>[]
             {
                 new KeyValuePair<string, string>("grant_type", "client_credentials"),
                 new KeyValuePair<string, string>("client_id", Config.YelpId),
                 new KeyValuePair<string, string>("client_secret", Config.YelpSecret),
             }, out var result))
-            {
-
                 YelpToken = result;
-
-            }
 
         }
 

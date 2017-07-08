@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using YunoBotV2.Configuration;
 using YunoBotV2.Core;
-using YunoBotV2.Deserializers;
+using YunoBotV2.Objects.Deserializers;
 using YunoBotV2.Services.WebServices;
 
 namespace YunoBotV2.Commands
@@ -342,22 +342,14 @@ namespace YunoBotV2.Commands
 
             }
 
-            var authorBuilder = new EmbedAuthorBuilder
-            {
+            var authorBuilder = new EmbedAuthorBuilder()
+                .WithIconUrl("https://anilist.co/img/logo_al.png")
+                .WithName("Anilist")
+                .WithUrl("https://anilist.co/");
 
-                IconUrl = "https://anilist.co/img/logo_al.png",
-                Name = "Anilist",
-                Url = "https://anilist.co/",
-
-            };
-
-            var footerBuilder = new EmbedFooterBuilder
-            {
-
-                IconUrl = "http://img00.deviantart.net/e0d8/i/2011/241/f/6/my_computer_anime_icon_by_hikanepb-d3j5a2v.png",
-                Text = "Brought to you by Anilist | Because screw MAL and XML",
-
-            };
+            var footerBuilder = new EmbedFooterBuilder()
+                .WithIconUrl("http://img00.deviantart.net/e0d8/i/2011/241/f/6/my_computer_anime_icon_by_hikanepb-d3j5a2v.png")
+                .WithText("Brought to you by Anilist | Because screw MAL and XML");
 
             var eBuilder = new EmbedBuilder
             {
@@ -365,7 +357,7 @@ namespace YunoBotV2.Commands
                 Author = authorBuilder,
                 Color = new Color(255, 183, 197),
                 Url = $"https://anilist.co/anime/{result.Id}",
-                ThumbnailUrl = result.ImageUrlMed,
+                ThumbnailUrl = "Brought to you by Anilist | Because screw MAL and XML",
                 ImageUrl = result.ImageUrlBanner,
                 Title = result.TitleRomaji,
                 Description = description,

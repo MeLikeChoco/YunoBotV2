@@ -9,7 +9,7 @@ using YunoBotV2.Services.WebServices;
 using System.Text.RegularExpressions;
 using YunoBotV2.Configuration;
 using Newtonsoft.Json.Linq;
-using YunoBotV2.Deserializers;
+using YunoBotV2.Objects.Deserializers;
 
 namespace YunoBotV2.Commands
 {
@@ -79,20 +79,12 @@ namespace YunoBotV2.Commands
             var generalStats = stats.general;
 
             var authorBuilder = new EmbedAuthorBuilder()
-            {
-
-                Name = "League of Legends",
-                Url = "http://www.leagueoflegends.com/",
-                IconUrl = "http://orig01.deviantart.net/907e/f/2015/025/5/5/league_of_legends__connected_fates__episode_2_by_lol_connectedfates-d8fgb24.jpg",
-
-            };
+                .WithName("League of Legends")
+                .WithUrl("http://www.leagueoflegends.com/")
+                .WithIconUrl("http://orig01.deviantart.net/907e/f/2015/025/5/5/league_of_legends__connected_fates__episode_2_by_lol_connectedfates-d8fgb24.jpg");
 
             var footerBuilder = new EmbedFooterBuilder()
-            {
-
-                Text = "Brought to you by ChampionGG",
-
-            };
+                .WithText("Brought to you by ChampionGG");
 
             var eBuilder = new EmbedBuilder()
             {

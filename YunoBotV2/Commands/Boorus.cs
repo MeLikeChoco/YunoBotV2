@@ -10,6 +10,7 @@ using YunoBotV2.Services.WebServices;
 
 namespace YunoBotV2.Commands
 {
+    [Name("NSFW/SFW")]
     public class Boorus : CustomModuleBase
     {
 
@@ -24,11 +25,9 @@ namespace YunoBotV2.Commands
 
         [Command("nsfw")]
         [Summary("Returns a nsfw picture")]
+        [RequireNsfw]
         public async Task NsfwCommand([Remainder]string tags = "")
-        {
-
-            //temporary measure against accidental nsfw pictures
-            if (!Context.Channel.Name.ToLower().Contains("nsfw")) return;
+        {           
 
             if (tags.Contains("webm"))
             {

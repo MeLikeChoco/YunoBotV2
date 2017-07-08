@@ -12,6 +12,7 @@ using YunoBotV2.Services.WebServices;
 namespace YunoBotV2.Commands
 {
     [Group("aqw")]
+    [Name("AQWorlds")]
     public class AQWorlds : CustomModuleBase
     {
 
