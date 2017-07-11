@@ -25,7 +25,7 @@
     <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00171" />
     <PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha9-00166" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.3.0-beta3" />
-    <PackageReference Include="Microsoft.Data.SQLite" Version="2.0.0-preview1-final" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="1.1.1" />
     <PackageReference Include="morelinq" Version="2.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />

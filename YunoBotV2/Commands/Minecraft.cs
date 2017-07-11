@@ -15,7 +15,7 @@ namespace YunoBotV2.Commands
 
         private const char Ampersand = '§';
         private const string MCAPI = "https://mcapi.ca";
-        private const string FileExtension = "png";
+        private const string FileName = "minecraftskin.png";
         private Web _web;
 
         public Minecraft(Web web)
@@ -41,7 +41,7 @@ namespace YunoBotV2.Commands
 
             }
 
-            await UploadAsync(stream, FileExtension);
+            await UploadAsync(stream, FileName);
 
         }
 
@@ -61,7 +61,7 @@ namespace YunoBotV2.Commands
 
             }
 
-            await UploadAsync(stream, FileExtension);
+            await UploadAsync(stream, FileName);
 
         }
 
@@ -81,7 +81,7 @@ namespace YunoBotV2.Commands
 
             }
 
-            await UploadAsync(stream, FileExtension);
+            await UploadAsync(stream, FileName);
 
         }
 

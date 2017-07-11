@@ -81,11 +81,7 @@ namespace YunoBotV2.Commands
             if (message == null)
                 return;
 
-            var filename = message.Filename;
-            var index = filename.LastIndexOf('.');
-            var extension = filename.Substring(index);
             var url = message.Url;
-
 
             using (var stream = await _webService.GetStream(url))
             {
@@ -119,7 +115,7 @@ namespace YunoBotV2.Commands
 
                     output.Seek(0, SeekOrigin.Begin);
 
-                    await UploadAsync(output, extension);
+                    await UploadAsync(output, message.Filename);
 
                 }
 

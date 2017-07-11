@@ -78,7 +78,7 @@ namespace YunoBotV2.Commands
             _formattedRight = $"**{_rightUser}**";
             await SendImage(_rightUserObject);
 
-            //await StartBattle();
+            await StartBattle();
 
         }
 
@@ -116,7 +116,7 @@ namespace YunoBotV2.Commands
                 baseImage.SaveAsPng(stream);
                 stream.Position = 0; //reset position to write to sendfileasync
 
-                await UploadAsync(stream, "png");
+                await UploadAsync(stream, "battle.png");
 
             }
 

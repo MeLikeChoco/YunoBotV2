@@ -42,7 +42,7 @@ namespace YunoBotV2.Core
                 AlwaysDownloadUsers = true,
                 LogLevel = LogSeverity.Verbose,
                 MessageCacheSize = 1000,
-                WebSocketProvider = WS4NetProvider.Instance,
+                WebSocketProvider = WS4NetProvider.Instance,                
 
             });
             _commands = new CommandService(new CommandServiceConfig
@@ -82,7 +82,7 @@ namespace YunoBotV2.Core
             await Cache.InitializeCache(web);
 
             _client.JoinedGuild += Database.CreateSettings;
-            _client.Connected += async () => { await Database.InitializeSettings(_client); };
+            _client.Ready += async () => { await Database.InitializeSettings(_client); };
             _client.UserJoined += Database.AssignAutoRole;
 
         }
