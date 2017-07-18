@@ -19,7 +19,11 @@ namespace YunoBotV2.Objects.Deserializers
         public ulong[] SelfRoles { get { return SelfRoleString.Split('/').Select(str => ulong.Parse(str)).ToArray(); } }
         [Computed, Write(false)]
         public ulong[] AutoRoles { get { return AutoRoleString.Split('/').Select(str => ulong.Parse(str)).ToArray(); } }
-
+        public ulong TwitterChannel { get; private set; }
+        [Computed, Write(false)]
+        public ulong [] TwitterSubscriptions { get { return TwitterSubscriptionString.Split('/').Select(str => ulong.Parse(str)).ToArray(); } }
+        
+        public string TwitterSubscriptionString { get; private set; }
         public string SelfRoleString { get; private set; }
         public string AutoRoleString { get; private set; }
 
