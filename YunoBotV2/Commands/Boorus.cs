@@ -14,12 +14,19 @@ namespace YunoBotV2.Commands
     public class Boorus : CustomModuleBase
     {
 
-        private Web _service;
+        private Web _web;
+        private static readonly string[] SiteList = new string[]
+        {
+
+            "https://gelbooru.com/",
+            "http://rule34.xxx/"
+
+        };
 
         public Boorus(Web serviceParams)
         {
 
-            _service = serviceParams;
+            _web = serviceParams;
 
         }
 
@@ -27,7 +34,9 @@ namespace YunoBotV2.Commands
         [Summary("Returns a nsfw picture")]
         [RequireNsfw]
         public async Task NsfwCommand([Remainder]string tags = "")
-        {           
+        {
+
+            tags = tags.ToLower();
 
             if (tags.Contains("webm"))
             {
@@ -35,7 +44,14 @@ namespace YunoBotV2.Commands
                 return;
             }
 
-            await Gelbooru(tags, true);
+            if (tags.Substring(0, 4) == "real")
+            {
+
+                await SendReal(tags.Substring(4));
+
+            }
+            else
+                await SendHentai(tags, true);
 
         }
 
@@ -50,20 +66,72 @@ namespace YunoBotV2.Commands
                 return;
             }
 
-            await Gelbooru(tags, false);
+            await SendHentai(tags, false);
 
         }
 
-        public async Task Gelbooru(string tags, bool nsfw)
+        public async Task SendReal(string tags)
         {
 
             using (Context.Channel.EnterTypingState())
             {
 
+                var baseUrl = "http://rb.booru.org/";
+                var url = $"{baseUrl}index.php?page=post&s=list&tags={Uri.EscapeUriString(tags)}";
+                var dom = await _web.GetDom(url);
+                var paginator = dom.GetElementById("paginator");
+
+                if (paginator != null)
+                {
+
+                    var pages = paginator.Children
+                        .Where(element => element.TagName == "A" && !element.HasAttribute("alt"))
+                        .Select(element => element.GetAttribute("href"));
+                    var pageCount = pages.Count();
+                    var pIndex = Rand.Next(pageCount + 1);
+
+                    if(pIndex != pageCount + 1)
+                        url = baseUrl + pages.ElementAt(pIndex);
+
+                    dom = await _web.GetDom(url);
+
+                }
+                
+                var results = dom.GetElementsByClassName("thumb");
+                var picNum = results.Count();
+
+                if (picNum == 0)
+                {
+
+                    await NoResultsReturnedErrorMessage();
+                    return;
+
+                }
+
+                var index = Rand.Next(picNum);
+                var picture = results[index];
+                url = baseUrl + picture.FirstElementChild.GetAttribute("href");
+                dom = await _web.GetDom(url);
+                picture = dom.GetElementById("note-container").FirstElementChild;
+
+                await ReplyAsync(picture.GetAttribute("src"));
+
+            }
+
+        }
+
+        public async Task SendHentai(string tags, bool nsfw)
+        {
+
+            using (Context.Channel.EnterTypingState())
+            {
+
+                var booru = Rand.Next(SiteList.Length);
+
                 var url = nsfw ?
-                $"http://gelbooru.com/index.php?page=dapi&s=post&q=index&tags={Uri.EscapeUriString(tags)}%20{Uri.EscapeUriString("-webm")}%20rating:explicit&limit=100&json=1" :
-                $"http://gelbooru.com/index.php?page=dapi&s=post&q=index&tags={Uri.EscapeUriString(tags)}%20{Uri.EscapeUriString("-webm")}%20rating:safe&limit=100&json=1";
-                JArray searchResults = await _service.GetJArrayContent(url);
+                $"{SiteList[booru]}index.php?page=dapi&s=post&q=index&tags={Uri.EscapeUriString(tags)}%20{Uri.EscapeUriString("-webm")}%20rating:explicit&limit=100&json=1" :
+                $"{SiteList[booru]}index.php?page=dapi&s=post&q=index&tags={Uri.EscapeUriString(tags)}%20{Uri.EscapeUriString("-webm")}%20rating:safe&limit=100&json=1";
+                JArray searchResults = await _web.GetJArrayContent(url);
 
                 if (searchResults == null)
                 {
