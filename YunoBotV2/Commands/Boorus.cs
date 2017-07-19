@@ -90,7 +90,7 @@ namespace YunoBotV2.Commands
                     var pageCount = pages.Count();
                     var pIndex = Rand.Next(pageCount + 1);
 
-                    if(pIndex != pageCount + 1)
+                    if(pIndex != pageCount)
                         url = baseUrl + pages.ElementAt(pIndex);
 
                     dom = await _web.GetDom(url);
