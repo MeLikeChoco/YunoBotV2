@@ -22,8 +22,8 @@
     <PackageReference Include="Discord.Addons.InteractiveCommands" Version="1.2.4" />
     <PackageReference Include="Discord.Net" Version="1.0.2-build-00800" />
     <PackageReference Include="FIGlet.Net" Version="1.0.0" />
-    <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00171" />
-    <PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha9-00166" />
+    <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00173" />
+    <PackageReference Include="ImageSharp.Drawing" Version="1.0.0-alpha9-00168" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.3.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="1.1.1" />
     <PackageReference Include="morelinq" Version="2.6.0" />

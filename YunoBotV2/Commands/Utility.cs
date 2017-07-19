@@ -14,6 +14,15 @@ namespace YunoBotV2.Commands
     public class Utility : CustomModuleBase
     {
 
+        [Command("ban")]
+        [Summary("Ban a user regardless of presence in guild")]
+        public async Task BanCommand(IUser user, [Remainder]string reason)
+        {
+
+            await Context.Guild.AddBanAsync(user, reason: reason);
+
+        }
+
         [Command("role")]
         [Summary("Selfrole with the entered role")]
         public async Task RoleCommand([Remainder]string search)
