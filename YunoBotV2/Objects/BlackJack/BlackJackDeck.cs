@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using YunoBotV2.Services;
 using YunoBotV2.Services.WebServices;
 
-namespace YunoBotV2.Commands.BlackJack
+namespace YunoBotV2.Objects.BlackJack
 {
     public class BlackJackDeck
     {

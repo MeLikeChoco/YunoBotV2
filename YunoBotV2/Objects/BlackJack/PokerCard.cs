@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YunoBotV2.Commands.BlackJack
+namespace YunoBotV2.Objects.BlackJack
 {
 
     public class PokerCard

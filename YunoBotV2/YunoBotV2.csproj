@@ -16,11 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Commands\BlackJack\BlackJack.cs" />
-    <None Include="Commands\BlackJack\BlackJackHand.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.9.9" />
     <PackageReference Include="Dapper" Version="1.50.2" />
     <PackageReference Include="Dapper.Contrib" Version="1.50.0" />

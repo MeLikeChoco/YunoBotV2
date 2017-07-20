@@ -7,8 +7,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using YunoBotV2.Services.WebServices;
+using YunoBotV2.Objects.BlackJack;
 
-namespace YunoBotV2.Commands.BlackJack
+namespace YunoBotV2.Commands
 {
     public class BlackJack : CustomModuleBase
     {
