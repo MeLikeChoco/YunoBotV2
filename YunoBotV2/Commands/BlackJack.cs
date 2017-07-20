@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using YunoBotV2.Services.WebServices;
 using YunoBotV2.Objects.BlackJack;
+using ImageSharp;
 
 namespace YunoBotV2.Commands
 {
@@ -69,6 +70,18 @@ namespace YunoBotV2.Commands
                 _players.Add(new BlackJackPlayer(user));
 
                 await ReplyAsync($"{7 - _players.Count} slots for blackjack left! Type `join` to play!");
+
+            }
+
+        }
+
+        private async Task GeneratePlayingField()
+        {
+
+            using(var playmat = Image.Load("Files/PokerCards/playmat.png"))
+            {
+
+
 
             }
 

@@ -12,6 +12,8 @@ namespace YunoBotV2.Objects.BlackJack
 
         public ulong UserId { get; private set; }
         public BlackJackHand Hand { get; private set; }
+        public bool HasFolded { get; private set; }
+        public bool HasBust { get; }
 
         public BlackJackPlayer(SocketUser user)
         {

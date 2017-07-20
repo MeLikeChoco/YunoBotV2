@@ -36,12 +36,12 @@ namespace YunoBotV2.Objects.BlackJack
 
         }
 
-        public async Task<PokerCard[]> Deal(int amount = 1)
+        public async Task<PokerCard> Deal()
         {
 
-            var response = await _web.GetJObjectContent(DeckOfCardsApi + _deckId + $"/draw/?count={amount}");
+            var response = await _web.GetJObjectContent(DeckOfCardsApi + _deckId + $"/draw/?count=1");
 
-            return response["cards"].ToObject<PokerCard[]>();
+            return response["cards"].ToObject<PokerCard>();
 
         }
 

@@ -13,7 +13,7 @@ namespace YunoBotV2.Objects.BlackJack
     {
 
         [JsonIgnore]
-        public static readonly Dictionary<string, int> Values = new Dictionary<string, int>()
+        private static readonly Dictionary<string, int> Values = new Dictionary<string, int>()
         {
 
             { "ACE", 11 },
