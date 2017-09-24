@@ -266,3 +266,7 @@ __pycache__/
 /YunoBotV2/Configuration/deathbattle.png
 /YunoBotV2/Commands/ForOwner/Utility.cs
 /YunoBotV2/Database/Database.db
+/YunoV3/Files/TestToken.txt
+/YunoV3/Files/LegitToken.txt
+/YunoV3/Databases/Guilds.db
+/YunoV3/log.txt
