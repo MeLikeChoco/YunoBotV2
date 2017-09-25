@@ -14,10 +14,7 @@ namespace YunoV3.Objects
         public BotSettings()
         {
 
-            if (bool.TryParse(Environment.GetCommandLineArgs().FirstOrDefault(), out var setting))
-                IsTest = setting;
-            else
-                IsTest = false;
+            IsTest = Environment.GetCommandLineArgs().ElementAtOrDefault(1) == "debug";
 
         }
 

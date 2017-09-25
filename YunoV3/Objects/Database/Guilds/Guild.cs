@@ -17,6 +17,8 @@ namespace YunoV3.Objects.Database.Guilds
 
             Id = id;
             Prefix = "e$";
+            _autoRoleString = "";
+            _selfRoleString = "";
 
         }
 
@@ -28,15 +30,18 @@ namespace YunoV3.Objects.Database.Guilds
         [Required]
         public string Prefix { get; set; }
         [Column("AutoRoles")]
-        public string AutoRoleString { get; private set; }
+        [Required]
+        public string _autoRoleString { get; private set; }
         [Column("SelfRoles")]
-        public string SelfRoleString { get; private set; }
+        [Required]
+        public string _selfRoleString { get; private set; }
 
         [NotMapped]
         public List<ulong> AutoRoles
         {
 
-            get => new List<ulong>(AutoRoleString.Split(',').Select(id => ulong.Parse(id)));
+            //there where method is just in case the string is empty, so i can return an empty collection instead of throwing an error
+            get => new List<ulong>(_autoRoleString.Split(',').Where(id => id != "").Select(id => ulong.Parse(id)));
 
         }
 
@@ -44,38 +49,43 @@ namespace YunoV3.Objects.Database.Guilds
         public List<ulong> SelfRoles
         {
             
-            get => new List<ulong>(SelfRoleString.Split(',').Select(id => ulong.Parse(id)));
+            get => new List<ulong>(_selfRoleString.Split(',').Where(id => id != "").Select(id => ulong.Parse(id)));
 
         }
-
-        [NotMapped]
-        private object _autoRoleLock = new object();
 
         public void AddAutoRole(SocketRole role)
         {
 
-            lock (_autoRoleLock)
-            {
-
-                if (string.IsNullOrEmpty(AutoRoleString))
-                    AutoRoleString = role.Id.ToString();
-                else
-                    AutoRoleString += $",{role.Id}";
-
-            }
+            if (string.IsNullOrEmpty(_autoRoleString))
+                _autoRoleString = role.Id.ToString();
+            else if (!_autoRoleString.Contains(role.Id.ToString()))
+                _autoRoleString += $",{role.Id}";
 
         }
 
         public void RemoveAutoRole(SocketRole role)
         {
 
-            lock (_autoRoleLock)
-            {
+            if (!string.IsNullOrEmpty(_autoRoleString))
+                _autoRoleString = _autoRoleString.Replace(role.Id.ToString(), "").Replace(",,", "");
 
-                if (!string.IsNullOrEmpty(AutoRoleString))
-                    AutoRoleString = AutoRoleString.Replace(role.Id.ToString(), "").Replace(",,", "");
+        }
 
-            }
+        public void AddSelfRole(SocketRole role)
+        {
+
+            if (string.IsNullOrEmpty(_selfRoleString))
+                _selfRoleString = role.Id.ToString();
+            else
+                _selfRoleString += $",{role.Id}";
+
+        }
+
+        public void RemoveSelfRole(SocketRole role)
+        {
+
+            if (!string.IsNullOrEmpty(_selfRoleString))
+                _selfRoleString = _selfRoleString.Replace(role.Id.ToString(), "").Replace(",,", "");
 
         }
 

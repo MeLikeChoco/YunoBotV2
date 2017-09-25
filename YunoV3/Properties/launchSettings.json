@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "YunoV3": {
+      "commandName": "Project",
+      "commandLineArgs": "debug"
+    }
+  }
+}

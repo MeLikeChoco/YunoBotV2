@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace YunoV3.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class UpdateStuff : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,17 +12,15 @@ namespace YunoV3.Migrations
                 name: "Guilds",
                 columns: table => new
                 {
-                    Id = table.Column<ulong>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", false),
-                    AutoRoles = table.Column<string>(type: "TEXT", nullable: true),
+                    Id = table.Column<ulong>(type: "INTEGER", nullable: false),
                     Prefix = table.Column<string>(type: "TEXT", nullable: false),
-                    SelfRoles = table.Column<string>(type: "TEXT", nullable: true)
+                    AutoRoles = table.Column<string>(type: "TEXT", nullable: false),
+                    SelfRoles = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Guilds", x => x.Id);
                 });
-
             migrationBuilder.CreateIndex("id_idx", "Guilds", "Id", unique: true);
         }
 

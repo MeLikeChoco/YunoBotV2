@@ -20,15 +20,18 @@ namespace YunoV3.Migrations
 
             modelBuilder.Entity("YunoV3.Objects.Database.Guilds.Guild", b =>
                 {
-                    b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AutoRoles");
+                    b.Property<ulong>("Id");
 
                     b.Property<string>("Prefix")
                         .IsRequired();
 
-                    b.Property<string>("SelfRoles");
+                    b.Property<string>("_autoRoleString")
+                        .IsRequired()
+                        .HasColumnName("AutoRoles");
+
+                    b.Property<string>("_selfRoleString")
+                        .IsRequired()
+                        .HasColumnName("SelfRoles");
 
                     b.HasKey("Id");
 

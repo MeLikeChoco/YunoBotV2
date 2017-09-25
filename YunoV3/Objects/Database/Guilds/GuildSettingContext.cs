@@ -26,7 +26,7 @@ namespace YunoV3.Objects.Database.Guilds
                 {
 
                     Guilds.Add(new Guild(guild.Id));
-
+                    
                 }
 
             }

@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using YunoV3.Objects;
 using YunoV3.Objects.Database.Guilds;
+using YunoV3.Objects.Exceptions;
+using YunoV3.Services;
 
 namespace YunoV3.Core
 {
@@ -19,9 +22,10 @@ namespace YunoV3.Core
         private DiscordSocketClient _client;
         private CommandService _cmdService;
         private BotSettings _botSettings;
+        private Random _random;
         private IServiceProvider _services;
 
-        public Events(DiscordSocketClient client, 
+        public Events(DiscordSocketClient client,
             CommandService cmdService)
         {
 
@@ -52,9 +56,14 @@ namespace YunoV3.Core
         private void BuildServices()
         {
 
+            _random = new Random();
+
             _services = new ServiceCollection()
-                .AddSingleton<Random>()
                 .AddDbContext<GuildSettingContext>()
+                .AddSingleton(_random)
+                .AddSingleton(new InteractiveService(_client, TimeSpan.FromSeconds(60)))
+                .AddSingleton(new Zalgo(_random))
+                .AddSingleton<Web>()
                 .BuildServiceProvider();
 
         }
@@ -77,7 +86,7 @@ namespace YunoV3.Core
 
             var prefix = "e$";
 
-            if(!(message.Channel is SocketDMChannel))
+            if (!(message.Channel is SocketDMChannel))
             {
 
                 using (var db = new GuildSettingContext())
@@ -93,7 +102,7 @@ namespace YunoV3.Core
             var possibleCmd = message as SocketUserMessage;
             var argPos = 0;
 
-            if(possibleCmd.Content.Trim() != prefix
+            if (possibleCmd.Content.Trim() != prefix
                 && (possibleCmd.HasStringPrefix(prefix, ref argPos, StringComparison.InvariantCultureIgnoreCase)
                 || possibleCmd.HasMentionPrefix(_client.CurrentUser, ref argPos)))
             {
@@ -107,25 +116,49 @@ namespace YunoV3.Core
 
                 Logger.Log("Info", "Command", possibleCmd.Content);
 
-                var result = await _cmdService.ExecuteAsync(context, argPos, _services);
-
-                if (!result.IsSuccess)
+                try
                 {
 
-                    if (result.ErrorReason.ToLower().Contains("unknown command"))
-                        return;
-                    else if (result.ErrorReason.ToLower().Contains("you are currently in timeout"))
-                        await context.Channel.SendMessageAsync("Please wait 5 seconds between each type of paginator command!");
-                    else
-                        await context.Channel.SendMessageAsync("There was an error in the command.");
+                    var result = await _cmdService.ExecuteAsync(context, argPos, _services);
 
-                    //await context.Channel.SendMessageAsync("https://goo.gl/JieFJM");
+                    if (!result.IsSuccess)
+                    {
 
-                    Logger.Log("Error", "Error", result.ErrorReason);
-                    //debug purposes
-                    //await context.Channel.SendMessageAsync($"**Error:** {result.ErrorReason}");
+                        if (result.ErrorReason.ToLower().Contains("unknown command"))
+                            return;
+                        else if (result.ErrorReason.ToLower().Contains("you are currently in timeout"))
+                            await context.Channel.SendMessageAsync("Please wait 5 seconds between each type of paginator command!");
+
+                        //await context.Channel.SendMessageAsync("https://goo.gl/JieFJM");
+
+                        Logger.Log("Error", "Error", result.ErrorReason);
+                        //debug purposes
+                        //await context.Channel.SendMessageAsync($"**Error:** {result.ErrorReason}");
+
+                    }
 
                 }
+                catch (WebServiceException)
+                {
+
+                    await context.Channel.SendMessageAsync("The current service the command uses is not available right now. Please try again later.");
+
+                }
+
+            }
+
+        }
+
+        public async Task GiveAutoRoles(SocketGuildUser user)
+        {
+
+            using (var db = new GuildSettingContext())
+            {
+
+                var setting = await db.FindAsync<Guild>(user.Guild.Id);
+                var roles = user.Guild.Roles.Where(role => setting.AutoRoles.Contains(role.Id));
+
+                await user.AddRolesAsync(roles);
 
             }
 

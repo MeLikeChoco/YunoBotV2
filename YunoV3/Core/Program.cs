@@ -44,6 +44,7 @@ namespace YunoV3.Core
             cmdService.Log += events.Log;
             client.Ready += events.ReadyHerWeapons;
             client.JoinedGuild += events.GenGuildSetting;
+            client.UserJoined += events.GiveAutoRoles;
 
             var token = settings.IsTest ? tokens.DiscordTest : tokens.DiscordLegit;
 
