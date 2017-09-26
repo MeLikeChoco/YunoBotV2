@@ -1,0 +1,56 @@
+﻿{0} shits on {1} for {2} damage!
+{0} uses Rasengan on {1} for {2} damage!
+{0} pierces {1} with Chidori for {2} damage!
+{0} used Solar Beam on {1}. It's super effective! {2} damage!
+{0} used Hyper Beam on {1}. It's super effective! {2} damage!
+{0} used Hydro Pump on {1}. It's super effective! {2} damage!
+{0} used Tackle on {1}. It's super effective! {2} damage!
+After 10 episodes, {0} uses Spirit Bomb on {1} for {2} damage!
+{0} fires the Kamehameha at {1}, dealing {2} damage!
+{0} uses Thousand Years of Pain up {1}'s butt, dealing {2} damage!
+{0} slaps {1} with a dill pickle for {2} damage!
+{0} hits {1} with a dildo for {2} damage!
+{0} casts Fire Dragon's Roar towards {1}, dealing {2} damage!
+{0} shoots {1} with a AK-47 for {2} damage!
+{0} attempts to take out {1} with a M16A4 for {2} damage!
+{0} sprays {1} with a M4A1, dealing {2} damage!
+{0} does a drive-by on {1} with a Desert Eagle dealing {2} damage!
+{0} shoves an apple down {1}'s throat for {2} damage!
+{0} smashes a watermelon on {1}'s head for {2} damage!
+{0} shoves a cucumber up {1}'s butt, dealing {2} damage!
+{0} marks {1} for a tactical nuke dealing {2} damage!
+Wielding a hachet, {0} hacks away at {1} for {2} damage!
+{0} slices and dices {1} with a katana for {2} damage!
+Wielding a deadly eggplant, {0} smacks {1} for {2} damage!
+{0} launches a Fireball at {1}, dealing {2} damage!
+{0} casts multiple Ice Spears at {1} for {2} damage!
+{0} casts an Ice Beam at {1} for {2} damage!
+Invoking an explosion, {0} blasts {1} away, dealing {2} damage!
+Ryu tags in for {0} and fires Hadouken at {1} for {2} damage!
+Invoking a storm, {0} casts Lightning Spears at {1} for {2} damage!
+{0} shocks {1}, dealing {2} damage!
+Praying to the gods, {0} unleashes a maelstrom on {1} for {2} damage!
+{0} casts Meteor Deluge on {1} for {2} damage!
+{0} slaps {1} for {2} damage!
+{0} summons the cry of a banshee on {1} for {2} damage!
+{0} casts Dragon Lightning towards {1}, dealing {2} damage!
+{0} pinches {1} for {2} damage!
+{0} smashes {1}'s head with a beer bottle for {2} damage!
+{0} fires a Firebolt at {1}, dealing {2} damage!
+{0} throws a pommel trying to end {1} rightly for {2} damage!
+As the Overmind, {0} orders a Zerg Rush at {1} for {2} damage!
+{0} stings {1} with a scorpion for {2} damage!
+{0} crushes {1} for {2} damage!
+{0} shouts "CRUCIO" towards {1}, dealing {2} damage!
+{0} throws a snail shell at {1} for {2} damage!
+{0} snipes {1} with the AWP but only dealing {2} damage!
+{0} HULK SMASH-es {1} for {2} damage!
+{0} calls United Airlines on {1} for {2} damage!
+{0} throws Leafy at {1} for {2} damage!
+{0} swings a pickaxe at {1}, dealing {2} damage!
+{0} throws a shuriken at {1} for {2} damage!
+{0} piledrives {1} for {2} damage!
+Commanding elephants, {0} tramples {1}, dealing {2} damage!
+Secretly Superman, {0} uses laser eyes on {1} for {2} damage!
+{0} bonks {1} on the head with Thor's Hammer for {2} damage!
+{0} unleashes Alpha Strike on {1}, dealing {2} damage!

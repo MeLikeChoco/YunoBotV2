@@ -1,4 +1,6 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
+using Discord.Rest;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,8 +36,16 @@ namespace YunoV3.Modules
         /// <param name="stream">The stream</param>
         /// <param name="filename">The filename</param>
         /// <returns>Task</returns>
-        public Task UploadAsync(Stream stream, string filename)
+        public Task<RestUserMessage> UploadAsync(Stream stream, string filename)
             => Context.Channel.SendFileAsync(stream, filename);
+
+        /// <summary>
+        /// Send an embed message
+        /// </summary>
+        /// <param name="embed">The embed to send</param>
+        /// <returns>Task</returns>
+        public Task<RestUserMessage> SendEmbedAsync(Embed embed)
+            => Context.Channel.SendMessageAsync("", embed: embed);
 
     }
 }

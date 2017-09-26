@@ -154,7 +154,7 @@ namespace YunoV3.Modules.Commands
                 .Where(command => command.Name == input && command.CheckPreconditionsAsync(Context).Result.IsSuccess);
 
             if (commands.Count() != 0)
-                return ReplyAsync(GenHelpPage(commands));
+                return ReplyAsync($"```fix\n{GenHelpPage(commands)}```");
             else
                 return NoResultError("commands", input);
 

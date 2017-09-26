@@ -36,58 +36,36 @@ namespace YunoV3.Services
         public Task<HttpResponseMessage> PostAsync(string url, string content, string contentType = null, string auth = null)
         {
 
-            var payload = new HttpRequestMessage(HttpMethod.Post, url)
+            using (var payload = new HttpRequestMessage(HttpMethod.Post, url)
             {
 
                 Content = new StringContent(content)
 
-            };
+            })
+            {
 
-            if (!string.IsNullOrEmpty(auth))
-                payload.Headers.Authorization = new AuthenticationHeaderValue(auth);
+                if (!string.IsNullOrEmpty(auth))
+                    payload.Headers.Authorization = new AuthenticationHeaderValue(auth);
 
-            if (!string.IsNullOrEmpty(contentType))
-                payload.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+                if (!string.IsNullOrEmpty(contentType))
+                    payload.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
-            return _client.SendAsync(payload, HttpCompletionOption.ResponseHeadersRead);
+                return _client.SendAsync(payload, HttpCompletionOption.ResponseHeadersRead);
+            }
 
         }
 
         public async Task<JObject> GetJObjectAsync(string url)
-        {
-
-            var content = await CheckUrl(url);
-
-            return JObject.Parse(await content.ReadAsStringAsync());
-
-        }
+            => JObject.Parse(await GetStringAsync(url));
 
         public async Task<JArray> GetJArrayAsync(string url)
-        {
-
-            var content = await CheckUrl(url);
-
-            return JArray.Parse(await content.ReadAsStringAsync());
-
-        }
+            => JArray.Parse(await GetStringAsync(url));
 
         public async Task<IDocument> GetDomAsync(string url)
-        {
-
-            var content = await CheckUrl(url);
-
-            return await _htmlParser.ParseAsync(await content.ReadAsStringAsync());
-
-        }
+            => await _htmlParser.ParseAsync(await GetStringAsync(url));
 
         public async Task<T> GetDeserializedObjectAsync<T>(string url)
-        {
-
-            var content = await GetStringAsync(url);
-
-            return JsonConvert.DeserializeObject<T>(content);
-
-        }
+            => JsonConvert.DeserializeObject<T>(await GetStringAsync(url));
 
         public async Task<T> GetDeserializedObjectAsync<T>(string url, params object[] path)
         {
@@ -109,25 +87,28 @@ namespace YunoV3.Services
         public async Task<string> GetStringAsync(string url)
         {
 
-            var content = await CheckUrl(url);
-
-            return await content.ReadAsStringAsync();
+            using (var content = await CheckUrl(url))
+                return await content.ReadAsStringAsync();
 
         }
 
         public async Task<(Stream stream, string filename)> GetStreamAsync(string url)
         {
 
-            var content = await CheckUrl(url);
-            var stream = await content.ReadAsStreamAsync();
-            var copy = new MemoryStream();
+            using (var content = await CheckUrl(url))
+            using (var stream = await content.ReadAsStreamAsync())
+            {
 
-            await stream.CopyToAsync(copy);
-            copy.Seek(0, SeekOrigin.Begin);
+                var copy = new MemoryStream();
 
-            var filename = content.Headers.ContentDisposition?.FileName;
+                await stream.CopyToAsync(copy);
+                copy.Seek(0, SeekOrigin.Begin);
 
-            return (copy, filename);
+                var filename = content.Headers.ContentDisposition?.FileName;
+
+                return (copy, filename);
+
+            }
 
         }
 

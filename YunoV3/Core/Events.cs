@@ -21,7 +21,6 @@ namespace YunoV3.Core
 
         private DiscordSocketClient _client;
         private CommandService _cmdService;
-        private BotSettings _botSettings;
         private Random _random;
         private IServiceProvider _services;
 
@@ -31,7 +30,6 @@ namespace YunoV3.Core
 
             _client = client;
             _cmdService = cmdService;
-            _botSettings = new BotSettings();
 
         }
 
@@ -64,6 +62,7 @@ namespace YunoV3.Core
                 .AddSingleton(new InteractiveService(_client, TimeSpan.FromSeconds(60)))
                 .AddSingleton(new Zalgo(_random))
                 .AddSingleton<Web>()
+                .AddSingleton<BotSettings>()
                 .BuildServiceProvider();
 
         }

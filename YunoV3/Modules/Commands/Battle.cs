@@ -15,6 +15,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using YunoV3.Extensions;
+using YunoV3.Objects;
 using YunoV3.Services;
 
 namespace YunoV3.Modules.Commands
@@ -24,9 +25,17 @@ namespace YunoV3.Modules.Commands
     {
 
         private Web _web;
+        private Random _random;
+        private string[] _battleMoves;
 
-        public Battle(Web web)
-            => _web = web;
+        public Battle(Web web, Random random, BotSettings settings)
+        {
+
+            _web = web;
+            _random = random;
+            _battleMoves = settings.BattleMoves;
+
+        }
 
         [Command("battle")]
         [Summary("Battle a random user to the death")]
@@ -41,6 +50,8 @@ namespace YunoV3.Modules.Commands
         {
             
             var user = Context.User as SocketGuildUser;
+            var bUser = new BattleUser(user);
+            var bEnemy = new BattleUser(enemy);
 
             using (var userStream = await GetAvatarStream(user))
             using (var enemyStream = await GetAvatarStream(enemy))
@@ -56,9 +67,9 @@ namespace YunoV3.Modules.Commands
                 Font font;
 
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                    font = new Font(SystemFonts.Find("Segoe UI"), 30);
+                    font = new Font(SystemFonts.Find("Segoe UI"), 30, FontStyle.Bold);
                 else
-                    font = new Font(SystemFonts.Find("DejaVu Sans"), 25);
+                    font = new Font(SystemFonts.Find("DejaVu Sans"), 25, FontStyle.Bold);
 
                 var textOptions = new TextGraphicsOptions
                 {
@@ -83,8 +94,8 @@ namespace YunoV3.Modules.Commands
 
                     processor.DrawImage(userImage, 1, Size.Empty, new Point(21, 193));
                     processor.DrawImage(enemyImage, 1, Size.Empty, new Point(520, 193));
-                    processor.DrawText(user.Nickname ?? user.Username, font, Rgba32.Green, new Vector2(195, 606), textOptions);
-                    processor.DrawText(enemy.Nickname ?? enemy.Username, font, Rgba32.Red, new Vector2(700, 606), textOptions);
+                    processor.DrawText(bUser.Name, font, Rgba32.Green, new Vector2(195, 606), textOptions);
+                    processor.DrawText(bEnemy.Name, font, Rgba32.Red, new Vector2(700, 606), textOptions);
 
                 });
 
@@ -94,6 +105,72 @@ namespace YunoV3.Modules.Commands
                 await UploadAsync(output, "deathbattle.png");
 
             }
+
+            var log = new StringBuilder();
+            Attacker attacker;
+            int userRoll, enemyRoll;
+
+            do
+            {
+
+                userRoll = _random.Next(1, 101);
+                enemyRoll = _random.Next(1, 101);
+
+            } while (userRoll == enemyRoll); //highly unlikely, but might as well be sure
+
+            attacker = userRoll > enemyRoll ? Attacker.User : Attacker.Enemy;
+
+            log.AppendLine($":game_die: {bUser} rolled {userRoll}. {bEnemy} rolled {enemyRoll}.");
+
+            if (attacker == Attacker.User)
+                log.Append($"{bUser} ");
+            else
+                log.Append($"{bEnemy} ");
+
+            log.AppendLine(" got a higher roll. He/she initiates the first attack!");
+            
+            var fight = await SendEmbedAsync(GetEmbed(log.ToString(), bUser, bEnemy, attacker));
+            BattleUser winner;
+
+            do
+            {
+
+                await Task.Delay(2000);
+
+                var damage = _random.Next(3, 29);
+                var battleline = _battleMoves[_random.Next(0, _battleMoves.Length)];
+
+                if (attacker == Attacker.User)
+                {
+
+                    bEnemy.Damage(damage);
+                    log.AppendLine($":arrow_right: {string.Format(battleline, bUser, bEnemy, damage)}");
+
+                }
+                else
+                {
+
+                    bUser.Damage(damage);
+                    log.AppendLine($":arrow_left: {string.Format(battleline, bEnemy, bUser, damage)}");
+
+                }
+
+                await fight.EditAsync(GetEmbed(log.ToString(), bUser, bEnemy, attacker));
+
+                if (attacker == Attacker.User)
+                    attacker = Attacker.Enemy;
+                else
+                    attacker = Attacker.User;
+
+            } while (bUser.Hp != 0 && bEnemy.Hp != 0);
+
+            if (bUser.Hp == 0)
+                winner = bEnemy;
+            else
+                winner = bUser;
+
+            log.Append($":trophy: {winner} has won the bout!");
+            await fight.EditAsync(GetEmbed(log.ToString(), bUser, bEnemy, Attacker.Winner));
 
         }
 
@@ -109,6 +186,45 @@ namespace YunoV3.Modules.Commands
                 return File.Open(filepath, FileMode.Open);
 
             }
+
+        }
+
+        private Embed GetEmbed(string battlelog, BattleUser user, BattleUser enemy, Attacker attacker)
+        {
+
+            Color color;
+
+            switch (attacker)
+            {
+
+                case Attacker.Enemy:
+                    color = new Color(255, 0, 0);
+                    break;
+                case Attacker.User:
+                    color = new Color(0, 128, 0);
+                    break;
+                case Attacker.Winner:
+                default:
+                    color = new Color(255, 215, 0);
+                    break;
+
+            }            
+
+            return new EmbedBuilder()
+                .WithColor(color)
+                .WithDescription(battlelog)
+                .AddField(user.Name, $"{user.Hp} / 100", true)
+                .AddField(enemy.Name, $"{enemy.Hp} / 100", true)
+                .Build();
+
+        }
+
+        private enum Attacker
+        {
+
+            User,
+            Enemy,
+            Winner
 
         }
 
