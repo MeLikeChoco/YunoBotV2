@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <Folder Include="Databases\" />
+    <Folder Include="Files\Tokens\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,12 +67,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Files\Images\Default Discord Avatars\Yellow.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\Tokens\LegitToken.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\Tokens\TestToken.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
