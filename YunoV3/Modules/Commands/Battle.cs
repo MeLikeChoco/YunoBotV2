@@ -32,7 +32,7 @@ namespace YunoV3.Modules.Commands
         [Summary("Battle a random user to the death")]
         public Task BattleSomeoneRandom()
             => BattleSomeone(Context.Guild.Users
-                .Where(user => user.Username != Context.User.Username && user.GetAvatarUrl() != null)
+                .Where(user => user.Username != Context.User.Username)
                 .RandomSubset(1).First());
 
         [Command("battle")]
