@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord.Addons.Interactive;
+using Discord.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace YunoV3.Modules
 {
-    public class CustomBase : ModuleBase<SocketCommandContext>
+    public class CustomInteractiveBase : InteractiveBase<SocketCommandContext>
     {
 
         /// <summary>

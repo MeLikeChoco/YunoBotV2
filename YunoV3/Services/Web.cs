@@ -70,7 +70,7 @@ namespace YunoV3.Services
             return JArray.Parse(await content.ReadAsStringAsync());
 
         }
- 
+
         public async Task<IDocument> GetDomAsync(string url)
         {
 
@@ -83,9 +83,26 @@ namespace YunoV3.Services
         public async Task<T> GetDeserializedObjectAsync<T>(string url)
         {
 
-            var content = await CheckUrl(url);
+            var content = await GetStringAsync(url);
 
-            return JsonConvert.DeserializeObject<T>(await content.ReadAsStringAsync());
+            return JsonConvert.DeserializeObject<T>(content);
+
+        }
+
+        public async Task<T> GetDeserializedObjectAsync<T>(string url, params object[] path)
+        {
+
+            var content = await GetStringAsync(url);
+            dynamic jobject = JsonConvert.DeserializeObject(content);
+
+            foreach (var key in path)
+            {
+
+                jobject = jobject[key];
+
+            }
+
+            return jobject.ToObject<T>();
 
         }
 

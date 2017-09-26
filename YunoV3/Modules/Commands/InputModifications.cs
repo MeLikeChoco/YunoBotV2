@@ -19,10 +19,12 @@ namespace YunoV3.Modules.Commands
             => _zalgo = zalgo;
 
         [Command("zalgo")]
+        [Summary("Y̴͎̓O̲̓͡U̧͙̍ ̸̯͂W̻͋͢Ï̴͕L͎̾̕L͙ͮ́ ̫ͫ͡O̸͔̎B̴̤̓E̡̹ͩY̪ͨ͘҉̙ͮ͝")]
         public Task SendZalgo([Remainder]string input)
             => ReplyAsync(_zalgo.GetZalgo(input));
 
         [Command("zalgod")]
+        [Summary("Y̴͎̓O̲̓͡U̧͙̍ ̸̯͂W̻͋͢Ï̴͕L͎̾̕L͙ͮ́ ̫ͫ͡O̸͔̎B̴̤̓E̡̹ͩY̪ͨ͘҉̙ͮ͝")]
         [RequireBotPermission(GuildPermission.ManageMessages)]
         public Task SendZalgod([Remainder]string input)
         {

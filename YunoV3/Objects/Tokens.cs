@@ -16,8 +16,8 @@ namespace YunoV3.Objects
         public Tokens()
         {
 
-            DiscordTest = File.ReadAllText("Files/TestToken.txt");
-            DiscordLegit = File.ReadAllText("Files/LegitToken.txt");
+            DiscordTest = File.ReadAllText("Files/Tokens/TestToken.txt");
+            DiscordLegit = File.ReadAllText("Files/Tokens/LegitToken.txt");
 
         }
 
