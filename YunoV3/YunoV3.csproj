@@ -32,7 +32,6 @@
 
   <ItemGroup>
     <Folder Include="Databases\" />
-    <Folder Include="Files\Tokens\" />
   </ItemGroup>
 
   <ItemGroup>
