@@ -1,6 +1,7 @@
 ﻿using AngleSharp.Dom;
 using Discord;
 using Discord.Commands;
+using Newtonsoft.Json.Linq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YunoV3.Extensions;
+using YunoV3.Objects;
 using YunoV3.Objects.Deserializers;
 using YunoV3.Objects.Exceptions;
 using YunoV3.Services;
@@ -21,12 +23,14 @@ namespace YunoV3.Modules.Commands
 
         private Web _web;
         private Random _random;
+        private Tokens _tokens;
 
-        public WebRelated(Web web, Random random)
+        public WebRelated(Web web, Random random, Tokens tokens)
         {
 
             _web = web;
             _random = random;
+            _tokens = tokens;
 
         }
 
@@ -107,8 +111,8 @@ namespace YunoV3.Modules.Commands
             } while (element == null);
 
             var image = element.GetAttribute("src");
-            var result = await _web.GetStreamAsync(image);            
-            
+            var result = await _web.GetStreamAsync(image);
+
             await UploadAsync(result.stream, new Uri(image).Segments.Last().Replace("gif", "png"));
 
         }
@@ -125,7 +129,7 @@ namespace YunoV3.Modules.Commands
                 url += $"&tag={Uri.EscapeUriString(topic)}";
 
             var result = await _web.GetJObjectAsync(url);
-            var gifUrl = result["data"]["image_original_url"].ToString();
+            var gifUrl = result["data"]["image_original_url"].Value<string>();
             var downData = await _web.GetStreamAsync(gifUrl);
 
             await UploadAsync(downData.stream, downData.filename ?? "giphy.gif");
@@ -193,6 +197,61 @@ namespace YunoV3.Modules.Commands
             body.AddField("Nationality", $"{response.Nationality}");
 
             await ReplyAsync("", embed: body.Build());
+
+        }
+
+        [Command("wallpaper")]
+        [Summary("Get a random wallpaper")]
+        public async Task GetRandomWallpaper()
+        {
+
+            var url = $"https://wall.alphacoders.com/api2.0/get.php?auth={_tokens.Wallpapers}&method=random&height=1080&width=1920";
+            var response = await _web.GetJObjectAsync(url);
+
+            await SendEmbedAsync(GetWallpaper(response).Build());
+
+        }
+
+        [Command("wallpaper")]
+        [Summary("Get a wallpaper based on the topic you entered")]
+        public async Task GetWallpaper([Remainder]string search)
+        {
+
+            var url = $"https://wall.alphacoders.com/api2.0/get.php?auth={_tokens.Wallpapers}&method=search&height=1080&width=1920&term={Uri.EscapeUriString(search)}";
+            var response = await _web.GetJObjectAsync(url);
+            var pages = response["total_match"].Value<int>();
+
+            if (pages > 1)
+            {
+
+                var page = _random.Next(1, (pages / 30) + 1);
+                url += $"&page={page}";
+                response = await _web.GetJObjectAsync(url);
+
+            }
+            else if (pages == 0)
+            {
+
+                await NoResultError("wallpapers", search);
+                return;
+
+            }
+
+            await SendEmbedAsync(GetWallpaper(response).Build());
+
+        }
+
+        private EmbedBuilder GetWallpaper(JObject response)
+        {
+
+            var wallpapers = response["wallpapers"].ToObject<JArray>();
+            var wallpaper = wallpapers[_random.Next(0, wallpapers.Count)];
+
+            return new EmbedBuilder()
+                .WithTitle("Link")
+                .WithUrl(wallpaper["url_image"].Value<string>())
+                .WithImageUrl(wallpaper["url_image"].Value<string>())
+                .WithColor(_random.GetColor());
 
         }
 

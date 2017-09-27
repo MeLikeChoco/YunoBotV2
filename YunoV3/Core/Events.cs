@@ -63,6 +63,7 @@ namespace YunoV3.Core
                 .AddSingleton(new Zalgo(_random))
                 .AddSingleton<Web>()
                 .AddSingleton<BotSettings>()
+                .AddSingleton<Tokens>()
                 .BuildServiceProvider();
 
         }

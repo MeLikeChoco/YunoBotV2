@@ -36,8 +36,6 @@ namespace YunoV3.Core
 
             });
 
-            var tokens = new Tokens();
-            var settings = new BotSettings();
             var events = new Events(client, cmdService);
 
             client.Log += events.Log;
@@ -46,7 +44,7 @@ namespace YunoV3.Core
             client.JoinedGuild += events.GenGuildSetting;
             client.UserJoined += events.GiveAutoRoles;
 
-            var token = settings.IsTest ? tokens.DiscordTest : tokens.DiscordLegit;
+            var token = new BotSettings().IsTest ? new Tokens().DiscordTest : new Tokens().DiscordLegit;
 
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();

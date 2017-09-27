@@ -120,12 +120,12 @@ namespace YunoV3.Modules.Commands
 
             attacker = userRoll > enemyRoll ? Attacker.User : Attacker.Enemy;
 
-            log.AppendLine($":game_die: {bUser} rolled {userRoll}. {bEnemy} rolled {enemyRoll}.");
+            log.AppendLine($":game_die: **{bUser}** rolled __{userRoll}__. **{bEnemy}** rolled __{enemyRoll}__.");
 
             if (attacker == Attacker.User)
-                log.Append($"{bUser} ");
+                log.Append($"**{bUser}** ");
             else
-                log.Append($"{bEnemy} ");
+                log.Append($"**{bEnemy}** ");
 
             log.AppendLine(" got a higher roll. He/she initiates the first attack!");
             
@@ -144,14 +144,14 @@ namespace YunoV3.Modules.Commands
                 {
 
                     bEnemy.Damage(damage);
-                    log.AppendLine($":arrow_right: {string.Format(battleline, bUser, bEnemy, damage)}");
+                    log.AppendLine($":arrow_right: {string.Format(battleline, $"**{bUser}**", $"**{bEnemy}**", $"__{damage}__")}");
 
                 }
                 else
                 {
 
                     bUser.Damage(damage);
-                    log.AppendLine($":arrow_left: {string.Format(battleline, bEnemy, bUser, damage)}");
+                    log.AppendLine($":arrow_left: {string.Format(battleline, $"**{bEnemy}**", $"**{bUser}**", $"__{damage}__")}");
 
                 }
 
@@ -169,7 +169,7 @@ namespace YunoV3.Modules.Commands
             else
                 winner = bUser;
 
-            log.Append($":trophy: {winner} has won the bout!");
+            log.Append($":trophy: **{winner}** has won the bout!");
             await fight.EditAsync(GetEmbed(log.ToString(), bUser, bEnemy, Attacker.Winner));
 
         }
