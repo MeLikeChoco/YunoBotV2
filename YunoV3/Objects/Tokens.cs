@@ -30,7 +30,7 @@ namespace YunoV3.Objects
                 {
 
                     case "LegitToken.txt":
-                        DiscordTest = GetToken(file);
+                        DiscordLegit = GetToken(file);
                         break;
                     case "TestToken.txt":
                         DiscordTest = GetToken(file);
