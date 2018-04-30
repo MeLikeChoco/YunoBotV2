@@ -21,25 +21,16 @@ namespace YunoV3.Modules.Commands
     public class WebRelated : CustomBase
     {
 
-        private Web _web;
-        private Random _random;
-        private Tokens _tokens;
-
-        public WebRelated(Web web, Random random, Tokens tokens)
-        {
-
-            _web = web;
-            _random = random;
-            _tokens = tokens;
-
-        }
+        public Web Web { get; set; }
+        public Random Random { get; set; }
+        public Tokens Tokens { get; set; }
 
         [Command("needsmorejpeg")]
         [Summary("NEEDS MOAR JPEG")]
         public async Task NeedsMoreJpeg()
         {
 
-            var messages = await Context.Channel.GetMessagesAsync(50).Flatten();
+            var messages = await Context.Channel.GetMessagesAsync(50).FlattenAsync();
             var message = messages.FirstOrDefault(m => m.Attachments.Any(attachment => attachment.Height != null));
 
             if (message != null)
@@ -50,7 +41,7 @@ namespace YunoV3.Modules.Commands
                 if (attachment != null)
                 {
 
-                    var result = await _web.GetStreamAsync(attachment.Url);
+                    var result = await Web.GetStreamAsync(attachment.Url);
 
                     using (var stream = result.stream)
                     {
@@ -99,19 +90,19 @@ namespace YunoV3.Modules.Commands
 
                 //garfield began in 1978 but in the middle of that year and i aint
                 //checking whether or not that day of the year is valid
-                var year = _random.Next(1979, DateTime.Now.Year + 1);
-                var month = _random.Next(1, 13);
+                var year = Random.Next(1979, DateTime.Now.Year + 1);
+                var month = Random.Next(1, 13);
                 //i aint checking for leap year either
-                var day = _random.Next(1, 29);
+                var day = Random.Next(1, 29);
                 var url = $"https://garfield.com/comic/{year}/{month}/{day}";
-                var dom = await _web.GetDomAsync(url);
+                var dom = await Web.GetDomAsync(url);
                 element = dom.GetElementsByClassName("comic-display").First()
                     .GetElementsByClassName("img-responsive").FirstOrDefault();
 
             } while (element == null);
 
             var image = element.GetAttribute("src");
-            var result = await _web.GetStreamAsync(image);
+            var result = await Web.GetStreamAsync(image);
 
             await UploadAsync(result.stream, new Uri(image).Segments.Last().Replace("gif", "png"));
 
@@ -128,9 +119,9 @@ namespace YunoV3.Modules.Commands
             if (!string.IsNullOrEmpty(topic))
                 url += $"&tag={Uri.EscapeUriString(topic)}";
 
-            var result = await _web.GetJObjectAsync(url);
+            var result = await Web.GetJObjectAsync(url);
             var gifUrl = result["data"]["image_original_url"].Value<string>();
-            var downData = await _web.GetStreamAsync(gifUrl);
+            var downData = await Web.GetStreamAsync(gifUrl);
 
             await UploadAsync(downData.stream, downData.filename ?? "giphy.gif");
 
@@ -142,7 +133,7 @@ namespace YunoV3.Modules.Commands
         {
 
             var url = $"http://artii.herokuapp.com/make?text={Uri.EscapeUriString(input)}";
-            var response = await _web.GetStringAsync(url);
+            var response = await Web.GetStringAsync(url);
 
             if (string.IsNullOrEmpty(response))
                 throw new WebServiceException();
@@ -161,11 +152,11 @@ namespace YunoV3.Modules.Commands
             if (!string.IsNullOrEmpty(seed))
                 url += $"?seed={seed}";
 
-            var result = await _web.GetJObjectAsync(url);
+            var result = await Web.GetJObjectAsync(url);
             var response = result["results"].First.ToObject<RandomUser>();
 
             url = $"https://restcountries.eu/rest/v2/alpha/{response.Nationality}";
-            response.Nationality = await _web.GetDeserializedObjectAsync<string>(url, "name");
+            response.Nationality = await Web.GetDeserializedObjectAsync<string>(url, "name");
 
             var author = new EmbedAuthorBuilder()
                 .WithName($"{response.Name.Title}. {response.Name.First} {response.Name.Last}".Title())
@@ -205,8 +196,8 @@ namespace YunoV3.Modules.Commands
         public async Task GetRandomWallpaper()
         {
 
-            var url = $"https://wall.alphacoders.com/api2.0/get.php?auth={_tokens.Wallpapers}&method=random&height=1080&width=1920";
-            var response = await _web.GetJObjectAsync(url);
+            var url = $"https://wall.alphacoders.com/api2.0/get.php?auth={Tokens.Wallpapers}&method=random&height=1080&width=1920";
+            var response = await Web.GetJObjectAsync(url);
 
             await SendEmbedAsync(GetWallpaper(response).Build());
 
@@ -217,16 +208,16 @@ namespace YunoV3.Modules.Commands
         public async Task GetWallpaper([Remainder]string search)
         {
 
-            var url = $"https://wall.alphacoders.com/api2.0/get.php?auth={_tokens.Wallpapers}&method=search&height=1080&width=1920&term={Uri.EscapeUriString(search)}";
-            var response = await _web.GetJObjectAsync(url);
+            var url = $"https://wall.alphacoders.com/api2.0/get.php?auth={Tokens.Wallpapers}&method=search&height=1080&width=1920&term={Uri.EscapeUriString(search)}";
+            var response = await Web.GetJObjectAsync(url);
             var pages = response["total_match"].Value<int>();
 
             if (pages > 1)
             {
 
-                var page = _random.Next(1, (pages / 30) + 1);
+                var page = Random.Next(1, (pages / 30) + 1);
                 url += $"&page={page}";
-                response = await _web.GetJObjectAsync(url);
+                response = await Web.GetJObjectAsync(url);
 
             }
             else if (pages == 0)
@@ -245,13 +236,13 @@ namespace YunoV3.Modules.Commands
         {
 
             var wallpapers = response["wallpapers"].ToObject<JArray>();
-            var wallpaper = wallpapers[_random.Next(0, wallpapers.Count)];
+            var wallpaper = wallpapers[Random.Next(0, wallpapers.Count)];
 
             return new EmbedBuilder()
                 .WithTitle("Link")
                 .WithUrl(wallpaper["url_image"].Value<string>())
                 .WithImageUrl(wallpaper["url_image"].Value<string>())
-                .WithColor(_random.GetColor());
+                .WithColor(Random.GetColor());
 
         }
 

@@ -13,15 +13,12 @@ namespace YunoV3.Modules.Commands
     public class InputModifications : CustomBase
     {
 
-        private Zalgo _zalgo;
-
-        public InputModifications(Zalgo zalgo)
-            => _zalgo = zalgo;
+        public Zalgo Zalgo { get; set; }
 
         [Command("zalgo")]
         [Summary("Y̴͎̓O̲̓͡U̧͙̍ ̸̯͂W̻͋͢Ï̴͕L͎̾̕L͙ͮ́ ̫ͫ͡O̸͔̎B̴̤̓E̡̹ͩY̪ͨ͘҉̙ͮ͝")]
         public Task SendZalgo([Remainder]string input)
-            => ReplyAsync(_zalgo.GetZalgo(input));
+            => ReplyAsync(Zalgo.GetZalgo(input));
 
         [Command("zalgod")]
         [Summary("Y̴͎̓O̲̓͡U̧͙̍ ̸̯͂W̻͋͢Ï̴͕L͎̾̕L͙ͮ́ ̫ͫ͡O̸͔̎B̴̤̓E̡̹ͩY̪ͨ͘҉̙ͮ͝")]
@@ -31,7 +28,7 @@ namespace YunoV3.Modules.Commands
 
             Context.Message.DeleteAsync();
 
-            return ReplyAsync(_zalgo.GetZalgo(input));
+            return ReplyAsync(Zalgo.GetZalgo(input));
 
         }
 

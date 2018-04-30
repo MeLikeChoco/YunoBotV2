@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
+using Discord.Net.Providers.WS4Net;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -19,37 +20,79 @@ namespace YunoV3.Core
     public class Events
     {
 
-        private DiscordSocketClient _client;
-        private CommandService _cmdService;
+        private DiscordSocketClient _discordSocketclient;
+        private CommandService _commandService;
         private Random _random;
         private IServiceProvider _services;
 
-        public Events(DiscordSocketClient client,
-            CommandService cmdService)
+        private DiscordSocketConfig _discordSocketConfig
         {
 
-            _client = client;
-            _cmdService = cmdService;
+            get
+            {
+
+                var config = new DiscordSocketConfig
+                {
+
+                    LogLevel = LogSeverity.Verbose,
+                    MessageCacheSize = 1000
+
+                };
+
+                if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
+                    config.WebSocketProvider = WS4NetProvider.Instance;
+
+                return config;
+
+            }
 
         }
 
-        public async Task ReadyHerWeapons()
+        private CommandServiceConfig _commandServiceConfig => new CommandServiceConfig
+        {
+
+            LogLevel = LogSeverity.Verbose,
+            DefaultRunMode = RunMode.Async //the overhead is nothing to be worried about
+
+        };
+
+        public Events()
+        {
+
+            _discordSocketclient = new DiscordSocketClient(_discordSocketConfig);
+            _commandService = new CommandService(_commandServiceConfig);
+
+            _discordSocketclient.Log += Log;
+            _commandService.Log += Log;
+            _discordSocketclient.Ready += ReadyHerWeapons;
+            _discordSocketclient.JoinedGuild += GenGuildSetting;
+            _discordSocketclient.UserJoined += GiveAutoRoles;
+
+        }
+
+        public async Task GoOnAKillingSpree()
+        {
+
+            var token = new BotSettings().IsTest ? new Tokens().DiscordTest : new Tokens().DiscordLegit;
+
+            await _discordSocketclient.LoginAsync(TokenType.Bot, token);
+            await _discordSocketclient.StartAsync();
+
+        }
+
+        private async Task ReadyHerWeapons()
         {
 
             BuildGuildSettings();
             BuildServices();
             await BuildCommandHandler();
 
-            _client.Ready -= ReadyHerWeapons;
+            _discordSocketclient.Ready -= ReadyHerWeapons;
 
         }
 
         private void BuildGuildSettings()
-        {
-
-            new GuildSettingContext(_client.Guilds);
-
-        }
+            => new GuildSettingContext(_discordSocketclient.Guilds);
 
         private void BuildServices()
         {
@@ -59,7 +102,7 @@ namespace YunoV3.Core
             _services = new ServiceCollection()
                 .AddDbContext<GuildSettingContext>()
                 .AddSingleton(_random)
-                .AddSingleton(new InteractiveService(_client, TimeSpan.FromSeconds(60)))
+                .AddSingleton(new InteractiveService(_discordSocketclient, TimeSpan.FromDays(1)))
                 .AddSingleton(new Zalgo(_random))
                 .AddSingleton<Web>()
                 .AddSingleton<BotSettings>()
@@ -71,8 +114,8 @@ namespace YunoV3.Core
         private async Task BuildCommandHandler()
         {
 
-            _client.MessageReceived += CommandHandler;
-            await _cmdService.AddModulesAsync(Assembly.GetEntryAssembly());
+            _discordSocketclient.MessageReceived += CommandHandler;
+            await _commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
 
         }
 
@@ -104,10 +147,10 @@ namespace YunoV3.Core
 
             if (possibleCmd.Content.Trim() != prefix
                 && (possibleCmd.HasStringPrefix(prefix, ref argPos, StringComparison.InvariantCultureIgnoreCase)
-                || possibleCmd.HasMentionPrefix(_client.CurrentUser, ref argPos)))
+                || possibleCmd.HasMentionPrefix(_discordSocketclient.CurrentUser, ref argPos)))
             {
 
-                var context = new SocketCommandContext(_client, possibleCmd);
+                var context = new SocketCommandContext(_discordSocketclient, possibleCmd);
 
                 if (message.Channel is SocketDMChannel)
                     Logger.Log("Info", "Command", $"{possibleCmd.Author.Username} in DM's");
@@ -119,11 +162,11 @@ namespace YunoV3.Core
                 try
                 {
 
-                    var result = await _cmdService.ExecuteAsync(context, argPos, _services);
+                    var result = await _commandService.ExecuteAsync(context, argPos, _services);
 
                     if (!result.IsSuccess)
                     {
-
+                        
                         if (result.ErrorReason.ToLower().Contains("unknown command"))
                             return;
                         else if (result.ErrorReason.ToLower().Contains("you are currently in timeout"))
@@ -149,7 +192,7 @@ namespace YunoV3.Core
 
         }
 
-        public async Task GiveAutoRoles(SocketGuildUser user)
+        private async Task GiveAutoRoles(SocketGuildUser user)
         {
 
             using (var db = new GuildSettingContext())
@@ -164,7 +207,7 @@ namespace YunoV3.Core
 
         }
 
-        public async Task GenGuildSetting(SocketGuild guild)
+        private async Task GenGuildSetting(SocketGuild guild)
         {
 
             using (var db = new GuildSettingContext())
@@ -177,7 +220,7 @@ namespace YunoV3.Core
 
         }
 
-        public Task Log(LogMessage message)
+        private Task Log(LogMessage message)
         {
 
             Logger.Log(message.Severity.ToString(), message.Source, message.Message, message.Exception);

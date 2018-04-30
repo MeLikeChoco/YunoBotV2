@@ -19,35 +19,8 @@ namespace YunoV3.Core
             Logger.Initialize();
             Logger.Log("YunoBot is up and running! Ready to kill for love and attention!");
 
-            var client = new DiscordSocketClient(new DiscordSocketConfig
-            {
-
-                LogLevel = LogSeverity.Verbose,
-                MessageCacheSize = 1000
-
-            });
-
-            var cmdService = new CommandService(new CommandServiceConfig
-            {
-
-                LogLevel = LogSeverity.Verbose,
-                CaseSensitiveCommands = false,
-                DefaultRunMode = RunMode.Async //the overhead is nothing to be worried about
-
-            });
-
-            var events = new Events(client, cmdService);
-
-            client.Log += events.Log;
-            cmdService.Log += events.Log;
-            client.Ready += events.ReadyHerWeapons;
-            client.JoinedGuild += events.GenGuildSetting;
-            client.UserJoined += events.GiveAutoRoles;
-
-            var token = new BotSettings().IsTest ? new Tokens().DiscordTest : new Tokens().DiscordLegit;
-
-            await client.LoginAsync(TokenType.Bot, token);
-            await client.StartAsync();
+            var events = new Events();
+            await events.GoOnAKillingSpree();
 
             await Task.Delay(-1);
 

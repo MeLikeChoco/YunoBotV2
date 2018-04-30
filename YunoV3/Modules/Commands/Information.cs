@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using YunoV3.Extensions;
 using YunoV3.Objects.Database.Guilds;
@@ -190,6 +191,15 @@ namespace YunoV3.Modules.Commands
             }
 
             return str;
+
+        }
+
+        [Command("test")]
+        [Summary("blarg")]
+        public async Task Testing()
+        {
+            
+
 
         }
 

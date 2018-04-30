@@ -14,29 +14,15 @@ namespace YunoV3.Modules.Commands
     public class Settings : CustomBase
     {
 
-        private GuildSettingContext _dbContext;
+        public GuildSettingContext DbContext { get; set; }
+
         private Guild _guild;
 
-        public Settings(GuildSettingContext dbContext)
-        {
-
-            _dbContext = dbContext;
-
-        }
-
         protected override void BeforeExecute(CommandInfo command)
-        {
-
-            _guild = _dbContext.Find<Guild>(Context.Guild.Id);
-
-        }
+            => _guild = DbContext.Find<Guild>(Context.Guild.Id);
 
         protected override void AfterExecute(CommandInfo command)
-        {
-
-            _dbContext.SaveChanges();
-
-        }
+            => DbContext.SaveChanges();
 
         [Command("role")]
         [Summary("Role yourself with one of the self roles!")]
@@ -49,7 +35,7 @@ namespace YunoV3.Modules.Commands
                 await NoResultError("roles", input);
             else if (_guild.SelfRoles.Contains(role.Id))
             {
-
+                                
                 await (Context.User as SocketGuildUser).AddRoleAsync(role);
                 await ReplyAsync($"You have been given **{role.Name}**!");
 

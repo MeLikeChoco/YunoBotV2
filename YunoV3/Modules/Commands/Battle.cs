@@ -24,18 +24,14 @@ namespace YunoV3.Modules.Commands
     public class Battle : CustomBase
     {
 
-        private Web _web;
-        private Random _random;
+        public Web Web { get; set; }
+        public Random Random { get; set; }
+        public BotSettings BotSettings { get; set; }
+
         private string[] _battleMoves;
 
-        public Battle(Web web, Random random, BotSettings settings)
-        {
-
-            _web = web;
-            _random = random;
-            _battleMoves = settings.BattleMoves;
-
-        }
+        protected override void BeforeExecute(CommandInfo command)
+            => _battleMoves = BotSettings.BattleMoves;
 
         [Command("battle")]
         [Summary("Battle a random user to the death")]
@@ -113,8 +109,8 @@ namespace YunoV3.Modules.Commands
             do
             {
 
-                userRoll = _random.Next(1, 101);
-                enemyRoll = _random.Next(1, 101);
+                userRoll = Random.Next(1, 101);
+                enemyRoll = Random.Next(1, 101);
 
             } while (userRoll == enemyRoll); //highly unlikely, but might as well be sure
 
@@ -137,8 +133,8 @@ namespace YunoV3.Modules.Commands
 
                 await Task.Delay(2000);
 
-                var damage = _random.Next(3, 29);
-                var battleline = _battleMoves[_random.Next(0, _battleMoves.Length)];
+                var damage = Random.Next(3, 29);
+                var battleline = _battleMoves[Random.Next(0, _battleMoves.Length)];
 
                 if (attacker == Attacker.User)
                 {
@@ -178,7 +174,7 @@ namespace YunoV3.Modules.Commands
         {
 
             if (user.GetAvatarUrl() != null)
-                return (await _web.GetStreamAsync(user.GetAvatarUrl())).stream;
+                return (await Web.GetStreamAsync(user.GetAvatarUrl())).stream;
             else
             {
 

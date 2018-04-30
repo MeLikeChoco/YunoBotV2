@@ -17,29 +17,25 @@ namespace YunoV3.Modules.Commands.Music
     public class Lyrics : CustomInteractiveBase
     {
 
-        private Web _web;
+        public Web Web { get; set; }
+
         private Criteria<SocketMessage> _criteria;
 
         private const string LyricsSearch = "http://search.azlyrics.com/search.php?q=";
         private const string NextLinePattern = @"\s*<br>";
         private const string HtmlTagPattern = @"<.*?>";
 
-        public Lyrics(Web web)
-        {
-
-            _web = web;
-            _criteria = new Criteria<SocketMessage>()
+        public Lyrics()
+            => _criteria = new Criteria<SocketMessage>()
                 .AddCriterion(new EnsureSourceUserCriterion())
                 .AddCriterion(new EnsureSourceChannelCriterion());
-
-        }
 
         [Command("lyrics")]
         [Summary("Get the lyrics to a song")]
         public async Task GetLyrics([Remainder]string input)
         {
 
-            var dom = await _web.GetDomAsync($"{LyricsSearch}{Uri.EscapeUriString(input)}");
+            var dom = await Web.GetDomAsync($"{LyricsSearch}{Uri.EscapeUriString(input)}");
             var table = dom.GetElementsByClassName("panel")
                 .FirstOrDefault(element => element.TextContent.Contains("Song results"))?
                 .GetElementsByClassName("table")
@@ -91,7 +87,7 @@ namespace YunoV3.Modules.Commands.Music
                     return;
 
                 var dmchannel = await Context.User.GetOrCreateDMChannelAsync();
-                dom = await _web.GetDomAsync(link);
+                dom = await Web.GetDomAsync(link);
                 var mainDom = dom.GetElementsByClassName("col-xs-12 col-lg-8 text-center").FirstOrDefault();
 
                 var lyricElement = mainDom.GetElementsByTagName("div")

@@ -1,4 +1,6 @@
 ﻿using Discord.WebSocket;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,68 +26,52 @@ namespace YunoV3.Objects.Database.Guilds
 
         public Guild() { }
 
+        [NotMapped]
+        private object _autoRoleLock = new object();
+        [NotMapped]
+        private object _selfRoleLock = new object();
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public ulong Id { get; set; }
         [Required]
         public string Prefix { get; set; }
-        [Column("AutoRoles")]
-        [Required]
-        public string _autoRoleString { get; private set; }
-        [Column("SelfRoles")]
-        [Required]
-        public string _selfRoleString { get; private set; }
 
-        [NotMapped]
-        public List<ulong> AutoRoles
-        {
+        private string _autoRoleString;
+        private string _selfRoleString;
 
-            //there where method is just in case the string is empty, so i can return an empty collection instead of throwing an error
-            get => new List<ulong>(_autoRoleString.Split(',').Where(id => id != "").Select(id => ulong.Parse(id)));
-
-        }
-
-        [NotMapped]
-        public List<ulong> SelfRoles
-        {
-            
-            get => new List<ulong>(_selfRoleString.Split(',').Where(id => id != "").Select(id => ulong.Parse(id)));
-
-        }
+        public List<ulong> AutoRoles => _autoRoleString.Split(',').Where(id => !string.IsNullOrEmpty(id)).Select(ulong.Parse).ToList();
+        public List<ulong> SelfRoles => _selfRoleString.Split(',').Where(id => !string.IsNullOrEmpty(id)).Select(ulong.Parse).ToList();
 
         public void AddAutoRole(SocketRole role)
         {
 
-            if (string.IsNullOrEmpty(_autoRoleString))
-                _autoRoleString = role.Id.ToString();
-            else if (!_autoRoleString.Contains(role.Id.ToString()))
-                _autoRoleString += $",{role.Id}";
+            lock (_autoRoleLock)
+                _autoRoleString = string.Join(',', AutoRoles.Union(new ulong[] { role.Id }));
 
         }
 
         public void RemoveAutoRole(SocketRole role)
         {
 
-            if (!string.IsNullOrEmpty(_autoRoleString))
-                _autoRoleString = _autoRoleString.Replace(role.Id.ToString(), "").Replace(",,", "");
+            lock (_autoRoleLock)
+                _autoRoleString = string.Join(',', AutoRoles.Except(new ulong[] { role.Id }));
 
         }
 
         public void AddSelfRole(SocketRole role)
         {
 
-            if (string.IsNullOrEmpty(_selfRoleString))
-                _selfRoleString = role.Id.ToString();
-            else
-                _selfRoleString += $",{role.Id}";
+            lock (_selfRoleLock)
+                _selfRoleString = string.Join(',', SelfRoles.Union(new ulong[] { role.Id }));
 
         }
 
         public void RemoveSelfRole(SocketRole role)
         {
 
-            if (!string.IsNullOrEmpty(_selfRoleString))
-                _selfRoleString = _selfRoleString.Replace(role.Id.ToString(), "").Replace(",,", "");
+            lock (_selfRoleLock)
+                _selfRoleString = string.Join(',', SelfRoles.Except(new ulong[] { role.Id }));
 
         }
 

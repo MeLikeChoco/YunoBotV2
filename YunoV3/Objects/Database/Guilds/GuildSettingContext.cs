@@ -16,6 +16,14 @@ namespace YunoV3.Objects.Database.Guilds
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseSqlite("Data Source = Databases/Guilds.db");
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+            modelBuilder.Entity<Guild>().Property<string>("_autoRoleString").HasColumnName("AutoRoles");
+            modelBuilder.Entity<Guild>().Property<string>("_selfRoleString").HasColumnName("SelfRoles");
+
+        }
+
         public GuildSettingContext(IEnumerable<SocketGuild> guilds)
         {
 
